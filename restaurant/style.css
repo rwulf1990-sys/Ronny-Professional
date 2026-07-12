@@ -83,6 +83,15 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ---------- Canvas & Noise ---------- */
 #scene { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+/* Graceful fallback when WebGL is unavailable/blocked: a warm static
+   gradient stands in for the 3D scene instead of a blank canvas. */
+body.no-3d #scene { display: none; }
+body.no-3d {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 28%, rgba(229, 168, 46, .22), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 15% 80%, rgba(255, 140, 66, .14), transparent 60%),
+    var(--black);
+}
 .noise {
   position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
