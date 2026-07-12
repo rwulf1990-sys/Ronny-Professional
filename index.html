@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIS BRANDING — Marken, die man fühlt.</title>
+  <meta name="description" content="Dis Branding – Kreativstudio für epische Markenauftritte. Branding, Design & digitale Erlebnisse mit Wow-Effekt.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+  <link rel="preload" href="fonts/syne-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/space-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-diamond"></div>
+      <span class="loader-text">DIS BRANDING</span>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Fullscreen 3D Canvas -->
+  <canvas id="scene"></canvas>
+
+  <!-- Noise Overlay -->
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <header class="nav" id="nav">
+    <a href="#hero" class="nav-logo">
+      <span class="nav-logo-mark">◆</span> DIS<span class="thin">BRANDING</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#leistungen" data-magnetic>Leistungen</a>
+      <a href="#showcase" data-magnetic>Showcase</a>
+      <a href="#prozess" data-magnetic>Prozess</a>
+      <a href="#kontakt" class="nav-cta" data-magnetic>Projekt starten</a>
+    </nav>
+    <button class="nav-burger" id="burger" aria-label="Menü öffnen">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#leistungen">Leistungen</a>
+    <a href="#showcase">Showcase</a>
+    <a href="#prozess">Prozess</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <p class="hero-kicker reveal"><span class="pulse-dot"></span> Kreativstudio für epische Marken</p>
+        <h1 class="hero-title">
+          <span class="line"><span class="word reveal-word">WIR</span> <span class="word reveal-word">BAUEN</span></span>
+          <span class="line"><span class="word reveal-word gradient-text">MARKEN,</span></span>
+          <span class="line"><span class="word reveal-word">DIE</span> <span class="word reveal-word">MAN</span> <span class="word reveal-word glow-text">FÜHLT.</span></span>
+        </h1>
+        <p class="hero-sub reveal">Dis Branding verwandelt Ideen in unvergessliche visuelle Erlebnisse —
+          Branding, Design und digitale Welten mit maximalem Wow-Effekt.</p>
+        <div class="hero-actions reveal">
+          <a href="#kontakt" class="btn btn-primary" data-magnetic>Projekt starten <span class="btn-arrow">→</span></a>
+          <a href="#showcase" class="btn btn-ghost" data-magnetic>Arbeiten ansehen</a>
+        </div>
+      </div>
+      <div class="hero-scroll-hint">
+        <div class="mouse"><div class="mouse-wheel"></div></div>
+        <span>Scrollen</span>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num" data-count="120">0</span><span class="stat-plus">+</span><span class="stat-label">Projekte</span></div>
+        <div class="stat"><span class="stat-num" data-count="98">0</span><span class="stat-plus">%</span><span class="stat-label">Zufriedenheit</span></div>
+        <div class="stat"><span class="stat-num" data-count="15">0</span><span class="stat-plus">+</span><span class="stat-label">Auszeichnungen</span></div>
+      </div>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>BRANDING ◆ DESIGN ◆ WEB ◆ MOTION ◆ STRATEGIE ◆ IDENTITÄT ◆ </span>
+        <span>BRANDING ◆ DESIGN ◆ WEB ◆ MOTION ◆ STRATEGIE ◆ IDENTITÄT ◆ </span>
+      </div>
+    </div>
+
+    <!-- ============ LEISTUNGEN ============ -->
+    <section class="section" id="leistungen">
+      <div class="section-head">
+        <span class="section-tag reveal">01 — Leistungen</span>
+        <h2 class="section-title reveal">Was wir <span class="gradient-text">entfesseln</span></h2>
+      </div>
+      <div class="cards">
+        <article class="card reveal" data-tilt>
+          <div class="card-glow"></div>
+          <div class="card-icon">◈</div>
+          <h3>Brand Identity</h3>
+          <p>Logo, Farbwelt, Typografie & Guidelines — eine Identität, die im Kopf bleibt und Herzen erobert.</p>
+          <span class="card-num">01</span>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card-glow"></div>
+          <div class="card-icon">◉</div>
+          <h3>Web Experiences</h3>
+          <p>Immersive Websites mit 3D, Animation und Interaktion — schnell, responsiv und unvergesslich.</p>
+          <span class="card-num">02</span>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card-glow"></div>
+          <div class="card-icon">◬</div>
+          <h3>Motion & 3D</h3>
+          <p>Animationen, 3D-Visuals und Video-Content, die deine Marke zum Leben erwecken.</p>
+          <span class="card-num">03</span>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card-glow"></div>
+          <div class="card-icon">◇</div>
+          <h3>Strategie</h3>
+          <p>Positionierung, Storytelling und Markenarchitektur — das Fundament für epischen Erfolg.</p>
+          <span class="card-num">04</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ SHOWCASE ============ -->
+    <section class="section" id="showcase">
+      <div class="section-head">
+        <span class="section-tag reveal">02 — Showcase</span>
+        <h2 class="section-title reveal">Ausgewählte <span class="gradient-text">Arbeiten</span></h2>
+      </div>
+      <div class="showcase">
+        <article class="show-item reveal" data-tilt>
+          <div class="show-visual grad-a"><span class="show-emblem">◆</span></div>
+          <div class="show-info">
+            <h3>Nova Athletics</h3>
+            <p>Brand Identity · Web · Motion</p>
+          </div>
+        </article>
+        <article class="show-item reveal" data-tilt>
+          <div class="show-visual grad-b"><span class="show-emblem">◉</span></div>
+          <div class="show-info">
+            <h3>Lumen Coffee</h3>
+            <p>Packaging · Identity</p>
+          </div>
+        </article>
+        <article class="show-item reveal" data-tilt>
+          <div class="show-visual grad-c"><span class="show-emblem">◬</span></div>
+          <div class="show-info">
+            <h3>Vertex Studios</h3>
+            <p>3D Experience · Web</p>
+          </div>
+        </article>
+        <article class="show-item reveal" data-tilt>
+          <div class="show-visual grad-d"><span class="show-emblem">◈</span></div>
+          <div class="show-info">
+            <h3>Pulse Records</h3>
+            <p>Identity · Motion Design</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ PROZESS ============ -->
+    <section class="section" id="prozess">
+      <div class="section-head">
+        <span class="section-tag reveal">03 — Prozess</span>
+        <h2 class="section-title reveal">Vom Funken zur <span class="gradient-text">Supernova</span></h2>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <div class="step-line"></div>
+          <h3>Discover</h3>
+          <p>Wir tauchen tief in deine Marke, dein Publikum und deine Vision ein.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">2</div>
+          <div class="step-line"></div>
+          <h3>Design</h3>
+          <p>Konzepte, Moodboards und Prototypen — bis die Richtung elektrisiert.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">3</div>
+          <div class="step-line"></div>
+          <h3>Build</h3>
+          <p>Pixelgenaue Umsetzung mit modernster Technologie und Liebe zum Detail.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">4</div>
+          <div class="step-line"></div>
+          <h3>Launch</h3>
+          <p>Go-Live mit Impact — und Betreuung, die deine Marke weiter wachsen lässt.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA / KONTAKT ============ -->
+    <section class="section cta" id="kontakt">
+      <div class="cta-inner reveal">
+        <h2 class="cta-title">Bereit für etwas<br><span class="gradient-text glow-text">Episches?</span></h2>
+        <p class="cta-sub">Erzähl uns von deinem Projekt — wir machen daraus eine Marke, die niemand vergisst.</p>
+        <a href="mailto:hallo@disbranding.de" class="btn btn-primary btn-xl" data-magnetic>
+          hallo@disbranding.de <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 Dis Branding — Made with ◆ &amp; WebGL</span>
+    <div class="footer-links">
+      <a href="#">Instagram</a>
+      <a href="#">Behance</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
