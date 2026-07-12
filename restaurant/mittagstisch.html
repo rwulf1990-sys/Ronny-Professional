@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mittagstisch im DIS Restaurant Henstedt-Ulzburg – täglich wechselnde Gerichte.">
+  <title>Mittagstisch – DIS Restaurant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕛</text></svg>">
+  <link rel="preload" href="../fonts/montserrat-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .mt-page {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 90px 24px;
+      position: relative; z-index: 3;
+    }
+    .mt-back {
+      position: fixed; top: 22px; left: clamp(20px, 5vw, 60px); z-index: 10;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; letter-spacing: 2px; font-weight: 700;
+      color: var(--gray-light); text-decoration: none;
+      transition: color .3s;
+    }
+    .mt-back:hover { color: var(--gold); }
+    .mt-back .arrow { transition: transform .3s var(--ease-out); }
+    .mt-back:hover .arrow { transform: translateX(-3px); }
+
+    .mt-icon {
+      font-size: 2.6rem; margin-bottom: 18px;
+      filter: drop-shadow(0 0 20px rgba(229, 168, 46, .5));
+    }
+    .mt-kicker {
+      font-size: 11px; letter-spacing: 5px; color: var(--gold);
+      margin-bottom: 18px; font-weight: 500;
+    }
+    .mt-title {
+      font-size: clamp(2.2rem, 6vw, 3.6rem);
+      font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+    .mt-sub {
+      color: var(--gray-light); font-size: 14px;
+      letter-spacing: 1px; margin-bottom: 48px;
+    }
+
+    .mt-card {
+      max-width: 480px; width: 100%;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015));
+      border: 1px solid rgba(229, 168, 46, .3);
+      border-radius: 24px;
+      padding: 44px 36px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    }
+    .mt-card-eyebrow {
+      font-size: 10px; letter-spacing: 3px; color: var(--gold);
+      font-weight: 700; margin-bottom: 16px;
+    }
+    .mt-card h2 {
+      font-size: 1.4rem; font-weight: 700; letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .mt-card p {
+      color: var(--gray-light); font-size: 14px; line-height: 1.7;
+      margin-bottom: 26px;
+    }
+    .mt-card-divider {
+      width: 48px; height: 1px;
+      background: var(--gold-grad);
+      margin: 0 auto 26px;
+    }
+    .mt-contact {
+      display: flex; flex-direction: column; gap: 10px;
+      font-size: 13px; color: var(--gray-light);
+    }
+    .mt-contact a { color: var(--gold); text-decoration: none; }
+    .mt-contact a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body class="no-3d loaded">
+
+  <a class="mt-back" href="index.html#kontakt">
+    <span class="arrow">←</span> Zurück zu DIS Restaurant
+  </a>
+
+  <main class="mt-page">
+    <div class="mt-icon">🕛</div>
+    <p class="mt-kicker">— DIS RESTAURANT · HENSTEDT-ULZBURG —</p>
+    <h1 class="mt-title">Mittagstisch</h1>
+    <p class="mt-sub">Täglich wechselnde Gerichte</p>
+
+    <div class="mt-card">
+      <p class="mt-card-eyebrow">IN VORBEREITUNG</p>
+      <h2>Unsere Mittagskarte wird gerade zusammengestellt</h2>
+      <p>Schaut in Kürze wieder vorbei — hier findet ihr dann Gerichte, Preise und Zeiten unseres täglich wechselnden Mittagstischs.</p>
+      <div class="mt-card-divider"></div>
+      <div class="mt-contact">
+        <span>Fragen zum Mittagstisch?</span>
+        <a href="tel:+494193967994">04193 967994</a>
+        <a href="mailto:info@dis-restaurant.de">info@dis-restaurant.de</a>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
