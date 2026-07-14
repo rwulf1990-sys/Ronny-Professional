@@ -142,20 +142,29 @@ function initScene() {
     rings.push(ring);
   }
 
-  /* ---------- Floating gold shards ---------- */
+  /* ---------- Floating pizza & burger icons ---------- */
+  function makeEmojiTexture(emoji, px = 128) {
+    const c = document.createElement('canvas');
+    c.width = c.height = px;
+    const ctx = c.getContext('2d');
+    ctx.font = `${px * 0.82}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emoji, px / 2, px * 0.56);
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+  }
+
   const shards = new THREE.Group();
-  const shardGeo = new THREE.OctahedronGeometry(0.14, 0);
+  const foodTextures = [makeEmojiTexture('🍕'), makeEmojiTexture('🍔')];
   const SHARD_COUNT = isSmallScreen ? 12 : 22;
   for (let i = 0; i < SHARD_COUNT; i++) {
-    const shard = new THREE.Mesh(
-      shardGeo,
-      new THREE.MeshPhysicalMaterial({
-        color: ringColors[i % 3],
-        metalness: 0.9,
-        roughness: 0.25,
-        emissive: ringColors[i % 3],
-        emissiveIntensity: 0.4,
-        flatShading: true,
+    const shard = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: foodTextures[i % 2],
+        transparent: true,
+        depthWrite: false,
       })
     );
     const radius = 3.6 + Math.random() * 2.4;
@@ -166,7 +175,8 @@ function initScene() {
       radius * Math.sin(phi),
       radius * Math.sin(theta) * Math.cos(phi)
     );
-    shard.scale.setScalar(0.5 + Math.random() * 1.2);
+    const scale = 0.4 + Math.random() * 0.5;
+    shard.scale.set(scale, scale, 1);
     shard.userData = {
       baseY: shard.position.y,
       speed: 0.4 + Math.random() * 0.8,
@@ -268,8 +278,7 @@ function initScene() {
     shards.children.forEach((shard) => {
       const u = shard.userData;
       shard.position.y = u.baseY + Math.sin(t * u.speed + u.phase) * 0.4;
-      shard.rotation.x += u.rotSpeed * 0.01;
-      shard.rotation.y += u.rotSpeed * 0.013;
+      shard.material.rotation += u.rotSpeed * 0.012;
     });
     shards.rotation.y = t * 0.05;
 
