@@ -409,6 +409,7 @@ const DOUBLE_PRICE = 4;
 const SAUCE_PRICES = {
   none: 0,
   mayo: 0.6,
+  ketchup: 0.6,
   'vegan-mayo': 1,
   'trueffel-mayo': 1,
   'chili-cheese': 1,
