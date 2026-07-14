@@ -359,6 +359,53 @@ window.showTab = function (btn, id) {
   document.getElementById(id).classList.add('active');
 };
 
+/* ---------- Extras Modal (Mayo/Ketchup) ---------- */
+const EXTRA_PRICE = 0.6;
+const extrasOverlay = document.getElementById('extras-overlay');
+const extrasTitle = document.getElementById('extras-title');
+const extrasTotalPrice = document.getElementById('extras-total-price');
+const extraMayo = document.getElementById('extra-mayo');
+const extraKetchup = document.getElementById('extra-ketchup');
+let extrasBasePrice = 0;
+
+function formatEUR(value) {
+  return value.toFixed(2).replace('.', ',') + ' €';
+}
+
+function updateExtrasTotal() {
+  let total = extrasBasePrice;
+  if (extraMayo.checked) total += EXTRA_PRICE;
+  if (extraKetchup.checked) total += EXTRA_PRICE;
+  extrasTotalPrice.textContent = formatEUR(total);
+}
+
+window.openExtras = function (name, basePrice) {
+  extrasBasePrice = basePrice;
+  extrasTitle.textContent = name;
+  extraMayo.checked = false;
+  extraKetchup.checked = false;
+  updateExtrasTotal();
+  extrasOverlay.classList.add('open');
+};
+
+function closeExtras() {
+  extrasOverlay.classList.remove('open');
+}
+
+extraMayo.addEventListener('change', updateExtrasTotal);
+extraKetchup.addEventListener('change', updateExtrasTotal);
+document.getElementById('extras-close').addEventListener('click', closeExtras);
+extrasOverlay.addEventListener('click', (e) => {
+  if (e.target === extrasOverlay) closeExtras();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && extrasOverlay.classList.contains('open')) closeExtras();
+});
+document.getElementById('extras-confirm').addEventListener('click', () => {
+  closeExtras();
+  window.goOrder();
+});
+
 /* ---------- Loader ---------- */
 function finishLoading() {
   document.getElementById('loader').classList.add('done');
