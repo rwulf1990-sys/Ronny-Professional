@@ -745,6 +745,9 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
 }
 .extras-option:hover { border-color: rgba(229, 168, 46, .4); }
 .extras-option-left { display: flex; align-items: center; gap: 12px; }
+.extras-option-text { display: flex; flex-direction: column; gap: 2px; }
+.extras-option-name { font-weight: 500; }
+.extras-option-desc { font-size: 11px; color: var(--gray); font-weight: 400; }
 .extras-checkbox {
   width: 18px; height: 18px;
   accent-color: var(--gold);
