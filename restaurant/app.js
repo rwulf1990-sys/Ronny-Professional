@@ -426,10 +426,24 @@ const pattyDouble = document.getElementById('patty-double');
 const sauceRadios = document.querySelectorAll('input[name="sauce-choice"]');
 const priceMayo = document.getElementById('price-mayo');
 const priceKetchup = document.getElementById('price-ketchup');
+const drinkSection = document.getElementById('drink-section');
 
 function isMenuOrder() {
   const selected = document.querySelector('input[name="order-type"]:checked');
   return selected ? selected.value === 'menu' : false;
+}
+
+function handleOrderTypeChange() {
+  const menuOrder = isMenuOrder();
+  drinkSection.classList.toggle('visible', menuOrder);
+  // Menü always includes a free Mayo or Ketchup dip — make sure one is picked
+  if (menuOrder) {
+    const currentDip = document.querySelector('input[name="sauce-choice"]:checked');
+    if (!currentDip || currentDip.value === 'none') {
+      document.getElementById('sauce-mayo').checked = true;
+    }
+  }
+  updateBunsTotal();
 }
 
 function updateBunsTotal() {
@@ -460,6 +474,8 @@ window.openBuns = function (name) {
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
   document.getElementById('sauce-none').checked = true;
+  document.getElementById('drink-cola').checked = true;
+  drinkSection.classList.remove('visible');
   updateBunsTotal();
   bunsOverlay.classList.add('open');
 };
@@ -468,7 +484,7 @@ function closeBuns() {
   bunsOverlay.classList.remove('open');
 }
 
-orderTypeRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
+orderTypeRadios.forEach((r) => r.addEventListener('change', handleOrderTypeChange));
 bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyDouble.addEventListener('change', updateBunsTotal);
