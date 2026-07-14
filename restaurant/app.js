@@ -398,12 +398,51 @@ document.getElementById('extras-close').addEventListener('click', closeExtras);
 extrasOverlay.addEventListener('click', (e) => {
   if (e.target === extrasOverlay) closeExtras();
 });
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && extrasOverlay.classList.contains('open')) closeExtras();
-});
 document.getElementById('extras-confirm').addEventListener('click', () => {
   closeExtras();
   window.goOrder();
+});
+
+/* ---------- Buns Modal (Burger bun choice) ---------- */
+const BUN_PRICES = { brioche: 0, rustikal: 0, glutenfrei: 1 };
+const bunsOverlay = document.getElementById('buns-overlay');
+const bunsTitle = document.getElementById('buns-title');
+const bunsTotalPrice = document.getElementById('buns-total-price');
+const bunRadios = document.querySelectorAll('input[name="bun-choice"]');
+let bunsBasePrice = 0;
+
+function updateBunsTotal() {
+  const selected = document.querySelector('input[name="bun-choice"]:checked');
+  const extra = selected ? BUN_PRICES[selected.value] : 0;
+  bunsTotalPrice.textContent = formatEUR(bunsBasePrice + extra);
+}
+
+window.openBuns = function (name, basePrice) {
+  bunsBasePrice = basePrice;
+  bunsTitle.textContent = name;
+  document.getElementById('bun-brioche').checked = true;
+  updateBunsTotal();
+  bunsOverlay.classList.add('open');
+};
+
+function closeBuns() {
+  bunsOverlay.classList.remove('open');
+}
+
+bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
+document.getElementById('buns-close').addEventListener('click', closeBuns);
+bunsOverlay.addEventListener('click', (e) => {
+  if (e.target === bunsOverlay) closeBuns();
+});
+document.getElementById('buns-confirm').addEventListener('click', () => {
+  closeBuns();
+  window.goOrder();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (extrasOverlay.classList.contains('open')) closeExtras();
+  if (bunsOverlay.classList.contains('open')) closeBuns();
 });
 
 /* ---------- Loader ---------- */
