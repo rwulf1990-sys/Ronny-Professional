@@ -404,6 +404,7 @@ document.getElementById('extras-confirm').addEventListener('click', () => {
 });
 
 /* ---------- Buns Modal (Burger customization) ---------- */
+const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
 const BUN_PRICES = { brioche: 0, rustikal: 0, glutenfrei: 1 };
 const DOUBLE_PRICE = 4;
 const SAUCE_PRICES = {
@@ -418,24 +419,43 @@ const SAUCE_PRICES = {
 const bunsOverlay = document.getElementById('buns-overlay');
 const bunsTitle = document.getElementById('buns-title');
 const bunsTotalPrice = document.getElementById('buns-total-price');
+const orderTypeRadios = document.querySelectorAll('input[name="order-type"]');
 const bunRadios = document.querySelectorAll('input[name="bun-choice"]');
 const pattyRadios = document.querySelectorAll('input[name="patty-choice"]');
 const pattyDouble = document.getElementById('patty-double');
 const sauceRadios = document.querySelectorAll('input[name="sauce-choice"]');
-let bunsBasePrice = 0;
+const priceMayo = document.getElementById('price-mayo');
+const priceKetchup = document.getElementById('price-ketchup');
+
+function isMenuOrder() {
+  const selected = document.querySelector('input[name="order-type"]:checked');
+  return selected ? selected.value === 'menu' : false;
+}
 
 function updateBunsTotal() {
+  const selectedOrderType = document.querySelector('input[name="order-type"]:checked');
+  const basePrice = selectedOrderType ? ORDER_TYPE_PRICES[selectedOrderType.value] : ORDER_TYPE_PRICES.einzeln;
+  const menuOrder = isMenuOrder();
+
+  // Mayo/Ketchup are included free with the Menü, otherwise cost extra
+  priceMayo.textContent = menuOrder ? 'Inklusive' : '+0,60 €';
+  priceKetchup.textContent = menuOrder ? 'Inklusive' : '+0,60 €';
+
   const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
   const bunExtra = selectedBun ? BUN_PRICES[selectedBun.value] : 0;
   const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
   const selectedSauce = document.querySelector('input[name="sauce-choice"]:checked');
-  const sauceExtra = selectedSauce ? SAUCE_PRICES[selectedSauce.value] : 0;
-  bunsTotalPrice.textContent = formatEUR(bunsBasePrice + bunExtra + doubleExtra + sauceExtra);
+  let sauceExtra = selectedSauce ? SAUCE_PRICES[selectedSauce.value] : 0;
+  if (menuOrder && (selectedSauce?.value === 'mayo' || selectedSauce?.value === 'ketchup')) {
+    sauceExtra = 0;
+  }
+
+  bunsTotalPrice.textContent = formatEUR(basePrice + bunExtra + doubleExtra + sauceExtra);
 }
 
-window.openBuns = function (name, basePrice) {
-  bunsBasePrice = basePrice;
+window.openBuns = function (name) {
   bunsTitle.textContent = name;
+  document.getElementById('order-einzeln').checked = true;
   document.getElementById('bun-brioche').checked = true;
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
@@ -448,6 +468,7 @@ function closeBuns() {
   bunsOverlay.classList.remove('open');
 }
 
+orderTypeRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyDouble.addEventListener('change', updateBunsTotal);
