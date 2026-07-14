@@ -461,10 +461,46 @@ document.getElementById('buns-confirm').addEventListener('click', () => {
   window.goOrder();
 });
 
+/* ---------- Pizza-Baukasten Modal (Nr. 28) ---------- */
+const pizzaOverlay = document.getElementById('pizza-overlay');
+const pizzaTotalPrice = document.getElementById('pizza-total-price');
+const pizzaToppings = document.querySelectorAll('.pizza-topping');
+let pizzaBasePrice = 0;
+
+function updatePizzaTotal() {
+  let total = pizzaBasePrice;
+  pizzaToppings.forEach((cb) => {
+    if (cb.checked) total += parseFloat(cb.dataset.price);
+  });
+  pizzaTotalPrice.textContent = formatEUR(total);
+}
+
+window.openPizzaBuilder = function (basePrice) {
+  pizzaBasePrice = basePrice;
+  pizzaToppings.forEach((cb) => { cb.checked = false; });
+  updatePizzaTotal();
+  pizzaOverlay.classList.add('open');
+};
+
+function closePizza() {
+  pizzaOverlay.classList.remove('open');
+}
+
+pizzaToppings.forEach((cb) => cb.addEventListener('change', updatePizzaTotal));
+document.getElementById('pizza-close').addEventListener('click', closePizza);
+pizzaOverlay.addEventListener('click', (e) => {
+  if (e.target === pizzaOverlay) closePizza();
+});
+document.getElementById('pizza-confirm').addEventListener('click', () => {
+  closePizza();
+  window.goOrder();
+});
+
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (extrasOverlay.classList.contains('open')) closeExtras();
   if (bunsOverlay.classList.contains('open')) closeBuns();
+  if (pizzaOverlay.classList.contains('open')) closePizza();
 });
 
 /* ---------- Loader ---------- */
