@@ -403,24 +403,30 @@ document.getElementById('extras-confirm').addEventListener('click', () => {
   window.goOrder();
 });
 
-/* ---------- Buns Modal (Burger bun choice) ---------- */
+/* ---------- Buns Modal (Burger customization) ---------- */
 const BUN_PRICES = { brioche: 0, rustikal: 0, glutenfrei: 1 };
+const DOUBLE_PRICE = 4;
 const bunsOverlay = document.getElementById('buns-overlay');
 const bunsTitle = document.getElementById('buns-title');
 const bunsTotalPrice = document.getElementById('buns-total-price');
 const bunRadios = document.querySelectorAll('input[name="bun-choice"]');
+const pattyRadios = document.querySelectorAll('input[name="patty-choice"]');
+const pattyDouble = document.getElementById('patty-double');
 let bunsBasePrice = 0;
 
 function updateBunsTotal() {
-  const selected = document.querySelector('input[name="bun-choice"]:checked');
-  const extra = selected ? BUN_PRICES[selected.value] : 0;
-  bunsTotalPrice.textContent = formatEUR(bunsBasePrice + extra);
+  const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
+  const bunExtra = selectedBun ? BUN_PRICES[selectedBun.value] : 0;
+  const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
+  bunsTotalPrice.textContent = formatEUR(bunsBasePrice + bunExtra + doubleExtra);
 }
 
 window.openBuns = function (name, basePrice) {
   bunsBasePrice = basePrice;
   bunsTitle.textContent = name;
   document.getElementById('bun-brioche').checked = true;
+  document.getElementById('patty-beef').checked = true;
+  pattyDouble.checked = false;
   updateBunsTotal();
   bunsOverlay.classList.add('open');
 };
@@ -430,6 +436,8 @@ function closeBuns() {
 }
 
 bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
+pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
+pattyDouble.addEventListener('change', updateBunsTotal);
 document.getElementById('buns-close').addEventListener('click', closeBuns);
 bunsOverlay.addEventListener('click', (e) => {
   if (e.target === bunsOverlay) closeBuns();

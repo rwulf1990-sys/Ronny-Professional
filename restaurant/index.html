@@ -350,8 +350,10 @@
   <div class="extras-overlay" id="buns-overlay">
     <div class="extras-modal" role="dialog" aria-modal="true" aria-labelledby="buns-title">
       <button class="extras-close" id="buns-close" aria-label="Schließen">✕</button>
-      <p class="extras-eyebrow">BUN WÄHLEN</p>
+      <p class="extras-eyebrow">BURGER ANPASSEN</p>
       <h3 class="extras-title" id="buns-title">—</h3>
+
+      <p class="extras-group-label">BUN WÄHLEN</p>
       <div class="extras-options">
         <label class="extras-option">
           <span class="extras-option-left">
@@ -375,6 +377,43 @@
           <span class="extras-option-price">+1,00 €</span>
         </label>
       </div>
+
+      <p class="extras-group-label">PATTY WÄHLEN</p>
+      <div class="extras-options">
+        <label class="extras-option">
+          <span class="extras-option-left">
+            <input type="radio" name="patty-choice" value="beef" id="patty-beef" class="extras-checkbox" checked>
+            <span>Beef Patty 180g</span>
+          </span>
+          <span class="extras-option-price">Inklusive</span>
+        </label>
+        <label class="extras-option">
+          <span class="extras-option-left">
+            <input type="radio" name="patty-choice" value="vegan" id="patty-vegan" class="extras-checkbox">
+            <span>Vegane Patty 125g</span>
+          </span>
+          <span class="extras-option-price">Inklusive</span>
+        </label>
+        <label class="extras-option">
+          <span class="extras-option-left">
+            <input type="radio" name="patty-choice" value="chicken" id="patty-chicken" class="extras-checkbox">
+            <span>Chicken Patty 135g</span>
+          </span>
+          <span class="extras-option-price">Inklusive</span>
+        </label>
+      </div>
+
+      <p class="extras-group-label">EXTRA</p>
+      <div class="extras-options">
+        <label class="extras-option">
+          <span class="extras-option-left">
+            <input type="checkbox" id="patty-double" class="extras-checkbox">
+            <span>Double (2 Patties)</span>
+          </span>
+          <span class="extras-option-price">+4,00 €</span>
+        </label>
+      </div>
+
       <div class="extras-total">
         <span>Gesamt</span>
         <span id="buns-total-price">– €</span>
