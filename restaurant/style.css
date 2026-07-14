@@ -726,6 +726,10 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
   font-size: 1.3rem; font-weight: 700; letter-spacing: 1px;
   margin-bottom: 26px;
 }
+.extras-group-label {
+  font-size: 10px; letter-spacing: 2px; color: var(--gray);
+  font-weight: 700; margin-bottom: 10px;
+}
 .extras-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
 .extras-option {
   display: flex; align-items: center; justify-content: space-between;
