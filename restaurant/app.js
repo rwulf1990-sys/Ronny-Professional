@@ -406,19 +406,30 @@ document.getElementById('extras-confirm').addEventListener('click', () => {
 /* ---------- Buns Modal (Burger customization) ---------- */
 const BUN_PRICES = { brioche: 0, rustikal: 0, glutenfrei: 1 };
 const DOUBLE_PRICE = 4;
+const SAUCE_PRICES = {
+  none: 0,
+  mayo: 0.6,
+  'vegan-mayo': 1,
+  'trueffel-mayo': 1,
+  'chili-cheese': 1,
+  bbq: 1,
+};
 const bunsOverlay = document.getElementById('buns-overlay');
 const bunsTitle = document.getElementById('buns-title');
 const bunsTotalPrice = document.getElementById('buns-total-price');
 const bunRadios = document.querySelectorAll('input[name="bun-choice"]');
 const pattyRadios = document.querySelectorAll('input[name="patty-choice"]');
 const pattyDouble = document.getElementById('patty-double');
+const sauceRadios = document.querySelectorAll('input[name="sauce-choice"]');
 let bunsBasePrice = 0;
 
 function updateBunsTotal() {
   const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
   const bunExtra = selectedBun ? BUN_PRICES[selectedBun.value] : 0;
   const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
-  bunsTotalPrice.textContent = formatEUR(bunsBasePrice + bunExtra + doubleExtra);
+  const selectedSauce = document.querySelector('input[name="sauce-choice"]:checked');
+  const sauceExtra = selectedSauce ? SAUCE_PRICES[selectedSauce.value] : 0;
+  bunsTotalPrice.textContent = formatEUR(bunsBasePrice + bunExtra + doubleExtra + sauceExtra);
 }
 
 window.openBuns = function (name, basePrice) {
@@ -427,6 +438,7 @@ window.openBuns = function (name, basePrice) {
   document.getElementById('bun-brioche').checked = true;
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
+  document.getElementById('sauce-none').checked = true;
   updateBunsTotal();
   bunsOverlay.classList.add('open');
 };
@@ -438,6 +450,7 @@ function closeBuns() {
 bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyDouble.addEventListener('change', updateBunsTotal);
+sauceRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 document.getElementById('buns-close').addEventListener('click', closeBuns);
 bunsOverlay.addEventListener('click', (e) => {
   if (e.target === bunsOverlay) closeBuns();
