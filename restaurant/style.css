@@ -685,6 +685,79 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
 .hero-sub { transition-delay: .4s; }
 .hero-buttons { transition-delay: .55s; }
 
+/* ---------- Extras Modal (Mayo/Ketchup) ---------- */
+.extras-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background: rgba(5, 4, 3, .78);
+  backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .3s var(--ease-out), visibility .3s;
+}
+.extras-overlay.open { opacity: 1; visibility: visible; }
+.extras-modal {
+  position: relative;
+  width: 100%; max-width: 400px;
+  background: linear-gradient(160deg, #14110c, #0d0b08);
+  border: 1px solid rgba(229, 168, 46, .35);
+  border-radius: 24px;
+  padding: 40px 32px 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .6);
+  transform: translateY(24px) scale(.97);
+  opacity: 0;
+  transition: transform .35s var(--ease-out), opacity .35s var(--ease-out);
+}
+.extras-overlay.open .extras-modal { transform: translateY(0) scale(1); opacity: 1; }
+.extras-close {
+  position: absolute; top: 18px; right: 18px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .12);
+  color: var(--gray-light); font-size: 14px;
+  transition: all .3s;
+}
+.extras-close:hover { background: rgba(229, 168, 46, .15); color: var(--gold); border-color: rgba(229, 168, 46, .4); }
+.extras-eyebrow {
+  font-size: 10px; letter-spacing: 3px; color: var(--gold);
+  font-weight: 700; margin-bottom: 10px;
+}
+.extras-title {
+  font-size: 1.3rem; font-weight: 700; letter-spacing: 1px;
+  margin-bottom: 26px;
+}
+.extras-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.extras-option {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .02);
+  cursor: pointer;
+  transition: border-color .3s, background .3s;
+  font-size: 14px; color: var(--gray-light);
+}
+.extras-option:hover { border-color: rgba(229, 168, 46, .4); }
+.extras-option-left { display: flex; align-items: center; gap: 12px; }
+.extras-checkbox {
+  width: 18px; height: 18px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+.extras-option-price { color: var(--gold); font-weight: 700; font-size: 13px; }
+.extras-total {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 18px; margin-bottom: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  font-size: 13px; letter-spacing: 1px; color: var(--gray-light);
+  text-transform: uppercase;
+}
+#extras-total-price {
+  font-size: 1.3rem; color: #fff; letter-spacing: 0; text-transform: none;
+  font-weight: 700;
+}
+.extras-confirm { width: 100%; justify-content: center; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;

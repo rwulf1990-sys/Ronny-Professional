@@ -168,12 +168,12 @@
 
     <!-- SCHNITZEL -->
     <div class="menu-panel" id="schnitzel">
-      <div class="menu-card"><p class="menu-nr">Nr. 40</p><p class="menu-name">JÄGER ART</p><p class="menu-desc">Paniertes Schweineschnitzel (200g), Pilzrahmsauce, frische Pommes</p><div class="menu-footer"><span class="menu-price">11,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 41</p><p class="menu-name">WIENER ART</p><p class="menu-desc">Paniertes Schweineschnitzel (200g), Zitrone, frische Pommes</p><div class="menu-footer"><span class="menu-price">11,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 42</p><p class="menu-name">PAPRIKA ART</p><p class="menu-desc">Paniertes Schweineschnitzel (200g), Paprika-Zwiebel Sauce, frische Pommes</p><div class="menu-footer"><span class="menu-price">11,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 43</p><p class="menu-name">HÄHNCHEN</p><p class="menu-desc">Paniertes Hähnchenschnitzel (180g), Zitrone, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 44</p><p class="menu-name">CHICKEN-CHIPS</p><p class="menu-desc">Panierte Hähnchenbrust-Stücke 4 Stück, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 45</p><p class="menu-name">CURRYWURST</p><p class="menu-desc">Currywurst (160g) mit Curryketchup, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 40</p><p class="menu-name">JÄGER ART</p><p class="menu-desc">Paniertes Schweineschnitzel (200g), Pilzrahmsauce, frische Pommes</p><div class="menu-footer"><span class="menu-price">11,90 €</span><button class="btn-order-sm" onclick="openExtras('JÄGER ART', 11.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 41</p><p class="menu-name">WIENER ART</p><p class="menu-desc">Paniertes Schweineschnitzel (200g), Zitrone, frische Pommes</p><div class="menu-footer"><span class="menu-price">11,90 €</span><button class="btn-order-sm" onclick="openExtras('WIENER ART', 11.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 42</p><p class="menu-name">PAPRIKA ART</p><p class="menu-desc">Paniertes Schweineschnitzel (200g), Paprika-Zwiebel Sauce, frische Pommes</p><div class="menu-footer"><span class="menu-price">11,90 €</span><button class="btn-order-sm" onclick="openExtras('PAPRIKA ART', 11.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 43</p><p class="menu-name">HÄHNCHEN</p><p class="menu-desc">Paniertes Hähnchenschnitzel (180g), Zitrone, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('HÄHNCHEN', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 44</p><p class="menu-name">CHICKEN-CHIPS</p><p class="menu-desc">Panierte Hähnchenbrust-Stücke 4 Stück, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CHICKEN-CHIPS', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 45</p><p class="menu-name">CURRYWURST</p><p class="menu-desc">Currywurst (160g) mit Curryketchup, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CURRYWURST', 9.90)">BESTELLEN</button></div></div>
     </div>
 
     <!-- FRÜHSTÜCK -->
@@ -315,6 +315,36 @@
   </footer>
 
   <button id="back-top" aria-label="Nach oben">↑</button>
+
+  <!-- ===== EXTRAS-MODAL (Mayo/Ketchup) ===== -->
+  <div class="extras-overlay" id="extras-overlay">
+    <div class="extras-modal" role="dialog" aria-modal="true" aria-labelledby="extras-title">
+      <button class="extras-close" id="extras-close" aria-label="Schließen">✕</button>
+      <p class="extras-eyebrow">EXTRAS HINZUFÜGEN</p>
+      <h3 class="extras-title" id="extras-title">—</h3>
+      <div class="extras-options">
+        <label class="extras-option">
+          <span class="extras-option-left">
+            <input type="checkbox" id="extra-mayo" class="extras-checkbox">
+            <span>Mayo</span>
+          </span>
+          <span class="extras-option-price">+0,60 €</span>
+        </label>
+        <label class="extras-option">
+          <span class="extras-option-left">
+            <input type="checkbox" id="extra-ketchup" class="extras-checkbox">
+            <span>Ketchup</span>
+          </span>
+          <span class="extras-option-price">+0,60 €</span>
+        </label>
+      </div>
+      <div class="extras-total">
+        <span>Gesamt</span>
+        <span id="extras-total-price">– €</span>
+      </div>
+      <button class="btn-primary extras-confirm" id="extras-confirm">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
+    </div>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
