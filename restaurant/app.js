@@ -407,6 +407,7 @@ document.getElementById('extras-confirm').addEventListener('click', () => {
 const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
 const BUN_PRICES = { brioche: 0, rustikal: 0, glutenfrei: 1 };
 const DOUBLE_PRICE = 4;
+const POMMES_PRICE = 4.5;
 const SAUCE_PRICES = {
   none: 0,
   mayo: 0.6,
@@ -415,6 +416,17 @@ const SAUCE_PRICES = {
   'trueffel-mayo': 1,
   'chili-cheese': 1,
   bbq: 1,
+};
+const DRINK_PRICES = {
+  none: 0,
+  cola: 2.9,
+  'cola-zero': 2.9,
+  sprite: 2.9,
+  fanta: 2.9,
+  mineralwasser: 2.9,
+  'stilles-wasser': 2.5,
+  'fuze-tea': 2.9,
+  apfelschorle: 2.9,
 };
 const bunsOverlay = document.getElementById('buns-overlay');
 const bunsTitle = document.getElementById('buns-title');
@@ -426,7 +438,10 @@ const pattyDouble = document.getElementById('patty-double');
 const sauceRadios = document.querySelectorAll('input[name="sauce-choice"]');
 const priceMayo = document.getElementById('price-mayo');
 const priceKetchup = document.getElementById('price-ketchup');
-const drinkSection = document.getElementById('drink-section');
+const einzelnExtras = document.getElementById('einzeln-extras');
+const einzelnPommes = document.getElementById('einzeln-pommes');
+const drinkNoneOption = document.getElementById('drink-none-option');
+const drinkRadios = document.querySelectorAll('input[name="drink-choice"]');
 
 function isMenuOrder() {
   const selected = document.querySelector('input[name="order-type"]:checked');
@@ -435,14 +450,26 @@ function isMenuOrder() {
 
 function handleOrderTypeChange() {
   const menuOrder = isMenuOrder();
-  drinkSection.classList.toggle('visible', menuOrder);
-  // Menü always includes a free Mayo or Ketchup dip — make sure one is picked
+  einzelnExtras.classList.toggle('visible', !menuOrder);
+  drinkNoneOption.style.display = menuOrder ? 'none' : 'flex';
+
   if (menuOrder) {
+    // Menü always includes a free Mayo or Ketchup dip — make sure one is picked
     const currentDip = document.querySelector('input[name="sauce-choice"]:checked');
     if (!currentDip || currentDip.value === 'none') {
       document.getElementById('sauce-mayo').checked = true;
     }
+    // ...and a real drink, since it's included either way
+    const currentDrink = document.querySelector('input[name="drink-choice"]:checked');
+    if (!currentDrink || currentDrink.value === 'none') {
+      document.getElementById('drink-cola').checked = true;
+    }
+  } else {
+    // Einzeln: drink and fries are optional paid add-ons, default to none
+    document.getElementById('drink-none').checked = true;
+    einzelnPommes.checked = false;
   }
+
   updateBunsTotal();
 }
 
@@ -455,6 +482,13 @@ function updateBunsTotal() {
   priceMayo.textContent = menuOrder ? 'Inklusive' : '+0,60 €';
   priceKetchup.textContent = menuOrder ? 'Inklusive' : '+0,60 €';
 
+  // Drink prices show as included with the Menü, otherwise their normal price
+  Object.keys(DRINK_PRICES).forEach((key) => {
+    if (key === 'none') return;
+    const label = document.getElementById('price-drink-' + key);
+    if (label) label.textContent = menuOrder ? 'Inklusive' : '+' + formatEUR(DRINK_PRICES[key]);
+  });
+
   const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
   const bunExtra = selectedBun ? BUN_PRICES[selectedBun.value] : 0;
   const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
@@ -464,7 +498,11 @@ function updateBunsTotal() {
     sauceExtra = 0;
   }
 
-  bunsTotalPrice.textContent = formatEUR(basePrice + bunExtra + doubleExtra + sauceExtra);
+  const selectedDrink = document.querySelector('input[name="drink-choice"]:checked');
+  const drinkExtra = menuOrder || !selectedDrink ? 0 : DRINK_PRICES[selectedDrink.value];
+  const pommesExtra = !menuOrder && einzelnPommes.checked ? POMMES_PRICE : 0;
+
+  bunsTotalPrice.textContent = formatEUR(basePrice + bunExtra + doubleExtra + sauceExtra + drinkExtra + pommesExtra);
 }
 
 window.openBuns = function (name) {
@@ -474,8 +512,10 @@ window.openBuns = function (name) {
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
   document.getElementById('sauce-none').checked = true;
-  document.getElementById('drink-cola').checked = true;
-  drinkSection.classList.remove('visible');
+  document.getElementById('drink-none').checked = true;
+  einzelnPommes.checked = false;
+  einzelnExtras.classList.add('visible');
+  drinkNoneOption.style.display = 'flex';
   updateBunsTotal();
   bunsOverlay.classList.add('open');
 };
@@ -489,6 +529,8 @@ bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyDouble.addEventListener('change', updateBunsTotal);
 sauceRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
+einzelnPommes.addEventListener('change', updateBunsTotal);
+drinkRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 document.getElementById('buns-close').addEventListener('click', closeBuns);
 bunsOverlay.addEventListener('click', (e) => {
   if (e.target === bunsOverlay) closeBuns();
