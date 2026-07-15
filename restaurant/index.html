@@ -126,11 +126,10 @@
       <div class="menu-tabs" role="tablist">
       <button class="menu-tab active" onclick="showTab(this,'pizza')" role="tab">PIZZA</button>
       <button class="menu-tab" onclick="showTab(this,'burger')" role="tab">BURGER</button>
-      <button class="menu-tab" onclick="showTab(this,'schnitzel')" role="tab">SCHNITZEL + MEHR</button>
+      <button class="menu-tab" onclick="showTab(this,'schnitzel')" role="tab">SCHNITZEL UND CURRYWURST</button>
       <button class="menu-tab" onclick="showTab(this,'fruehstueck')" role="tab">FRÜHSTÜCK</button>
       <button class="menu-tab" onclick="showTab(this,'salat')" role="tab">SALAT</button>
       <button class="menu-tab" onclick="showTab(this,'kids')" role="tab">KIDS</button>
-      <button class="menu-tab" onclick="showTab(this,'sonstiges')" role="tab">SONSTIGES</button>
       <button class="menu-tab" onclick="showTab(this,'getraenke')" role="tab">GETRÄNKE</button>
     </div>
 
@@ -176,6 +175,9 @@
       <div class="menu-card"><p class="menu-nr">Nr. 44</p><p class="menu-name">CHICKEN-CHIPS</p><p class="menu-desc">Panierte Hähnchenbrust-Stücke 4 Stück, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CHICKEN-CHIPS', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 45</p><p class="menu-name">CURRYWURST</p><p class="menu-desc">Currywurst (160g) mit Curryketchup, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CURRYWURST', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 46</p><p class="menu-name">FISCHFILET</p><p class="menu-desc">Paniertes Seelachsfilet, frische Pommes, Remoulade</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">POMMES</p><p class="menu-desc">Frische Pommes</p><div class="menu-footer"><span class="menu-price">4,50 €</span><button class="btn-order-sm" onclick="openExtras('POMMES', 4.50)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">KETCHUP</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">MAYO</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
     </div>
 
     <!-- FRÜHSTÜCK -->
@@ -198,12 +200,6 @@
       <div class="menu-card"><p class="menu-name">HAMBURGER FÜR KIDS 🧒</p><p class="menu-desc">Mit Pommes, dazu Mayo oder Ketchup</p><div class="menu-footer"><span class="menu-price">5,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
     </div>
 
-    <!-- SONSTIGES -->
-    <div class="menu-panel" id="sonstiges">
-      <div class="menu-card"><p class="menu-name">POMMES</p><p class="menu-desc">Frische Pommes</p><div class="menu-footer"><span class="menu-price">4,50 €</span><button class="btn-order-sm" onclick="openExtras('POMMES', 4.50)">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">KETCHUP</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">MAYO</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-    </div>
 
     <!-- GETRÄNKE -->
     <div class="menu-panel" id="getraenke">
