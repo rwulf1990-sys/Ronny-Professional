@@ -53,7 +53,7 @@
       <li><a href="#ueber-uns">ÜBER UNS</a></li>
       <li><a href="#kontakt">KONTAKT</a></li>
     </ul>
-    <button class="nav-cta" onclick="goOrder()">ONLINE BESTELLEN</button>
+    <button class="nav-cta" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">ONLINE BESTELLEN</button>
     <div class="hamburger" id="hamburger" role="button" tabindex="0" aria-label="Menü öffnen">
       <span></span><span></span><span></span>
     </div>
@@ -62,7 +62,7 @@
     <a href="#menu">MENÜ</a>
     <a href="#ueber-uns">ÜBER UNS</a>
     <a href="#kontakt">KONTAKT</a>
-    <a href="https://dis.order.dish.co" target="_blank" style="color:#E5A82E">ONLINE BESTELLEN →</a>
+    <a href="#menu" style="color:#E5A82E">ONLINE BESTELLEN →</a>
   </div>
 
   <main>
@@ -77,7 +77,7 @@
         </h1>
         <p class="hero-sub reveal">PIZZA · BURGER · SCHNITZEL · FRÜHSTÜCK · MITTAGSTISCH</p>
         <div class="hero-buttons reveal">
-          <button class="btn-primary" onclick="goOrder()">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
+          <button class="btn-primary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
           <button class="btn-outline" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">MENÜ ANSEHEN</button>
           <button class="btn-outline" onclick="goToMittagstisch()">🕛 MITTAGSTISCH</button>
         </div>
@@ -137,19 +137,19 @@
 
       <!-- PIZZA -->
     <div class="menu-panel active" id="pizza">
-      <div class="menu-card"><p class="menu-nr">Nr. 1</p><p class="menu-name">SALAMI</p><p class="menu-desc">Tomatensauce, Salami, Mozzarella</p><div class="menu-footer"><span class="menu-price">8,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 3</p><p class="menu-name">SUCUK</p><p class="menu-desc">Tomatensauce, milde Pepperoni, Sucuk, Oliven, Hirtenkäse, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 5</p><p class="menu-name">MARGARITA</p><p class="menu-desc">Tomatensauce, Mozzarella</p><div class="menu-footer"><span class="menu-price">7,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 6</p><p class="menu-name">HAWAII</p><p class="menu-desc">Tomatensauce, Hinterschinken, Ananasstücke, Mozzarella</p><div class="menu-footer"><span class="menu-price">8,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 11</p><p class="menu-name">FITNESS</p><p class="menu-desc">Hähnchenstreifen, Champignons, Mais, Zwiebeln, Tomaten, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 12</p><p class="menu-name">TUNA</p><p class="menu-desc">Tomatensauce, Thunfischstücke, Mozzarella, rote Zwiebeln</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 15</p><p class="menu-name">SPEZIALE</p><p class="menu-desc">Hinterschinken, Salami, frische Champignons, rote Zwiebeln, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 17</p><p class="menu-name">PRIME-CHICKEN</p><p class="menu-desc">Tomatensauce, Hähnchenbrust, Broccoli, rote Zwiebeln, Sauce Hollandaise, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 24</p><p class="menu-name">VEGETARISCH 🍃</p><p class="menu-desc">Champignons, Paprika, Mais, rote Zwiebeln, Tomaten, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 25</p><p class="menu-name">DIS SPEZIAL</p><p class="menu-desc">Tomatensauce, Mozzarella, Hinterschinken, Salami, frische Champignons und rote Zwiebeln</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 26</p><p class="menu-name">BBQ-HÄHNCHEN</p><p class="menu-desc">Hähnchenbrust, Paprika, Mais, rote Zwiebeln, Mozzarella, BBQ-Sauce</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 1</p><p class="menu-name">SALAMI</p><p class="menu-desc">Tomatensauce, Salami, Mozzarella</p><div class="menu-footer"><span class="menu-price">8,90 €</span><button class="btn-order-sm" onclick="orderDirect('SALAMI', 8.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 3</p><p class="menu-name">SUCUK</p><p class="menu-desc">Tomatensauce, milde Pepperoni, Sucuk, Oliven, Hirtenkäse, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('SUCUK', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 5</p><p class="menu-name">MARGARITA</p><p class="menu-desc">Tomatensauce, Mozzarella</p><div class="menu-footer"><span class="menu-price">7,90 €</span><button class="btn-order-sm" onclick="orderDirect('MARGARITA', 7.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 6</p><p class="menu-name">HAWAII</p><p class="menu-desc">Tomatensauce, Hinterschinken, Ananasstücke, Mozzarella</p><div class="menu-footer"><span class="menu-price">8,90 €</span><button class="btn-order-sm" onclick="orderDirect('HAWAII', 8.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 11</p><p class="menu-name">FITNESS</p><p class="menu-desc">Hähnchenstreifen, Champignons, Mais, Zwiebeln, Tomaten, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('FITNESS', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 12</p><p class="menu-name">TUNA</p><p class="menu-desc">Tomatensauce, Thunfischstücke, Mozzarella, rote Zwiebeln</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('TUNA', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 15</p><p class="menu-name">SPEZIALE</p><p class="menu-desc">Hinterschinken, Salami, frische Champignons, rote Zwiebeln, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('SPEZIALE', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 17</p><p class="menu-name">PRIME-CHICKEN</p><p class="menu-desc">Tomatensauce, Hähnchenbrust, Broccoli, rote Zwiebeln, Sauce Hollandaise, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('PRIME-CHICKEN', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 24</p><p class="menu-name">VEGETARISCH 🍃</p><p class="menu-desc">Champignons, Paprika, Mais, rote Zwiebeln, Tomaten, Mozzarella</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('VEGETARISCH 🍃', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 25</p><p class="menu-name">DIS SPEZIAL</p><p class="menu-desc">Tomatensauce, Mozzarella, Hinterschinken, Salami, frische Champignons und rote Zwiebeln</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('DIS SPEZIAL', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 26</p><p class="menu-name">BBQ-HÄHNCHEN</p><p class="menu-desc">Hähnchenbrust, Paprika, Mais, rote Zwiebeln, Mozzarella, BBQ-Sauce</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('BBQ-HÄHNCHEN', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 28</p><p class="menu-name">DEINE EIGENE PIZZA</p><p class="menu-desc">Tomatensauce, Mozzarella, Basilikum – belege nach Wahl</p><div class="menu-footer"><span class="menu-price">7,90 €</span><button class="btn-order-sm" onclick="openPizzaBuilder(7.90)">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 19</p><p class="menu-name">FUNGHI</p><p class="menu-desc">Tomatensauce, Mozzarella, frische Champignons</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 19</p><p class="menu-name">FUNGHI</p><p class="menu-desc">Tomatensauce, Mozzarella, frische Champignons</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('FUNGHI', 9.90)">BESTELLEN</button></div></div>
     </div>
 
     <!-- BURGER -->
@@ -164,7 +164,7 @@
       <div class="menu-card"><p class="menu-nr">Nr. 63</p><p class="menu-name">AVOCADO BURGER</p><p class="menu-desc">Beef Patty 180g, Tomaten, Cheddar, Guacamole, Salat, Mayo</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openBuns('AVOCADO BURGER')">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 64</p><p class="menu-name">ITALIAN BURGER</p><p class="menu-desc">Beef Patty 180g, Mozzarella, Grana Padano, Rucola, Salat, Mayo</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openBuns('ITALIAN BURGER')">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 65</p><p class="menu-name">CRUNCHY CHICKEN BURGER</p><p class="menu-desc">Chicken 135g paniert mit Cornflakes, Gewürzgurken, Coleslaw, Salat, Honig-Senf Sauce, Mayo</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openBuns('CRUNCHY CHICKEN BURGER')">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 66</p><p class="menu-name">HACKSTEAK BURGER OHNE BROT</p><p class="menu-desc">Beef Patty 180g, ohne Brot mit Gemüse, Kräuterbutter, dazu Pommes & Getränk</p><div class="menu-footer"><span class="menu-price">15,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 66</p><p class="menu-name">HACKSTEAK BURGER OHNE BROT</p><p class="menu-desc">Beef Patty 180g, ohne Brot mit Gemüse, Kräuterbutter, dazu Pommes & Getränk</p><div class="menu-footer"><span class="menu-price">15,90 €</span><button class="btn-order-sm" onclick="orderDirect('HACKSTEAK BURGER OHNE BROT', 15.90)">BESTELLEN</button></div></div>
       <div class="menu-card" style="border-color: var(--gold-dark);"><p class="menu-nr" style="color:var(--gold)">VEGAN</p><p class="menu-name">VEGAN CHEESEBURGER</p><p class="menu-desc">Laugen Bun, Beyond Meat® Patty, Tomaten, Wilmersburger „Käse", rote Zwiebeln, Salat, Gewürzgurken, Ketchup, vegane Mayo</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openBuns('VEGAN CHEESEBURGER')">BESTELLEN</button></div></div>
     </div>
 
@@ -176,30 +176,30 @@
       <div class="menu-card"><p class="menu-nr">Nr. 43</p><p class="menu-name">HÄHNCHEN</p><p class="menu-desc">Paniertes Hähnchenschnitzel (180g), Zitrone, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('HÄHNCHEN', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 44</p><p class="menu-name">CHICKEN-CHIPS</p><p class="menu-desc">Panierte Hähnchenbrust-Stücke 4 Stück, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CHICKEN-CHIPS', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 45</p><p class="menu-name">CURRYWURST</p><p class="menu-desc">Currywurst (160g) mit Curryketchup, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CURRYWURST', 9.90)">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 46</p><p class="menu-name">FISCHFILET</p><p class="menu-desc">Paniertes Seelachsfilet, frische Pommes, Remoulade</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 46</p><p class="menu-name">FISCHFILET</p><p class="menu-desc">Paniertes Seelachsfilet, frische Pommes, Remoulade</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('FISCHFILET', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-name">POMMES</p><p class="menu-desc">Frische Pommes</p><div class="menu-footer"><span class="menu-price">4,50 €</span><button class="btn-order-sm" onclick="openExtras('POMMES', 4.50)">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">KETCHUP</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">MAYO</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">KETCHUP</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="orderDirect('KETCHUP', 0.60)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">MAYO</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="orderDirect('MAYO', 0.60)">BESTELLEN</button></div></div>
     </div>
 
     <!-- FRÜHSTÜCK -->
     <div class="menu-panel" id="fruehstueck">
-      <div class="menu-card"><p class="menu-name">GANZES BELEGTES BRÖTCHEN</p><p class="menu-desc">Verschieden belegt</p><div class="menu-footer"><span class="menu-price">2,00 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">HALBES METT BRÖTCHEN</p><p class="menu-desc">Mit rohem Hackfleisch</p><div class="menu-footer"><span class="menu-price">2,00 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">RÜHREI MIT SPECK</p><p class="menu-desc">Frisches Rührei mit Speck</p><div class="menu-footer"><span class="menu-price">4,00 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">GANZES BELEGTES BRÖTCHEN</p><p class="menu-desc">Verschieden belegt</p><div class="menu-footer"><span class="menu-price">2,00 €</span><button class="btn-order-sm" onclick="orderDirect('GANZES BELEGTES BRÖTCHEN', 2.00)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">HALBES METT BRÖTCHEN</p><p class="menu-desc">Mit rohem Hackfleisch</p><div class="menu-footer"><span class="menu-price">2,00 €</span><button class="btn-order-sm" onclick="orderDirect('HALBES METT BRÖTCHEN', 2.00)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">RÜHREI MIT SPECK</p><p class="menu-desc">Frisches Rührei mit Speck</p><div class="menu-footer"><span class="menu-price">4,00 €</span><button class="btn-order-sm" onclick="orderDirect('RÜHREI MIT SPECK', 4.00)">BESTELLEN</button></div></div>
     </div>
 
     <!-- SALAT -->
     <div class="menu-panel" id="salat">
-      <div class="menu-card"><p class="menu-nr">Nr. 30</p><p class="menu-name">GEMISCHTER SALAT</p><p class="menu-desc">Gemischter Salat mit Salatdressing</p><div class="menu-footer"><span class="menu-price">7,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 32</p><p class="menu-name">HÄHNCHEN SALAT</p><p class="menu-desc">Gemischter Salat, Hähnchenstreifen und Salatdressing</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-nr">Nr. 33</p><p class="menu-name">HIRTENSALAT</p><p class="menu-desc">Gemischter Salat, Hirtenkäse und Salatdressing</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 30</p><p class="menu-name">GEMISCHTER SALAT</p><p class="menu-desc">Gemischter Salat mit Salatdressing</p><div class="menu-footer"><span class="menu-price">7,90 €</span><button class="btn-order-sm" onclick="orderDirect('GEMISCHTER SALAT', 7.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 32</p><p class="menu-name">HÄHNCHEN SALAT</p><p class="menu-desc">Gemischter Salat, Hähnchenstreifen und Salatdressing</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('HÄHNCHEN SALAT', 9.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-nr">Nr. 33</p><p class="menu-name">HIRTENSALAT</p><p class="menu-desc">Gemischter Salat, Hirtenkäse und Salatdressing</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('HIRTENSALAT', 9.90)">BESTELLEN</button></div></div>
     </div>
 
     <!-- KIDS -->
     <div class="menu-panel" id="kids">
-      <div class="menu-card"><p class="menu-name">CHICKEN NUGGETS 🧒</p><p class="menu-desc">Mit Pommes und Ketchup oder Mayo</p><div class="menu-footer"><span class="menu-price">5,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">HAMBURGER FÜR KIDS 🧒</p><p class="menu-desc">Mit Pommes, dazu Mayo oder Ketchup</p><div class="menu-footer"><span class="menu-price">6,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">CHICKEN NUGGETS 🧒</p><p class="menu-desc">Mit Pommes und Ketchup oder Mayo</p><div class="menu-footer"><span class="menu-price">5,90 €</span><button class="btn-order-sm" onclick="orderDirect('CHICKEN NUGGETS 🧒', 5.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">HAMBURGER FÜR KIDS 🧒</p><p class="menu-desc">Mit Pommes, dazu Mayo oder Ketchup</p><div class="menu-footer"><span class="menu-price">6,90 €</span><button class="btn-order-sm" onclick="orderDirect('HAMBURGER FÜR KIDS 🧒', 6.90)">BESTELLEN</button></div></div>
     </div>
 
     <!-- MITTAGSTISCH -->
@@ -214,18 +214,18 @@
 
     <!-- GETRÄNKE -->
     <div class="menu-panel" id="getraenke">
-      <div class="menu-card"><p class="menu-name">COCA-COLA 0,33L</p><p class="menu-desc">Klassische Erfrischung – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">COCA-COLA ZERO 0,33L</p><p class="menu-desc">Ohne Zucker – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">SPRITE 0,33L</p><p class="menu-desc">Zitrone-Limette Limonade – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">FANTA 0,33L</p><p class="menu-desc">Fruchtige Orangenlimonade – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">KÖNIG PILSENER 0,33L 🔞</p><p class="menu-desc">Frisches Bier – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">3,00 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">MINERALWASSER 0,5L</p><p class="menu-desc">Mit Kohlensäure – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">STILLES WASSER 0,5L</p><p class="menu-desc">Ohne Kohlensäure – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,50 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">FUZE TEA 0,33L</p><p class="menu-desc">Eistee – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">LIFT APFELSCHORLE 0,5L</p><p class="menu-desc">Fruchtige Apfelschorle – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="goOrder()">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">COCA-COLA 0,33L</p><p class="menu-desc">Klassische Erfrischung – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('COCA-COLA 0,33L', 2.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">COCA-COLA ZERO 0,33L</p><p class="menu-desc">Ohne Zucker – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('COCA-COLA ZERO 0,33L', 2.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">SPRITE 0,33L</p><p class="menu-desc">Zitrone-Limette Limonade – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('SPRITE 0,33L', 2.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">FANTA 0,33L</p><p class="menu-desc">Fruchtige Orangenlimonade – inklusive 0,15 € Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('FANTA 0,33L', 2.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">KÖNIG PILSENER 0,33L 🔞</p><p class="menu-desc">Frisches Bier – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">3,00 €</span><button class="btn-order-sm" onclick="orderDirect('KÖNIG PILSENER 0,33L 🔞', 3.00)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">MINERALWASSER 0,5L</p><p class="menu-desc">Mit Kohlensäure – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('MINERALWASSER 0,5L', 2.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">STILLES WASSER 0,5L</p><p class="menu-desc">Ohne Kohlensäure – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,50 €</span><button class="btn-order-sm" onclick="orderDirect('STILLES WASSER 0,5L', 2.50)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">FUZE TEA 0,33L</p><p class="menu-desc">Eistee – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('FUZE TEA 0,33L', 2.90)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">LIFT APFELSCHORLE 0,5L</p><p class="menu-desc">Fruchtige Apfelschorle – inklusive Pfand</p><div class="menu-footer"><span class="menu-price">2,90 €</span><button class="btn-order-sm" onclick="orderDirect('LIFT APFELSCHORLE 0,5L', 2.90)">BESTELLEN</button></div></div>
     </div>
 
-      <p class="menu-note">Vollständige Speisekarte &amp; Online-Bestellung: <a href="https://dis.order.dish.co" target="_blank">dis.order.dish.co</a></p>
+      <p class="menu-note">Abholbestellung: einfach bestellen und vor Ort bezahlen – bar oder mit Karte.</p>
     </section>
 
     <!-- ===== ÜBER UNS ===== -->
@@ -286,8 +286,8 @@
       </div>
       <div class="order-cta reveal">
         <h3>ONLINE VORBESTELLEN</h3>
-        <p>Bestellt bequem von zuhause und holt euer Essen direkt bei uns ab. Schnell, einfach und ohne Wartezeit.</p>
-        <button class="btn-primary" onclick="goOrder()">→ JETZT VORBESTELLEN</button>
+        <p>Bestellt bequem von zuhause und holt euer Essen direkt bei uns ab. Bezahlt wird erst bei Abholung vor Ort – bar oder mit Karte.</p>
+        <button class="btn-primary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">→ JETZT VORBESTELLEN</button>
       </div>
     </div>
 
