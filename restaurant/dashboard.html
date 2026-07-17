@@ -26,6 +26,13 @@
     }
     .db-title svg { width: 36px; height: 36px; filter: drop-shadow(0 0 10px rgba(229,168,46,.5)); }
     .db-clock { font-size: 13px; color: var(--gray-light); letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+    .db-mode {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+      border-radius: 100px; padding: 4px 12px;
+    }
+    .db-mode.live { background: rgba(90, 210, 130, .18); color: #77d99a; border: 1px solid rgba(90,210,130,.4); }
+    .db-mode.demo { background: rgba(255,255,255,.08); color: var(--gray); border: 1px solid rgba(255,255,255,.15); }
+    .db-mode.error { background: rgba(255, 100, 80, .15); color: #ff8a70; border: 1px solid rgba(255,100,80,.4); }
     .db-back {
       font-size: 11px; letter-spacing: 2px; font-weight: 700;
       color: var(--gray-light); text-decoration: none;
@@ -112,6 +119,7 @@
         <text x="20" y="31" text-anchor="middle" fill="#E5A82E" font-size="8" font-weight="700" letter-spacing="1.5" font-family="Arial">DIS</text>
       </svg>
       BESTELL-DASHBOARD
+      <span class="db-mode demo" id="db-mode">…</span>
     </div>
     <span class="db-clock" id="db-clock">--:--:--</span>
     <a class="db-back" href="index.html">← ZUR WEBSITE</a>
@@ -143,11 +151,15 @@
     <div class="db-orders" id="db-orders"></div>
   </main>
 
+  <script src="supabase-config.js"></script>
   <script>
     const STORAGE_KEY = 'dis-orders';
     const STATUS_FLOW = { neu: 'arbeit', arbeit: 'fertig', fertig: 'abgeholt' };
     const STATUS_LABEL = { neu: 'NEU', arbeit: 'IN ARBEIT', fertig: 'FERTIG', abgeholt: 'ABGEHOLT' };
     const NEXT_LABEL = { neu: 'ANNEHMEN', arbeit: 'FERTIG MELDEN', fertig: 'ABGEHOLT' };
+
+    const SUPA = window.DIS_SUPABASE || {};
+    const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
 
     const DEMO_ORDERS = [
       { items: [
@@ -169,13 +181,89 @@
     let knownIds = new Set();
     let firstRender = true;
 
-    function loadOrders() {
+    /* ---------- Data layer: Supabase (live) or localStorage (demo) ---------- */
+    function supaHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        apikey: SUPA.anonKey,
+        Authorization: 'Bearer ' + SUPA.anonKey,
+      };
+    }
+
+    async function fetchOrders() {
+      if (SUPA_ON) {
+        try {
+          const res = await fetch(SUPA.url + '/rest/v1/orders?select=*&order=created_at.desc&limit=200', { headers: supaHeaders() });
+          if (!res.ok) throw new Error(res.status);
+          const rows = await res.json();
+          return rows.map((r) => ({
+            id: String(r.id),
+            ts: Date.parse(r.created_at),
+            items: r.items,
+            total: parseFloat(r.total),
+            pickup: r.pickup,
+            status: r.status,
+          }));
+        } catch (e) {
+          setConnState(false);
+          return [];
+        }
+      }
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
       catch (e) { return []; }
     }
-    function saveOrders(orders) {
+
+    async function insertOrder(order) {
+      if (SUPA_ON) {
+        try {
+          await fetch(SUPA.url + '/rest/v1/orders', {
+            method: 'POST', headers: supaHeaders(),
+            body: JSON.stringify({ items: order.items, total: order.total, pickup: order.pickup, status: 'neu' }),
+          });
+        } catch (e) { setConnState(false); }
+        return;
+      }
+      const orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      orders.push(order);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
     }
+
+    async function updateStatus(id, status) {
+      if (SUPA_ON) {
+        try {
+          await fetch(SUPA.url + '/rest/v1/orders?id=eq.' + encodeURIComponent(id), {
+            method: 'PATCH', headers: supaHeaders(),
+            body: JSON.stringify({ status }),
+          });
+        } catch (e) { setConnState(false); }
+        return;
+      }
+      const orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const order = orders.find((o) => o.id === id);
+      if (order) { order.status = status; localStorage.setItem(STORAGE_KEY, JSON.stringify(orders)); }
+    }
+
+    async function deletePickedUp() {
+      if (SUPA_ON) {
+        try {
+          await fetch(SUPA.url + '/rest/v1/orders?status=eq.abgeholt', {
+            method: 'DELETE', headers: supaHeaders(),
+          });
+        } catch (e) { setConnState(false); }
+        return;
+      }
+      const orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(orders.filter((o) => o.status !== 'abgeholt')));
+    }
+
+    /* ---------- UI ---------- */
+    function setConnState(ok) {
+      const el = document.getElementById('db-mode');
+      if (!SUPA_ON) { el.textContent = 'DEMO (LOKAL)'; el.className = 'db-mode demo'; return; }
+      el.textContent = ok ? 'LIVE' : 'VERBINDUNG GESTÖRT';
+      el.className = 'db-mode ' + (ok ? 'live' : 'error');
+    }
+
     function formatEUR(v) { return v.toFixed(2).replace('.', ',') + ' €'; }
     function formatTime(ts) {
       return new Date(ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -195,13 +283,13 @@
       } catch (e) { /* audio blocked until first interaction — fine */ }
     }
 
-    function render() {
-      const orders = loadOrders().sort((a, b) => b.ts - a.ts);
+    async function render() {
+      const orders = (await fetchOrders()).sort((a, b) => b.ts - a.ts);
+      if (SUPA_ON) setConnState(true);
       const container = document.getElementById('db-orders');
       const empty = document.getElementById('db-empty');
       empty.style.display = orders.length ? 'none' : 'block';
 
-      // Detect newly arrived orders (from other tabs) for the beep
       const currentIds = new Set(orders.map((o) => o.id));
       if (!firstRender) {
         for (const o of orders) {
@@ -227,7 +315,7 @@
           <div class="db-order-foot">
             <span class="db-order-total">${formatEUR(o.total)}</span>
             ${o.status !== 'abgeholt'
-              ? `<button class="db-btn primary" onclick="advance('${o.id}')">${NEXT_LABEL[o.status]}</button>`
+              ? `<button class="db-btn primary" onclick="advance('${o.id}', '${o.status}')">${NEXT_LABEL[o.status]}</button>`
               : ''}
           </div>
         </div>`).join('');
@@ -240,20 +328,16 @@
       document.getElementById('stat-umsatz').textContent = formatEUR(todayOrders.reduce((s, o) => s + o.total, 0));
     }
 
-    window.advance = function (id) {
-      const orders = loadOrders();
-      const order = orders.find((o) => o.id === id);
-      if (order && STATUS_FLOW[order.status]) {
-        order.status = STATUS_FLOW[order.status];
-        saveOrders(orders);
+    window.advance = async function (id, status) {
+      if (STATUS_FLOW[status]) {
+        await updateStatus(id, STATUS_FLOW[status]);
         render();
       }
     };
 
-    function addDemoOrder() {
+    async function addDemoOrder() {
       const demo = DEMO_ORDERS[Math.floor(Math.random() * DEMO_ORDERS.length)];
-      const orders = loadOrders();
-      orders.push({
+      await insertOrder({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         ts: Date.now(),
         items: demo.items,
@@ -261,7 +345,6 @@
         pickup: demo.pickup,
         status: 'neu',
       });
-      saveOrders(orders);
       beep();
       render();
     }
@@ -284,21 +367,21 @@
       this.textContent = soundOn ? 'TON: AN' : 'TON: AUS';
     });
 
-    document.getElementById('btn-clear').addEventListener('click', () => {
-      saveOrders(loadOrders().filter((o) => o.status !== 'abgeholt'));
+    document.getElementById('btn-clear').addEventListener('click', async () => {
+      await deletePickedUp();
       render();
     });
 
-    // Live updates: storage event fires when the website tab records an order
+    // Live updates: storage event (local mode, cross-tab) + poll
     window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) render(); });
-    // Fallback poll (same-tab writes and browsers without storage events)
-    setInterval(render, 3000);
+    setInterval(render, SUPA_ON ? 5000 : 3000);
 
     setInterval(() => {
       document.getElementById('db-clock').textContent =
         new Date().toLocaleTimeString('de-DE');
     }, 1000);
 
+    setConnState(true);
     render();
   </script>
 </body>
