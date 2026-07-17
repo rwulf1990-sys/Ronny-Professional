@@ -598,6 +598,12 @@ window.orderDirect = function (dish, price) {
   addToCart({ dish, details: [], price });
 };
 
+/* Soft drinks carry a 0,25 € takeaway deposit, charged automatically */
+const DRINK_PFAND = 0.25;
+window.orderDrink = function (dish, price) {
+  addToCart({ dish, details: ['inkl. 0,25 € Pfand'], price: price + DRINK_PFAND });
+};
+
 document.getElementById('extras-confirm').addEventListener('click', () => {
   const details = [];
   if (extraMayo.checked) details.push('Mayo');
@@ -691,7 +697,11 @@ function updateBunsTotal() {
   Object.keys(DRINK_PRICES).forEach((key) => {
     if (key === 'none') return;
     const label = document.getElementById('price-drink-' + key);
-    if (label) label.textContent = menuOrder ? 'Inklusive' : '+' + formatEUR(DRINK_PRICES[key]);
+    if (label) {
+      label.textContent = menuOrder
+        ? 'Inklusive · +0,25 € Pfand'
+        : '+' + formatEUR(DRINK_PRICES[key] + DRINK_PFAND) + ' inkl. Pfand';
+    }
   });
 
   const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
@@ -704,7 +714,12 @@ function updateBunsTotal() {
   }
 
   const selectedDrink = document.querySelector('input[name="drink-choice"]:checked');
-  const drinkExtra = menuOrder || !selectedDrink ? 0 : DRINK_PRICES[selectedDrink.value];
+  // Any bottled drink adds the 0,25 € takeaway deposit — with the Menü
+  // the drink itself is free, the deposit still applies.
+  let drinkExtra = 0;
+  if (selectedDrink && selectedDrink.value !== 'none') {
+    drinkExtra = (menuOrder ? 0 : DRINK_PRICES[selectedDrink.value]) + DRINK_PFAND;
+  }
   const pommesExtra = !menuOrder && einzelnPommes.checked ? POMMES_PRICE : 0;
 
   bunsTotalPrice.textContent = formatEUR(basePrice + bunExtra + doubleExtra + sauceExtra + drinkExtra + pommesExtra);
@@ -755,7 +770,7 @@ document.getElementById('buns-confirm').addEventListener('click', () => {
   const dip = checkedLabel('sauce-choice');
   if (dip && dip !== 'Keine') details.push('Dip: ' + dip);
   const drink = checkedLabel('drink-choice');
-  if (drink && drink !== 'Ohne Getränk') details.push('Getränk: ' + drink);
+  if (drink && drink !== 'Ohne Getränk') details.push('Getränk: ' + drink + ' (inkl. 0,25 € Pfand)');
   if (!isMenuOrder() && einzelnPommes.checked) details.push('Pommes');
   addToCart({
     dish: bunsTitle.textContent,
