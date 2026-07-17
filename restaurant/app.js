@@ -359,6 +359,14 @@ window.showTab = function (btn, id) {
   document.getElementById(id).classList.add('active');
 };
 
+window.goToMittagstisch = function () {
+  const tabBtn = [...document.querySelectorAll('.menu-tab')].find(
+    (t) => t.getAttribute('onclick')?.includes("'mittagstisch'")
+  );
+  if (tabBtn) window.showTab(tabBtn, 'mittagstisch');
+  document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+};
+
 /* ---------- Extras Modal (Mayo/Ketchup) ---------- */
 const EXTRA_PRICE = 0.6;
 const extrasOverlay = document.getElementById('extras-overlay');
