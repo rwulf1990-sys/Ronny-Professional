@@ -348,19 +348,20 @@ if (supportsWebGL()) {
 ------------------------------------------------------------ */
 
 /* ---------- Globals used by inline onclick handlers ---------- */
-/* Pickup-only ordering: no payment happens online. goOrder() confirms
-   the order was received; payment is at pickup in the restaurant. */
+/* Pickup-only ordering: no payment happens online. Items are collected
+   in a cart; placing the order stores it for the dashboard, and payment
+   happens at pickup in the restaurant. */
 const orderToast = document.createElement('div');
 orderToast.id = 'order-toast';
-orderToast.innerHTML = '✓ Bestellung eingegangen!<br><small>Abholung &amp; Bezahlung vor Ort</small>';
 document.body.appendChild(orderToast);
 let toastTimer = null;
 
-window.goOrder = function () {
+function showToast(title, sub) {
+  orderToast.innerHTML = title + (sub ? '<br><small>' + sub + '</small>' : '');
   orderToast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => orderToast.classList.remove('show'), 3500);
-};
+  toastTimer = setTimeout(() => orderToast.classList.remove('show'), 3000);
+}
 
 window.showTab = function (btn, id) {
   document.querySelectorAll('.menu-tab').forEach((t) => t.classList.remove('active'));
@@ -417,20 +418,119 @@ extrasOverlay.addEventListener('click', (e) => {
   if (e.target === extrasOverlay) closeExtras();
 });
 
-/* ---------- Order recording (feeds the local dashboard) ---------- */
+/* ---------- Warenkorb ---------- */
 function parseEUR(text) {
   return parseFloat(text.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
 }
 
-function recordOrder(dish, details, total) {
+const CART_KEY = 'dis-cart';
+const cartOverlay = document.getElementById('cart-overlay');
+const cartFab = document.getElementById('cart-fab');
+const cartCount = document.getElementById('cart-count');
+const cartItemsEl = document.getElementById('cart-items');
+const cartTotalEl = document.getElementById('cart-total');
+const cartConfirm = document.getElementById('cart-confirm');
+const pickupSelect = document.getElementById('pickup-time');
+
+function loadCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function saveCart(cart) {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { /* ok */ }
+}
+
+function renderCart() {
+  const cart = loadCart();
+  cartCount.textContent = cart.length;
+  cartFab.style.display = 'flex';
+
+  if (!cart.length) {
+    cartItemsEl.innerHTML = '<div class="cart-empty">Dein Warenkorb ist leer.<br>Füge Gerichte aus der Speisekarte hinzu.</div>';
+  } else {
+    cartItemsEl.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <p class="cart-item-name">${item.dish}</p>
+          ${item.details && item.details.length ? `<p class="cart-item-details">${item.details.join(' · ')}</p>` : ''}
+        </div>
+        <span class="cart-item-price">${formatEUR(item.price)}</span>
+        <button class="cart-item-remove" onclick="removeFromCart(${i})" aria-label="Entfernen">✕</button>
+      </div>`).join('');
+  }
+
+  cartTotalEl.textContent = formatEUR(cart.reduce((s, i) => s + i.price, 0));
+  cartConfirm.disabled = !cart.length;
+  cartConfirm.style.opacity = cart.length ? '1' : '.4';
+}
+
+function addToCart(item) {
+  const cart = loadCart();
+  cart.push(item);
+  saveCart(cart);
+  renderCart();
+  cartFab.classList.remove('bump');
+  void cartFab.offsetWidth;
+  cartFab.classList.add('bump');
+  showToast('✓ Zum Warenkorb hinzugefügt', item.dish);
+}
+
+window.removeFromCart = function (index) {
+  const cart = loadCart();
+  cart.splice(index, 1);
+  saveCart(cart);
+  renderCart();
+};
+
+/* Pickup slots: Bestellannahme täglich 11:00 – 20:30 Uhr */
+function buildPickupOptions() {
+  pickupSelect.innerHTML = '';
+  const asap = document.createElement('option');
+  asap.value = 'schnellstmoeglich';
+  asap.textContent = 'Schnellstmöglich';
+  pickupSelect.appendChild(asap);
+
+  const now = new Date();
+  for (let mins = 11 * 60; mins <= 20 * 60 + 30; mins += 15) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    const label = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
+    const opt = document.createElement('option');
+    opt.value = label;
+    opt.textContent = label;
+    // Slots already passed today (with 20 min prep buffer) can't be picked
+    const slot = new Date();
+    slot.setHours(h, m, 0, 0);
+    if (slot.getTime() < now.getTime() + 20 * 60 * 1000) opt.disabled = true;
+    pickupSelect.appendChild(opt);
+  }
+}
+
+function openCart() {
+  renderCart();
+  buildPickupOptions();
+  cartOverlay.classList.add('open');
+}
+function closeCart() {
+  cartOverlay.classList.remove('open');
+}
+
+cartFab.addEventListener('click', openCart);
+document.getElementById('cart-close').addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', (e) => {
+  if (e.target === cartOverlay) closeCart();
+});
+
+/* ---------- Order recording (feeds the local dashboard) ---------- */
+function recordOrder(items, total, pickup) {
   try {
     const orders = JSON.parse(localStorage.getItem('dis-orders') || '[]');
     orders.push({
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       ts: Date.now(),
-      dish,
-      details,
+      items,
       total,
+      pickup,
       status: 'neu',
     });
     localStorage.setItem('dis-orders', JSON.stringify(orders));
@@ -439,19 +539,32 @@ function recordOrder(dish, details, total) {
   }
 }
 
+cartConfirm.addEventListener('click', () => {
+  const cart = loadCart();
+  if (!cart.length) return;
+  const pickup = pickupSelect.value === 'schnellstmoeglich'
+    ? 'Schnellstmöglich'
+    : pickupSelect.value;
+  recordOrder(cart, cart.reduce((s, i) => s + i.price, 0), pickup);
+  saveCart([]);
+  renderCart();
+  closeCart();
+  showToast('✓ Bestellung eingegangen!', 'Abholung ' + pickup + ' · Bezahlung vor Ort');
+});
+
 window.orderDirect = function (dish, price) {
-  recordOrder(dish, [], price);
-  window.goOrder();
+  addToCart({ dish, details: [], price });
 };
 
 document.getElementById('extras-confirm').addEventListener('click', () => {
   const details = [];
   if (extraMayo.checked) details.push('Mayo');
   if (extraKetchup.checked) details.push('Ketchup');
-  recordOrder(extrasTitle.textContent, details, parseEUR(extrasTotalPrice.textContent));
+  addToCart({ dish: extrasTitle.textContent, details, price: parseEUR(extrasTotalPrice.textContent) });
   closeExtras();
-  window.goOrder();
 });
+
+renderCart();
 
 /* ---------- Buns Modal (Burger customization) ---------- */
 const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
@@ -602,9 +715,12 @@ document.getElementById('buns-confirm').addEventListener('click', () => {
   const drink = checkedLabel('drink-choice');
   if (drink && drink !== 'Ohne Getränk') details.push('Getränk: ' + drink);
   if (!isMenuOrder() && einzelnPommes.checked) details.push('Pommes');
-  recordOrder(bunsTitle.textContent, details.filter(Boolean), parseEUR(bunsTotalPrice.textContent));
+  addToCart({
+    dish: bunsTitle.textContent,
+    details: details.filter(Boolean),
+    price: parseEUR(bunsTotalPrice.textContent),
+  });
   closeBuns();
-  window.goOrder();
 });
 
 /* ---------- Pizza-Baukasten Modal (Nr. 28) ---------- */
@@ -641,9 +757,8 @@ document.getElementById('pizza-confirm').addEventListener('click', () => {
   const toppings = [...pizzaToppings]
     .filter((cb) => cb.checked)
     .map((cb) => cb.closest('.extras-option-left').innerText.trim().split('\n')[0]);
-  recordOrder('DEINE EIGENE PIZZA', toppings, parseEUR(pizzaTotalPrice.textContent));
+  addToCart({ dish: 'DEINE EIGENE PIZZA', details: toppings, price: parseEUR(pizzaTotalPrice.textContent) });
   closePizza();
-  window.goOrder();
 });
 
 document.addEventListener('keydown', (e) => {
@@ -651,6 +766,7 @@ document.addEventListener('keydown', (e) => {
   if (extrasOverlay.classList.contains('open')) closeExtras();
   if (bunsOverlay.classList.contains('open')) closeBuns();
   if (pizzaOverlay.classList.contains('open')) closePizza();
+  if (cartOverlay.classList.contains('open')) closeCart();
 });
 
 /* ---------- Loader ---------- */

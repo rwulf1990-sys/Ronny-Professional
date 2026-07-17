@@ -92,6 +92,10 @@
     .db-badge.abgeholt { background: rgba(255,255,255,.08); color: var(--gray); }
     .db-order-dish { font-size: 15px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
     .db-order-details { font-size: 12px; color: var(--gray-light); line-height: 1.7; margin-bottom: 14px; min-height: 18px; }
+    .db-order-pickup {
+      font-size: 12px; font-weight: 700; color: var(--gold);
+      letter-spacing: 1px; margin-bottom: 14px;
+    }
     .db-order-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .db-order-total { font-size: 17px; font-weight: 700; }
   </style>
@@ -145,15 +149,19 @@
     const STATUS_LABEL = { neu: 'NEU', arbeit: 'IN ARBEIT', fertig: 'FERTIG', abgeholt: 'ABGEHOLT' };
     const NEXT_LABEL = { neu: 'ANNEHMEN', arbeit: 'FERTIG MELDEN', fertig: 'ABGEHOLT' };
 
-    const DEMO_DISHES = [
-      { dish: 'CHEESEBURGER', details: ['Menü', 'Bun: Brioche Bun', 'Patty: Beef Patty 180g', 'Dip: Mayo', 'Getränk: Coca-Cola 0,33L'], total: 15.9 },
-      { dish: 'SALAMI', details: [], total: 8.9 },
-      { dish: 'JÄGER ART', details: ['Mayo'], total: 12.5 },
-      { dish: 'DEINE EIGENE PIZZA', details: ['Salami', 'Champignons', 'Mozzarella, doppelt'], total: 13.3 },
-      { dish: 'CURRYWURST', details: ['Ketchup'], total: 10.5 },
-      { dish: 'VEGAN CHEESEBURGER', details: ['Einzeln', 'Bun: Glutenfreier Bun', 'Patty: Vegane Patty 125g', 'Pommes'], total: 15.4 },
-      { dish: 'CHICKEN NUGGETS', details: ['Kids-Menü'], total: 5.9 },
-      { dish: 'HIRTENSALAT', details: [], total: 9.9 },
+    const DEMO_ORDERS = [
+      { items: [
+          { dish: 'CHEESEBURGER', details: ['Menü', 'Bun: Brioche Bun', 'Patty: Beef Patty 180g', 'Dip: Mayo', 'Getränk: Coca-Cola 0,33L'], price: 15.9 },
+          { dish: 'POMMES', details: ['Ketchup'], price: 5.1 },
+        ], pickup: '12:30 Uhr' },
+      { items: [{ dish: 'SALAMI', details: [], price: 8.9 }, { dish: 'FANTA 0,33L', details: [], price: 2.9 }], pickup: 'Schnellstmöglich' },
+      { items: [{ dish: 'JÄGER ART', details: ['Mayo'], price: 12.5 }], pickup: '18:00 Uhr' },
+      { items: [{ dish: 'DEINE EIGENE PIZZA', details: ['Salami', 'Champignons', 'Mozzarella, doppelt'], price: 13.3 }], pickup: '19:15 Uhr' },
+      { items: [
+          { dish: 'CURRYWURST', details: ['Ketchup'], price: 10.5 },
+          { dish: 'CHICKEN NUGGETS', details: [], price: 5.9 },
+        ], pickup: '17:45 Uhr' },
+      { items: [{ dish: 'VEGAN CHEESEBURGER', details: ['Einzeln', 'Bun: Glutenfreier Bun', 'Patty: Vegane Patty 125g', 'Pommes'], price: 15.4 }], pickup: 'Schnellstmöglich' },
     ];
 
     let soundOn = true;
@@ -209,8 +217,13 @@
             <span class="db-order-time">${formatTime(o.ts)} Uhr · #${o.id.slice(-4).toUpperCase()}</span>
             <span class="db-badge ${o.status}">${STATUS_LABEL[o.status]}</span>
           </div>
-          <p class="db-order-dish">${o.dish}</p>
-          <p class="db-order-details">${(o.details || []).join(' · ') || '—'}</p>
+          ${(o.items && o.items.length
+              ? o.items.map((it) => `
+                <p class="db-order-dish">${it.dish}</p>
+                <p class="db-order-details">${(it.details || []).join(' · ') || '—'}</p>`).join('')
+              : `<p class="db-order-dish">${o.dish || '—'}</p>
+                 <p class="db-order-details">${(o.details || []).join(' · ') || '—'}</p>`)}
+          ${o.pickup ? `<p class="db-order-pickup">🕛 Abholung: ${o.pickup}</p>` : ''}
           <div class="db-order-foot">
             <span class="db-order-total">${formatEUR(o.total)}</span>
             ${o.status !== 'abgeholt'
@@ -238,14 +251,14 @@
     };
 
     function addDemoOrder() {
-      const demo = DEMO_DISHES[Math.floor(Math.random() * DEMO_DISHES.length)];
+      const demo = DEMO_ORDERS[Math.floor(Math.random() * DEMO_ORDERS.length)];
       const orders = loadOrders();
       orders.push({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         ts: Date.now(),
-        dish: demo.dish,
-        details: demo.details,
-        total: demo.total,
+        items: demo.items,
+        total: demo.items.reduce((s, i) => s + i.price, 0),
+        pickup: demo.pickup,
         status: 'neu',
       });
       saveOrders(orders);
