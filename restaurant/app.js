@@ -348,8 +348,18 @@ if (supportsWebGL()) {
 ------------------------------------------------------------ */
 
 /* ---------- Globals used by inline onclick handlers ---------- */
+/* Pickup-only ordering: no payment happens online. goOrder() confirms
+   the order was received; payment is at pickup in the restaurant. */
+const orderToast = document.createElement('div');
+orderToast.id = 'order-toast';
+orderToast.innerHTML = '✓ Bestellung eingegangen!<br><small>Abholung &amp; Bezahlung vor Ort</small>';
+document.body.appendChild(orderToast);
+let toastTimer = null;
+
 window.goOrder = function () {
-  window.open('https://dis.order.dish.co', '_blank');
+  orderToast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => orderToast.classList.remove('show'), 3500);
 };
 
 window.showTab = function (btn, id) {
@@ -428,6 +438,11 @@ function recordOrder(dish, details, total) {
     // localStorage unavailable (private mode etc.) — ordering still works
   }
 }
+
+window.orderDirect = function (dish, price) {
+  recordOrder(dish, [], price);
+  window.goOrder();
+};
 
 document.getElementById('extras-confirm').addEventListener('click', () => {
   const details = [];
