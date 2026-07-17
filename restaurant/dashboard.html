@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Bestell-Dashboard – DIS Restaurant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+  <link rel="preload" href="../fonts/montserrat-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { padding-bottom: 60px; }
+
+    .db-header {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+      padding: 18px clamp(20px, 4vw, 48px);
+      background: rgba(5, 4, 3, .92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(229, 168, 46, .35);
+    }
+    .db-title {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 15px; font-weight: 700; letter-spacing: 3px; color: var(--gold);
+    }
+    .db-title svg { width: 36px; height: 36px; filter: drop-shadow(0 0 10px rgba(229,168,46,.5)); }
+    .db-clock { font-size: 13px; color: var(--gray-light); letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+    .db-back {
+      font-size: 11px; letter-spacing: 2px; font-weight: 700;
+      color: var(--gray-light); text-decoration: none;
+      border: 1px solid rgba(255,255,255,.15); border-radius: 100px;
+      padding: 8px 16px; transition: all .3s;
+    }
+    .db-back:hover { color: var(--gold); border-color: rgba(229,168,46,.5); }
+
+    .db-wrap { max-width: 1180px; margin: 0 auto; padding: 30px clamp(16px, 4vw, 48px); position: relative; z-index: 3; }
+
+    .db-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px; margin-bottom: 26px;
+    }
+    .db-stat {
+      background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+      border: 1px solid rgba(229, 168, 46, .25);
+      border-radius: 16px; padding: 18px 20px;
+    }
+    .db-stat-label { font-size: 10px; letter-spacing: 2px; color: var(--gray); font-weight: 700; margin-bottom: 6px; }
+    .db-stat-value { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .db-stat-value.gold { color: var(--gold); }
+
+    .db-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+    .db-btn {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      border-radius: 100px; padding: 10px 20px; cursor: pointer;
+      border: 1px solid rgba(229, 168, 46, .45);
+      background: rgba(255,255,255,.03); color: var(--gold);
+      transition: all .3s;
+    }
+    .db-btn:hover { background: rgba(229, 168, 46, .12); }
+    .db-btn.primary { background: var(--gold-grad); color: #000; border-color: transparent; }
+    .db-btn.danger { border-color: rgba(255, 100, 80, .4); color: #ff8a70; }
+    .db-btn.danger:hover { background: rgba(255, 100, 80, .1); }
+    .db-btn.toggled { background: var(--gold); color: #000; }
+
+    .db-empty {
+      text-align: center; color: var(--gray);
+      padding: 70px 20px; font-size: 14px;
+      border: 1px dashed rgba(229, 168, 46, .3); border-radius: 20px;
+    }
+
+    .db-orders { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .db-order {
+      background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+      border: 1px solid rgba(229, 168, 46, .25);
+      border-radius: 18px; padding: 20px 22px;
+      transition: opacity .3s, border-color .3s;
+      animation: orderIn .5s var(--ease-out);
+    }
+    @keyframes orderIn { from { opacity: 0; transform: translateY(16px); } }
+    .db-order.status-neu { border-color: var(--gold); box-shadow: 0 0 24px rgba(229, 168, 46, .18); }
+    .db-order.status-abgeholt { opacity: .45; }
+    .db-order-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .db-order-time { font-size: 11px; color: var(--gray); letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+    .db-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+      border-radius: 100px; padding: 4px 12px;
+    }
+    .db-badge.neu { background: var(--gold); color: #000; }
+    .db-badge.arbeit { background: rgba(80, 160, 255, .2); color: #7db8ff; border: 1px solid rgba(80,160,255,.4); }
+    .db-badge.fertig { background: rgba(90, 210, 130, .18); color: #77d99a; border: 1px solid rgba(90,210,130,.4); }
+    .db-badge.abgeholt { background: rgba(255,255,255,.08); color: var(--gray); }
+    .db-order-dish { font-size: 15px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+    .db-order-details { font-size: 12px; color: var(--gray-light); line-height: 1.7; margin-bottom: 14px; min-height: 18px; }
+    .db-order-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .db-order-total { font-size: 17px; font-weight: 700; }
+  </style>
+</head>
+<body class="no-3d loaded">
+
+  <header class="db-header">
+    <div class="db-title">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="18" width="28" height="16" rx="2" stroke="#E5A82E" stroke-width="1.8"/>
+        <path d="M10 18 Q20 6 30 18" stroke="#E5A82E" stroke-width="1.8"/>
+        <path d="M19 8 Q20 4 21 8" stroke="#E5A82E" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="4" y1="20" x2="36" y2="20" stroke="#E5A82E" stroke-width="1.8"/>
+        <text x="20" y="31" text-anchor="middle" fill="#E5A82E" font-size="8" font-weight="700" letter-spacing="1.5" font-family="Arial">DIS</text>
+      </svg>
+      BESTELL-DASHBOARD
+    </div>
+    <span class="db-clock" id="db-clock">--:--:--</span>
+    <a class="db-back" href="index.html">← ZUR WEBSITE</a>
+  </header>
+
+  <main class="db-wrap">
+    <div class="db-stats">
+      <div class="db-stat"><p class="db-stat-label">NEU</p><p class="db-stat-value gold" id="stat-neu">0</p></div>
+      <div class="db-stat"><p class="db-stat-label">IN ARBEIT</p><p class="db-stat-value" id="stat-arbeit">0</p></div>
+      <div class="db-stat"><p class="db-stat-label">FERTIG</p><p class="db-stat-value" id="stat-fertig">0</p></div>
+      <div class="db-stat"><p class="db-stat-label">UMSATZ HEUTE</p><p class="db-stat-value gold" id="stat-umsatz">0,00 €</p></div>
+    </div>
+
+    <div class="db-controls">
+      <button class="db-btn primary" id="btn-demo">+ DEMO-BESTELLUNG</button>
+      <button class="db-btn" id="btn-auto">AUTO-DEMO: AUS</button>
+      <button class="db-btn" id="btn-sound">TON: AN</button>
+      <button class="db-btn danger" id="btn-clear">ABGEHOLTE LÖSCHEN</button>
+    </div>
+
+    <div class="db-empty" id="db-empty">
+      Noch keine Bestellungen. Bestellungen von der Website (gleiches Gerät) erscheinen hier automatisch –
+      oder klicke „+ Demo-Bestellung" zum Ausprobieren.
+    </div>
+    <div class="db-orders" id="db-orders"></div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'dis-orders';
+    const STATUS_FLOW = { neu: 'arbeit', arbeit: 'fertig', fertig: 'abgeholt' };
+    const STATUS_LABEL = { neu: 'NEU', arbeit: 'IN ARBEIT', fertig: 'FERTIG', abgeholt: 'ABGEHOLT' };
+    const NEXT_LABEL = { neu: 'ANNEHMEN', arbeit: 'FERTIG MELDEN', fertig: 'ABGEHOLT' };
+
+    const DEMO_DISHES = [
+      { dish: 'CHEESEBURGER', details: ['Menü', 'Bun: Brioche Bun', 'Patty: Beef Patty 180g', 'Dip: Mayo', 'Getränk: Coca-Cola 0,33L'], total: 15.9 },
+      { dish: 'SALAMI', details: [], total: 8.9 },
+      { dish: 'JÄGER ART', details: ['Mayo'], total: 12.5 },
+      { dish: 'DEINE EIGENE PIZZA', details: ['Salami', 'Champignons', 'Mozzarella, doppelt'], total: 13.3 },
+      { dish: 'CURRYWURST', details: ['Ketchup'], total: 10.5 },
+      { dish: 'VEGAN CHEESEBURGER', details: ['Einzeln', 'Bun: Glutenfreier Bun', 'Patty: Vegane Patty 125g', 'Pommes'], total: 15.4 },
+      { dish: 'CHICKEN NUGGETS', details: ['Kids-Menü'], total: 5.9 },
+      { dish: 'HIRTENSALAT', details: [], total: 9.9 },
+    ];
+
+    let soundOn = true;
+    let autoTimer = null;
+    let knownIds = new Set();
+    let firstRender = true;
+
+    function loadOrders() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+      catch (e) { return []; }
+    }
+    function saveOrders(orders) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    }
+    function formatEUR(v) { return v.toFixed(2).replace('.', ',') + ' €'; }
+    function formatTime(ts) {
+      return new Date(ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function beep() {
+      if (!soundOn) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        osc.start(); osc.stop(ctx.currentTime + 0.5);
+      } catch (e) { /* audio blocked until first interaction — fine */ }
+    }
+
+    function render() {
+      const orders = loadOrders().sort((a, b) => b.ts - a.ts);
+      const container = document.getElementById('db-orders');
+      const empty = document.getElementById('db-empty');
+      empty.style.display = orders.length ? 'none' : 'block';
+
+      // Detect newly arrived orders (from other tabs) for the beep
+      const currentIds = new Set(orders.map((o) => o.id));
+      if (!firstRender) {
+        for (const o of orders) {
+          if (!knownIds.has(o.id)) { beep(); break; }
+        }
+      }
+      knownIds = currentIds;
+      firstRender = false;
+
+      container.innerHTML = orders.map((o) => `
+        <div class="db-order status-${o.status}">
+          <div class="db-order-top">
+            <span class="db-order-time">${formatTime(o.ts)} Uhr · #${o.id.slice(-4).toUpperCase()}</span>
+            <span class="db-badge ${o.status}">${STATUS_LABEL[o.status]}</span>
+          </div>
+          <p class="db-order-dish">${o.dish}</p>
+          <p class="db-order-details">${(o.details || []).join(' · ') || '—'}</p>
+          <div class="db-order-foot">
+            <span class="db-order-total">${formatEUR(o.total)}</span>
+            ${o.status !== 'abgeholt'
+              ? `<button class="db-btn primary" onclick="advance('${o.id}')">${NEXT_LABEL[o.status]}</button>`
+              : ''}
+          </div>
+        </div>`).join('');
+
+      const today = new Date().setHours(0, 0, 0, 0);
+      const todayOrders = orders.filter((o) => o.ts >= today);
+      document.getElementById('stat-neu').textContent = orders.filter((o) => o.status === 'neu').length;
+      document.getElementById('stat-arbeit').textContent = orders.filter((o) => o.status === 'arbeit').length;
+      document.getElementById('stat-fertig').textContent = orders.filter((o) => o.status === 'fertig').length;
+      document.getElementById('stat-umsatz').textContent = formatEUR(todayOrders.reduce((s, o) => s + o.total, 0));
+    }
+
+    window.advance = function (id) {
+      const orders = loadOrders();
+      const order = orders.find((o) => o.id === id);
+      if (order && STATUS_FLOW[order.status]) {
+        order.status = STATUS_FLOW[order.status];
+        saveOrders(orders);
+        render();
+      }
+    };
+
+    function addDemoOrder() {
+      const demo = DEMO_DISHES[Math.floor(Math.random() * DEMO_DISHES.length)];
+      const orders = loadOrders();
+      orders.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        ts: Date.now(),
+        dish: demo.dish,
+        details: demo.details,
+        total: demo.total,
+        status: 'neu',
+      });
+      saveOrders(orders);
+      beep();
+      render();
+    }
+
+    document.getElementById('btn-demo').addEventListener('click', addDemoOrder);
+
+    document.getElementById('btn-auto').addEventListener('click', function () {
+      if (autoTimer) {
+        clearInterval(autoTimer); autoTimer = null;
+        this.textContent = 'AUTO-DEMO: AUS'; this.classList.remove('toggled');
+      } else {
+        autoTimer = setInterval(addDemoOrder, 15000);
+        this.textContent = 'AUTO-DEMO: AN'; this.classList.add('toggled');
+        addDemoOrder();
+      }
+    });
+
+    document.getElementById('btn-sound').addEventListener('click', function () {
+      soundOn = !soundOn;
+      this.textContent = soundOn ? 'TON: AN' : 'TON: AUS';
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      saveOrders(loadOrders().filter((o) => o.status !== 'abgeholt'));
+      render();
+    });
+
+    // Live updates: storage event fires when the website tab records an order
+    window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) render(); });
+    // Fallback poll (same-tab writes and browsers without storage events)
+    setInterval(render, 3000);
+
+    setInterval(() => {
+      document.getElementById('db-clock').textContent =
+        new Date().toLocaleTimeString('de-DE');
+    }, 1000);
+
+    render();
+  </script>
+</body>
+</html>
