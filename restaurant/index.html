@@ -364,7 +364,7 @@
         <span>Gesamt</span>
         <span id="extras-total-price">– €</span>
       </div>
-      <button class="btn-primary extras-confirm" id="extras-confirm">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
+      <button class="btn-primary extras-confirm" id="extras-confirm">IN DEN WARENKORB <span class="btn-arrow">→</span></button>
     </div>
   </div>
 
@@ -538,7 +538,7 @@
         <span>Gesamt</span>
         <span id="buns-total-price">– €</span>
       </div>
-      <button class="btn-primary extras-confirm" id="buns-confirm">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
+      <button class="btn-primary extras-confirm" id="buns-confirm">IN DEN WARENKORB <span class="btn-arrow">→</span></button>
     </div>
   </div>
 
@@ -586,7 +586,35 @@
         <span>Gesamt</span>
         <span id="pizza-total-price">– €</span>
       </div>
-      <button class="btn-primary extras-confirm" id="pizza-confirm">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
+      <button class="btn-primary extras-confirm" id="pizza-confirm">IN DEN WARENKORB <span class="btn-arrow">→</span></button>
+    </div>
+  </div>
+
+
+  <!-- ===== WARENKORB ===== -->
+  <button id="cart-fab" aria-label="Warenkorb öffnen">
+    🛒 <span id="cart-count">0</span>
+  </button>
+
+  <div class="extras-overlay" id="cart-overlay">
+    <div class="extras-modal" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+      <button class="extras-close" id="cart-close" aria-label="Schließen">✕</button>
+      <p class="extras-eyebrow">WARENKORB</p>
+      <h3 class="extras-title" id="cart-title">Deine Bestellung</h3>
+
+      <div id="cart-items"></div>
+
+      <div class="extras-total">
+        <span>Gesamt</span>
+        <span id="cart-total">0,00 €</span>
+      </div>
+
+      <p class="extras-group-label">ABHOLZEIT WÄHLEN</p>
+      <p class="cart-hint">Bestellannahme täglich 11:00 – 20:30 Uhr</p>
+      <select id="pickup-time" class="cart-select"></select>
+
+      <button class="btn-primary extras-confirm" id="cart-confirm">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
+      <p class="cart-hint" style="margin-top:12px; margin-bottom:0; text-align:center;">Bezahlung bei Abholung vor Ort – bar oder mit Karte</p>
     </div>
   </div>
 
