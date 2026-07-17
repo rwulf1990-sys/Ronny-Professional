@@ -460,7 +460,7 @@ function renderCart() {
   }
 
   cartTotalEl.textContent = formatEUR(cart.reduce((s, i) => s + i.price, 0));
-  cartConfirm.disabled = !cart.length;
+  cartConfirm.disabled = !cart.length || !isOrderingDay();
   cartConfirm.style.opacity = cart.length ? '1' : '.4';
 }
 
@@ -483,8 +483,25 @@ window.removeFromCart = function (index) {
 };
 
 /* Pickup slots: Bestellannahme täglich 11:00 – 20:30 Uhr */
+/* Bestellannahme: Montag – Samstag, 11:00 – 20:30 Uhr (Sonntag geschlossen) */
+function isOrderingDay() {
+  return new Date().getDay() !== 0;
+}
+
 function buildPickupOptions() {
   pickupSelect.innerHTML = '';
+
+  if (!isOrderingDay()) {
+    const closed = document.createElement('option');
+    closed.textContent = 'Sonntag geschlossen – Bestellungen Mo–Sa möglich';
+    closed.disabled = true;
+    closed.selected = true;
+    pickupSelect.appendChild(closed);
+    pickupSelect.disabled = true;
+    return;
+  }
+  pickupSelect.disabled = false;
+
   const asap = document.createElement('option');
   asap.value = 'schnellstmoeglich';
   asap.textContent = 'Schnellstmöglich';
@@ -541,7 +558,7 @@ function recordOrder(items, total, pickup) {
 
 cartConfirm.addEventListener('click', () => {
   const cart = loadCart();
-  if (!cart.length) return;
+  if (!cart.length || !isOrderingDay()) return;
   const pickup = pickupSelect.value === 'schnellstmoeglich'
     ? 'Schnellstmöglich'
     : pickupSelect.value;
