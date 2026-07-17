@@ -538,8 +538,15 @@ cartOverlay.addEventListener('click', (e) => {
   if (e.target === cartOverlay) closeCart();
 });
 
-/* ---------- Order recording (feeds the local dashboard) ---------- */
-function recordOrder(items, total, pickup) {
+/* ---------- Order recording (feeds the dashboard) ----------
+   With Supabase configured (supabase-config.js) orders go to the
+   database and arrive on the dashboard on any device. Without it —
+   or if the request fails — they fall back to localStorage, which
+   the dashboard on the same device also reads. */
+const SUPA = window.DIS_SUPABASE || {};
+const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
+
+function saveLocalOrder(items, total, pickup) {
   try {
     const orders = JSON.parse(localStorage.getItem('dis-orders') || '[]');
     orders.push({
@@ -554,6 +561,24 @@ function recordOrder(items, total, pickup) {
   } catch (e) {
     // localStorage unavailable (private mode etc.) — ordering still works
   }
+}
+
+function recordOrder(items, total, pickup) {
+  if (SUPA_ON) {
+    fetch(SUPA.url + '/rest/v1/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPA.anonKey,
+        Authorization: 'Bearer ' + SUPA.anonKey,
+      },
+      body: JSON.stringify({ items, total, pickup, status: 'neu' }),
+    }).then((res) => {
+      if (!res.ok) saveLocalOrder(items, total, pickup);
+    }).catch(() => saveLocalOrder(items, total, pickup));
+    return;
+  }
+  saveLocalOrder(items, total, pickup);
 }
 
 cartConfirm.addEventListener('click', () => {
