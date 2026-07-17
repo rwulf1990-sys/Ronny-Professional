@@ -406,7 +406,34 @@ document.getElementById('extras-close').addEventListener('click', closeExtras);
 extrasOverlay.addEventListener('click', (e) => {
   if (e.target === extrasOverlay) closeExtras();
 });
+
+/* ---------- Order recording (feeds the local dashboard) ---------- */
+function parseEUR(text) {
+  return parseFloat(text.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+}
+
+function recordOrder(dish, details, total) {
+  try {
+    const orders = JSON.parse(localStorage.getItem('dis-orders') || '[]');
+    orders.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      ts: Date.now(),
+      dish,
+      details,
+      total,
+      status: 'neu',
+    });
+    localStorage.setItem('dis-orders', JSON.stringify(orders));
+  } catch (e) {
+    // localStorage unavailable (private mode etc.) — ordering still works
+  }
+}
+
 document.getElementById('extras-confirm').addEventListener('click', () => {
+  const details = [];
+  if (extraMayo.checked) details.push('Mayo');
+  if (extraKetchup.checked) details.push('Ketchup');
+  recordOrder(extrasTitle.textContent, details, parseEUR(extrasTotalPrice.textContent));
   closeExtras();
   window.goOrder();
 });
@@ -543,7 +570,24 @@ document.getElementById('buns-close').addEventListener('click', closeBuns);
 bunsOverlay.addEventListener('click', (e) => {
   if (e.target === bunsOverlay) closeBuns();
 });
+function checkedLabel(name) {
+  const input = document.querySelector(`input[name="${name}"]:checked`);
+  if (!input) return null;
+  return input.closest('.extras-option-left').innerText.trim().split('\n')[0];
+}
+
 document.getElementById('buns-confirm').addEventListener('click', () => {
+  const details = [];
+  details.push(checkedLabel('order-type'));
+  details.push('Bun: ' + checkedLabel('bun-choice'));
+  details.push('Patty: ' + checkedLabel('patty-choice'));
+  if (pattyDouble.checked) details.push('Double (2 Patties)');
+  const dip = checkedLabel('sauce-choice');
+  if (dip && dip !== 'Keine') details.push('Dip: ' + dip);
+  const drink = checkedLabel('drink-choice');
+  if (drink && drink !== 'Ohne Getränk') details.push('Getränk: ' + drink);
+  if (!isMenuOrder() && einzelnPommes.checked) details.push('Pommes');
+  recordOrder(bunsTitle.textContent, details.filter(Boolean), parseEUR(bunsTotalPrice.textContent));
   closeBuns();
   window.goOrder();
 });
@@ -579,6 +623,10 @@ pizzaOverlay.addEventListener('click', (e) => {
   if (e.target === pizzaOverlay) closePizza();
 });
 document.getElementById('pizza-confirm').addEventListener('click', () => {
+  const toppings = [...pizzaToppings]
+    .filter((cb) => cb.checked)
+    .map((cb) => cb.closest('.extras-option-left').innerText.trim().split('\n')[0]);
+  recordOrder('DEINE EIGENE PIZZA', toppings, parseEUR(pizzaTotalPrice.textContent));
   closePizza();
   window.goOrder();
 });
