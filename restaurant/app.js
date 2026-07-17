@@ -646,7 +646,7 @@ const orderTypeRadios = document.querySelectorAll('input[name="order-type"]');
 const bunRadios = document.querySelectorAll('input[name="bun-choice"]');
 const pattyRadios = document.querySelectorAll('input[name="patty-choice"]');
 const pattyDouble = document.getElementById('patty-double');
-const sauceRadios = document.querySelectorAll('input[name="sauce-choice"]');
+const dipChecks = document.querySelectorAll('.dip-choice');
 const priceMayo = document.getElementById('price-mayo');
 const priceKetchup = document.getElementById('price-ketchup');
 const einzelnExtras = document.getElementById('einzeln-extras');
@@ -666,8 +666,7 @@ function handleOrderTypeChange() {
 
   if (menuOrder) {
     // Menü always includes a free Mayo or Ketchup dip — make sure one is picked
-    const currentDip = document.querySelector('input[name="sauce-choice"]:checked');
-    if (!currentDip || currentDip.value === 'none') {
+    if (!document.getElementById('sauce-mayo').checked && !document.getElementById('sauce-ketchup').checked) {
       document.getElementById('sauce-mayo').checked = true;
     }
     // ...and a real drink, since it's included either way
@@ -689,9 +688,10 @@ function updateBunsTotal() {
   const basePrice = selectedOrderType ? ORDER_TYPE_PRICES[selectedOrderType.value] : ORDER_TYPE_PRICES.einzeln;
   const menuOrder = isMenuOrder();
 
-  // Mayo/Ketchup are included free with the Menü, otherwise cost extra
-  priceMayo.textContent = menuOrder ? 'Inklusive' : '+0,60 €';
-  priceKetchup.textContent = menuOrder ? 'Inklusive' : '+0,60 €';
+  // One Mayo or Ketchup is included free with the Menü; picking both
+  // makes the second one cost 0,60 €. Everything costs extra as Einzeln.
+  priceMayo.textContent = menuOrder ? '1× inklusive' : '+0,60 €';
+  priceKetchup.textContent = menuOrder ? '1× inklusive' : '+0,60 €';
 
   // Drink prices show as included with the Menü, otherwise their normal price
   Object.keys(DRINK_PRICES).forEach((key) => {
@@ -707,11 +707,19 @@ function updateBunsTotal() {
   const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
   const bunExtra = selectedBun ? BUN_PRICES[selectedBun.value] : 0;
   const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
-  const selectedSauce = document.querySelector('input[name="sauce-choice"]:checked');
-  let sauceExtra = selectedSauce ? SAUCE_PRICES[selectedSauce.value] : 0;
-  if (menuOrder && (selectedSauce?.value === 'mayo' || selectedSauce?.value === 'ketchup')) {
-    sauceExtra = 0;
-  }
+  // Multi-select dips: sum all picked dips; with the Menü the first
+  // Mayo/Ketchup is free, a second one costs its normal 0,60 €.
+  let sauceExtra = 0;
+  let freeDipUsed = false;
+  dipChecks.forEach((cb) => {
+    if (!cb.checked) return;
+    const value = cb.dataset.value;
+    if (menuOrder && (value === 'mayo' || value === 'ketchup') && !freeDipUsed) {
+      freeDipUsed = true;
+      return;
+    }
+    sauceExtra += SAUCE_PRICES[value];
+  });
 
   const selectedDrink = document.querySelector('input[name="drink-choice"]:checked');
   // Any bottled drink adds the 0,25 € takeaway deposit — with the Menü
@@ -731,7 +739,7 @@ window.openBuns = function (name) {
   document.getElementById('bun-brioche').checked = true;
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
-  document.getElementById('sauce-none').checked = true;
+  dipChecks.forEach((cb) => { cb.checked = false; });
   document.getElementById('drink-none').checked = true;
   einzelnPommes.checked = false;
   einzelnExtras.classList.add('visible');
@@ -748,7 +756,7 @@ orderTypeRadios.forEach((r) => r.addEventListener('change', handleOrderTypeChang
 bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyDouble.addEventListener('change', updateBunsTotal);
-sauceRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
+dipChecks.forEach((cb) => cb.addEventListener('change', updateBunsTotal));
 einzelnPommes.addEventListener('change', updateBunsTotal);
 drinkRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 document.getElementById('buns-close').addEventListener('click', closeBuns);
@@ -767,8 +775,10 @@ document.getElementById('buns-confirm').addEventListener('click', () => {
   details.push('Bun: ' + checkedLabel('bun-choice'));
   details.push('Patty: ' + checkedLabel('patty-choice'));
   if (pattyDouble.checked) details.push('Double (2 Patties)');
-  const dip = checkedLabel('sauce-choice');
-  if (dip && dip !== 'Keine') details.push('Dip: ' + dip);
+  const dips = [...dipChecks]
+    .filter((cb) => cb.checked)
+    .map((cb) => cb.closest('.extras-option-left').innerText.trim().split('\n')[0]);
+  if (dips.length) details.push('Dips: ' + dips.join(', '));
   const drink = checkedLabel('drink-choice');
   if (drink && drink !== 'Ohne Getränk') details.push('Getränk: ' + drink + ' (inkl. 0,25 € Pfand)');
   if (!isMenuOrder() && einzelnPommes.checked) details.push('Pommes');
