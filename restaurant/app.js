@@ -689,9 +689,25 @@ function updateBunsTotal() {
   const menuOrder = isMenuOrder();
 
   // One Mayo or Ketchup is included free with the Menü; picking both
-  // makes the second one cost 0,60 €. Everything costs extra as Einzeln.
-  priceMayo.textContent = menuOrder ? '1× inklusive' : '+0,60 €';
-  priceKetchup.textContent = menuOrder ? '1× inklusive' : '+0,60 €';
+  // makes the second one cost 0,60 €. The labels update live: once one
+  // of the two is ticked, the other switches from inclusive to +0,60 €.
+  if (!menuOrder) {
+    priceMayo.textContent = '+0,60 €';
+    priceKetchup.textContent = '+0,60 €';
+  } else {
+    const mayoChecked = document.getElementById('sauce-mayo').checked;
+    const ketchupChecked = document.getElementById('sauce-ketchup').checked;
+    if (mayoChecked) {
+      priceMayo.textContent = 'Inklusive';
+      priceKetchup.textContent = '+0,60 €';
+    } else if (ketchupChecked) {
+      priceKetchup.textContent = 'Inklusive';
+      priceMayo.textContent = '+0,60 €';
+    } else {
+      priceMayo.textContent = '1× inklusive';
+      priceKetchup.textContent = '1× inklusive';
+    }
+  }
 
   // Drink prices show as included with the Menü, otherwise their normal price
   Object.keys(DRINK_PRICES).forEach((key) => {
