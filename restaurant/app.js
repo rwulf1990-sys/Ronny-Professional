@@ -806,6 +806,48 @@ document.getElementById('buns-confirm').addEventListener('click', () => {
   closeBuns();
 });
 
+/* ---------- Pommes Modal (Dip-Auswahl) ---------- */
+const pommesOverlay = document.getElementById('pommes-overlay');
+const pommesTotalPrice = document.getElementById('pommes-total-price');
+const pommesDips = document.querySelectorAll('.pommes-dip');
+let pommesBasePrice = 0;
+
+function updatePommesTotal() {
+  let total = pommesBasePrice;
+  pommesDips.forEach((cb) => {
+    if (cb.checked) total += parseFloat(cb.dataset.price);
+  });
+  pommesTotalPrice.textContent = formatEUR(total);
+}
+
+window.openPommes = function (basePrice) {
+  pommesBasePrice = basePrice;
+  pommesDips.forEach((cb) => { cb.checked = false; });
+  updatePommesTotal();
+  pommesOverlay.classList.add('open');
+};
+
+function closePommes() {
+  pommesOverlay.classList.remove('open');
+}
+
+pommesDips.forEach((cb) => cb.addEventListener('change', updatePommesTotal));
+document.getElementById('pommes-close').addEventListener('click', closePommes);
+pommesOverlay.addEventListener('click', (e) => {
+  if (e.target === pommesOverlay) closePommes();
+});
+document.getElementById('pommes-confirm').addEventListener('click', () => {
+  const dips = [...pommesDips]
+    .filter((cb) => cb.checked)
+    .map((cb) => cb.closest('.extras-option-left').innerText.trim().split('\n')[0]);
+  addToCart({
+    dish: 'POMMES',
+    details: dips.length ? ['Dips: ' + dips.join(', ')] : [],
+    price: parseEUR(pommesTotalPrice.textContent),
+  });
+  closePommes();
+});
+
 /* ---------- Pizza-Baukasten Modal (Nr. 28) ---------- */
 const pizzaOverlay = document.getElementById('pizza-overlay');
 const pizzaTotalPrice = document.getElementById('pizza-total-price');
@@ -849,6 +891,7 @@ document.addEventListener('keydown', (e) => {
   if (extrasOverlay.classList.contains('open')) closeExtras();
   if (bunsOverlay.classList.contains('open')) closeBuns();
   if (pizzaOverlay.classList.contains('open')) closePizza();
+  if (pommesOverlay.classList.contains('open')) closePommes();
   if (cartOverlay.classList.contains('open')) closeCart();
 });
 

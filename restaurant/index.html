@@ -177,7 +177,7 @@
       <div class="menu-card"><p class="menu-nr">Nr. 44</p><p class="menu-name">CHICKEN-CHIPS</p><p class="menu-desc">Panierte Hähnchenbrust-Stücke 4 Stück, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CHICKEN-CHIPS', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 45</p><p class="menu-name">CURRYWURST</p><p class="menu-desc">Currywurst (160g) mit Curryketchup, frische Pommes</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="openExtras('CURRYWURST', 9.90)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-nr">Nr. 46</p><p class="menu-name">FISCHFILET</p><p class="menu-desc">Paniertes Seelachsfilet, frische Pommes, Remoulade</p><div class="menu-footer"><span class="menu-price">9,90 €</span><button class="btn-order-sm" onclick="orderDirect('FISCHFILET', 9.90)">BESTELLEN</button></div></div>
-      <div class="menu-card"><p class="menu-name">POMMES</p><p class="menu-desc">Frische Pommes</p><div class="menu-footer"><span class="menu-price">4,50 €</span><button class="btn-order-sm" onclick="openExtras('POMMES', 4.50)">BESTELLEN</button></div></div>
+      <div class="menu-card"><p class="menu-name">POMMES</p><p class="menu-desc">Frische Pommes</p><div class="menu-footer"><span class="menu-price">4,50 €</span><button class="btn-order-sm" onclick="openPommes(4.50)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-name">KETCHUP</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="orderDirect('KETCHUP', 0.60)">BESTELLEN</button></div></div>
       <div class="menu-card"><p class="menu-name">MAYO</p><p class="menu-desc">Portion</p><div class="menu-footer"><span class="menu-price">0,60 €</span><button class="btn-order-sm" onclick="orderDirect('MAYO', 0.60)">BESTELLEN</button></div></div>
     </div>
@@ -536,6 +536,31 @@
         <span id="buns-total-price">– €</span>
       </div>
       <button class="btn-primary extras-confirm" id="buns-confirm">IN DEN WARENKORB <span class="btn-arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- ===== POMMES-MODAL (Dip-Auswahl) ===== -->
+  <div class="extras-overlay" id="pommes-overlay">
+    <div class="extras-modal" role="dialog" aria-modal="true" aria-labelledby="pommes-title">
+      <button class="extras-close" id="pommes-close" aria-label="Schließen">✕</button>
+      <p class="extras-eyebrow">EXTRAS HINZUFÜGEN</p>
+      <h3 class="extras-title" id="pommes-title">POMMES</h3>
+
+      <p class="extras-group-label">DIP WÄHLEN (MEHRFACH MÖGLICH)</p>
+      <div class="extras-options">
+        <label class="extras-option"><span class="extras-option-left"><input type="checkbox" class="extras-checkbox pommes-dip" data-price="0.6"><span>Mayo</span></span><span class="extras-option-price">+0,60 €</span></label>
+        <label class="extras-option"><span class="extras-option-left"><input type="checkbox" class="extras-checkbox pommes-dip" data-price="0.6"><span>Ketchup</span></span><span class="extras-option-price">+0,60 €</span></label>
+        <label class="extras-option"><span class="extras-option-left"><input type="checkbox" class="extras-checkbox pommes-dip" data-price="1"><span>Vegane Mayo</span></span><span class="extras-option-price">+1,00 €</span></label>
+        <label class="extras-option"><span class="extras-option-left"><input type="checkbox" class="extras-checkbox pommes-dip" data-price="1"><span>Trüffel Mayo</span></span><span class="extras-option-price">+1,00 €</span></label>
+        <label class="extras-option"><span class="extras-option-left"><input type="checkbox" class="extras-checkbox pommes-dip" data-price="1"><span>Chili Cheese</span></span><span class="extras-option-price">+1,00 €</span></label>
+        <label class="extras-option"><span class="extras-option-left"><input type="checkbox" class="extras-checkbox pommes-dip" data-price="1"><span>BBQ</span></span><span class="extras-option-price">+1,00 €</span></label>
+      </div>
+
+      <div class="extras-total">
+        <span>Gesamt</span>
+        <span id="pommes-total-price">– €</span>
+      </div>
+      <button class="btn-primary extras-confirm" id="pommes-confirm">IN DEN WARENKORB <span class="btn-arrow">→</span></button>
     </div>
   </div>
 
