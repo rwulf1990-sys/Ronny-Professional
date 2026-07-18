@@ -848,11 +848,13 @@ document.getElementById('pommes-confirm').addEventListener('click', () => {
   closePommes();
 });
 
-/* ---------- Pizza-Baukasten Modal (Nr. 28) ---------- */
+/* ---------- Pizza-Baukasten Modal (alle Pizzen) ---------- */
 const pizzaOverlay = document.getElementById('pizza-overlay');
+const pizzaTitle = document.getElementById('pizza-title');
 const pizzaTotalPrice = document.getElementById('pizza-total-price');
 const pizzaToppings = document.querySelectorAll('.pizza-topping');
 let pizzaBasePrice = 0;
+let pizzaDishName = '';
 
 function updatePizzaTotal() {
   let total = pizzaBasePrice;
@@ -862,8 +864,10 @@ function updatePizzaTotal() {
   pizzaTotalPrice.textContent = formatEUR(total);
 }
 
-window.openPizzaBuilder = function (basePrice) {
+window.openPizzaBuilder = function (name, basePrice) {
+  pizzaDishName = name;
   pizzaBasePrice = basePrice;
+  pizzaTitle.textContent = name;
   pizzaToppings.forEach((cb) => { cb.checked = false; });
   updatePizzaTotal();
   pizzaOverlay.classList.add('open');
@@ -882,7 +886,11 @@ document.getElementById('pizza-confirm').addEventListener('click', () => {
   const toppings = [...pizzaToppings]
     .filter((cb) => cb.checked)
     .map((cb) => cb.closest('.extras-option-left').innerText.trim().split('\n')[0]);
-  addToCart({ dish: 'DEINE EIGENE PIZZA', details: toppings, price: parseEUR(pizzaTotalPrice.textContent) });
+  addToCart({
+    dish: pizzaDishName,
+    details: toppings.length ? ['Extra: ' + toppings.join(', ')] : [],
+    price: parseEUR(pizzaTotalPrice.textContent),
+  });
   closePizza();
 });
 
