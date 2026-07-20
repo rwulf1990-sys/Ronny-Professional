@@ -370,13 +370,25 @@ window.showTab = function (btn, id) {
   document.getElementById(id).classList.add('active');
 };
 
-window.goToMittagstisch = function () {
-  const tabBtn = [...document.querySelectorAll('.menu-tab')].find(
-    (t) => t.getAttribute('onclick')?.includes("'mittagstisch'")
-  );
-  if (tabBtn) window.showTab(tabBtn, 'mittagstisch');
-  document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+/* ---------- Mittagstisch Modal (Google Drive Karte) ---------- */
+const mittagstischOverlay = document.getElementById('mittagstisch-overlay');
+const mittagstischFrame = document.getElementById('mittagstisch-frame');
+const MITTAGSTISCH_DRIVE_URL = 'https://drive.google.com/file/d/1q8bwmnGXHIzHqGrGQepbUzEX8N8aGOlb/preview';
+
+window.openMittagstisch = function () {
+  if (mittagstischFrame && !mittagstischFrame.src) {
+    mittagstischFrame.src = MITTAGSTISCH_DRIVE_URL;
+  }
+  mittagstischOverlay.classList.add('open');
 };
+function closeMittagstisch() {
+  mittagstischOverlay.classList.remove('open');
+}
+document.getElementById('mittagstisch-close').addEventListener('click', closeMittagstisch);
+mittagstischOverlay.addEventListener('click', (e) => {
+  if (e.target === mittagstischOverlay) closeMittagstisch();
+});
+window.goToMittagstisch = window.openMittagstisch;
 
 /* ---------- Extras Modal (Mayo/Ketchup) ---------- */
 const EXTRA_PRICE = 0.6;
@@ -900,6 +912,7 @@ document.addEventListener('keydown', (e) => {
   if (pizzaOverlay.classList.contains('open')) closePizza();
   if (pommesOverlay.classList.contains('open')) closePommes();
   if (cartOverlay.classList.contains('open')) closeCart();
+  if (mittagstischOverlay.classList.contains('open')) closeMittagstisch();
 });
 
 /* ---------- Loader ---------- */
