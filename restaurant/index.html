@@ -79,7 +79,7 @@
         <div class="hero-buttons reveal">
           <button class="btn-primary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">JETZT BESTELLEN <span class="btn-arrow">→</span></button>
           <button class="btn-outline" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">MENÜ ANSEHEN</button>
-          <button class="btn-outline" onclick="goToMittagstisch()">🕛 MITTAGSTISCH</button>
+          <button class="btn-outline" onclick="openMittagstisch()">🕛 MITTAGSTISCH</button>
         </div>
       </div>
       <div class="hero-scroll-hint"><div class="mouse"><div class="mouse-wheel"></div></div><span>Scrollen</span></div>
@@ -107,9 +107,9 @@
         <p class="highlight-title">SCHNITZEL & MEHR</p>
         <p class="highlight-desc">Täglich frisch</p>
       </div>
-      <a class="highlight-item reveal" href="mittagstisch.html" target="_blank" rel="noopener">
+      <a class="highlight-item reveal" href="javascript:void(0)" onclick="openMittagstisch()">
         <div class="highlight-icon">🕛</div>
-        <p class="highlight-title">MITTAGSTISCH <span class="highlight-ext">↗</span></p>
+        <p class="highlight-title">MITTAGSTISCH</p>
         <p class="highlight-desc">Täglich wechselnd</p>
       </a>
       <div class="highlight-item reveal">
@@ -131,7 +131,7 @@
       <button class="menu-tab" onclick="showTab(this,'fruehstueck')" role="tab">FRÜHSTÜCK</button>
       <button class="menu-tab" onclick="showTab(this,'salat')" role="tab">SALAT</button>
       <button class="menu-tab" onclick="showTab(this,'kids')" role="tab">KIDS</button>
-      <button class="menu-tab" onclick="showTab(this,'mittagstisch')" role="tab">MITTAGSTISCH</button>
+      <button class="menu-tab" onclick="openMittagstisch()" role="tab">MITTAGSTISCH</button>
       <button class="menu-tab" onclick="showTab(this,'getraenke')" role="tab">GETRÄNKE</button>
     </div>
 
@@ -212,7 +212,7 @@
         <span class="burger-badge">🕛 MITTAGSTISCH</span>
         <p>TÄGLICH WECHSELNDE GERICHTE · KARTE IN VORBEREITUNG</p>
       </div>
-      <div class="menu-card"><p class="menu-name">UNSERE MITTAGSKARTE</p><p class="menu-desc">Die täglich wechselnden Gerichte, Preise und Zeiten findet ihr in Kürze hier. Bei Fragen ruft uns gerne an: 04193 967994</p><div class="menu-footer"><span class="menu-price">–</span><a class="btn-order-sm" href="mittagstisch.html" target="_blank" rel="noopener" style="text-decoration:none">MEHR INFOS</a></div></div>
+      <div class="menu-card"><p class="menu-name">UNSERE MITTAGSKARTE</p><p class="menu-desc">Die täglich wechselnden Gerichte, Preise und Zeiten findet ihr in unserer Mittagskarte. Bei Fragen ruft uns gerne an: 04193 967994</p><div class="menu-footer"><span class="menu-price">–</span><button class="btn-order-sm" onclick="openMittagstisch()">KARTE ANSEHEN</button></div></div>
     </div>
 
 
@@ -341,6 +341,18 @@
   </footer>
 
   <button id="back-top" aria-label="Nach oben">↑</button>
+
+  <!-- ===== MITTAGSTISCH-MODAL (Karte als Google Drive Vorschau) ===== -->
+  <div class="extras-overlay" id="mittagstisch-overlay">
+    <div class="extras-modal modal-doc" role="dialog" aria-modal="true" aria-labelledby="mittagstisch-modal-title">
+      <button class="extras-close" id="mittagstisch-close" aria-label="Schließen">✕</button>
+      <p class="extras-eyebrow">🕛 MITTAGSTISCH</p>
+      <h3 class="extras-title" id="mittagstisch-modal-title">Unsere Mittagskarte</h3>
+      <div class="modal-doc-frame">
+        <iframe id="mittagstisch-frame" title="Mittagstisch Karte" loading="lazy" allow="autoplay" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== EXTRAS-MODAL (Mayo/Ketchup) ===== -->
   <div class="extras-overlay" id="extras-overlay">
