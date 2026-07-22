@@ -443,6 +443,21 @@ const cartItemsEl = document.getElementById('cart-items');
 const cartTotalEl = document.getElementById('cart-total');
 const cartConfirm = document.getElementById('cart-confirm');
 const pickupSelect = document.getElementById('pickup-time');
+const phoneInput = document.getElementById('cart-phone');
+const phoneError = document.getElementById('cart-phone-error');
+
+/* A valid German phone number: at least 6 digits, allows +, spaces,
+   slashes, dashes and parentheses. */
+function isValidPhone(value) {
+  const cleaned = (value || '').replace(/[\s/()\-.]/g, '');
+  return /^\+?\d{6,}$/.test(cleaned);
+}
+if (phoneInput) {
+  phoneInput.addEventListener('input', () => {
+    phoneInput.classList.remove('invalid');
+    phoneError.classList.remove('show');
+  });
+}
 
 function loadCart() {
   try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
@@ -537,6 +552,8 @@ function buildPickupOptions() {
 function openCart() {
   renderCart();
   buildPickupOptions();
+  phoneInput.classList.remove('invalid');
+  phoneError.classList.remove('show');
   cartOverlay.classList.add('open');
 }
 function closeCart() {
@@ -557,7 +574,7 @@ cartOverlay.addEventListener('click', (e) => {
 const SUPA = window.DIS_SUPABASE || {};
 const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
 
-function saveLocalOrder(items, total, pickup) {
+function saveLocalOrder(items, total, pickup, phone) {
   try {
     const orders = JSON.parse(localStorage.getItem('dis-orders') || '[]');
     orders.push({
@@ -566,6 +583,7 @@ function saveLocalOrder(items, total, pickup) {
       items,
       total,
       pickup,
+      phone,
       status: 'neu',
     });
     localStorage.setItem('dis-orders', JSON.stringify(orders));
@@ -574,7 +592,7 @@ function saveLocalOrder(items, total, pickup) {
   }
 }
 
-function recordOrder(items, total, pickup) {
+function recordOrder(items, total, pickup, phone) {
   if (SUPA_ON) {
     fetch(SUPA.url + '/rest/v1/orders', {
       method: 'POST',
@@ -583,24 +601,35 @@ function recordOrder(items, total, pickup) {
         apikey: SUPA.anonKey,
         Authorization: 'Bearer ' + SUPA.anonKey,
       },
-      body: JSON.stringify({ items, total, pickup, status: 'neu' }),
+      body: JSON.stringify({ items, total, pickup, phone, status: 'neu' }),
     }).then((res) => {
-      if (!res.ok) saveLocalOrder(items, total, pickup);
-    }).catch(() => saveLocalOrder(items, total, pickup));
+      if (!res.ok) saveLocalOrder(items, total, pickup, phone);
+    }).catch(() => saveLocalOrder(items, total, pickup, phone));
     return;
   }
-  saveLocalOrder(items, total, pickup);
+  saveLocalOrder(items, total, pickup, phone);
 }
 
 cartConfirm.addEventListener('click', () => {
   const cart = loadCart();
   if (!cart.length || !isOrderingDay()) return;
+
+  // Telefonnummer ist Pflicht – ohne gültige Nummer keine Bestellung
+  const phone = phoneInput.value.trim();
+  if (!isValidPhone(phone)) {
+    phoneInput.classList.add('invalid');
+    phoneError.classList.add('show');
+    phoneInput.focus();
+    return;
+  }
+
   const pickup = pickupSelect.value === 'schnellstmoeglich'
     ? 'Schnellstmöglich'
     : pickupSelect.value;
-  recordOrder(cart, cart.reduce((s, i) => s + i.price, 0), pickup);
+  recordOrder(cart, cart.reduce((s, i) => s + i.price, 0), pickup, phone);
   saveCart([]);
   renderCart();
+  phoneInput.value = '';
   closeCart();
   showToast('✓ Bestellung eingegangen!', 'Abholung ' + pickup + ' · Bezahlung vor Ort');
 });
