@@ -774,6 +774,25 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
   cursor: pointer;
 }
 .cart-select:focus { outline: 2px solid rgba(229, 168, 46, .5); }
+.cart-input {
+  width: 100%;
+  padding: 13px 16px;
+  margin-bottom: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(229, 168, 46, .4);
+  background: #14110c;
+  color: #fff;
+  font-family: inherit; font-size: 14px;
+}
+.cart-input::placeholder { color: rgba(255, 255, 255, .35); }
+.cart-input:focus { outline: 2px solid rgba(229, 168, 46, .5); }
+.cart-input.invalid { border-color: #e0563e; }
+.cart-error {
+  display: none;
+  font-size: 12px; color: #f0876e;
+  letter-spacing: .3px; margin: 0 0 18px;
+}
+.cart-error.show { display: block; }
 
 /* ---------- Extras Modal (Mayo/Ketchup) ---------- */
 .extras-overlay {

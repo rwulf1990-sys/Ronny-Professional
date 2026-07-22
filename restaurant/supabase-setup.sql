@@ -9,15 +9,19 @@ create table if not exists public.orders (
   items jsonb not null,
   total numeric not null,
   pickup text,
+  phone text,
   status text not null default 'neu'
 );
+
+-- Falls die Tabelle schon existiert: Telefon-Spalte nachrüsten.
+alter table public.orders add column if not exists phone text;
 
 alter table public.orders enable row level security;
 
 -- Kunden (anonym) dürfen Bestellungen aufgeben; das Dashboard
 -- (ebenfalls anonym, kein Login) darf lesen, Status ändern und
--- abgeholte Bestellungen löschen. Die Bestellungen enthalten
--- keine personenbezogenen Daten.
+-- abgeholte Bestellungen löschen. Gespeichert wird nur die
+-- Telefonnummer zur Rückfrage – keine Zahlungsdaten.
 create policy "anon_insert" on public.orders
   for insert to anon with check (true);
 create policy "anon_select" on public.orders
