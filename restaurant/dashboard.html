@@ -165,6 +165,7 @@
 
     const SUPA = window.DIS_SUPABASE || {};
     const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
+    let connOk = true; // reflects whether the last Supabase fetch succeeded
 
     const DEMO_ORDERS = [
       { items: [
@@ -201,6 +202,7 @@
           const res = await fetch(SUPA.url + '/rest/v1/orders?select=*&order=created_at.desc&limit=200', { headers: supaHeaders() });
           if (!res.ok) throw new Error(res.status);
           const rows = await res.json();
+          connOk = true;
           return rows.map((r) => ({
             id: String(r.id),
             ts: Date.parse(r.created_at),
@@ -211,6 +213,7 @@
             status: r.status,
           }));
         } catch (e) {
+          connOk = false;
           setConnState(false);
           return [];
         }
@@ -291,7 +294,7 @@
 
     async function render() {
       const orders = (await fetchOrders()).sort((a, b) => b.ts - a.ts);
-      if (SUPA_ON) setConnState(true);
+      if (SUPA_ON) setConnState(connOk);
       const container = document.getElementById('db-orders');
       const empty = document.getElementById('db-empty');
       empty.style.display = orders.length ? 'none' : 'block';

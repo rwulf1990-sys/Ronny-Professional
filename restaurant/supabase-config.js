@@ -16,6 +16,6 @@
    ============================================================ */
 
 window.DIS_SUPABASE = {
-  url: '',
-  anonKey: '',
+  url: 'https://cjcysqefchfnyryrdsbo.supabase.co',
+  anonKey: 'sb_publishable_S7sshUv_5VIUcdXow1Zakw_fDUaaYx9',
 };
