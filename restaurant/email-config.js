@@ -17,7 +17,7 @@
 
 window.DIS_EMAIL = {
   publicKey: 'tMMTRNxgCwo8nMOUgsWAz',
-  serviceId: 'service_xbyq9ih',
+  serviceId: 'service_yidgkh4',
   templateId: 'template_suwr2ug',
   to: 'info@dis-restaurant.de',
 };
