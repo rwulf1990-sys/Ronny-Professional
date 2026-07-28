@@ -22,8 +22,8 @@ jobs:
       - name: Build IONOS package
         run: bash scripts/build-ionos.sh
 
-      - name: Install lftp + sshpass
-        run: sudo apt-get update && sudo apt-get install -y lftp sshpass
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
 
       - name: Deploy via SFTP
         env:
@@ -40,25 +40,7 @@ jobs:
           fi
           PORT="${SFTP_PORT:-22}"
           REMOTE="${REMOTE_DIR:-/}"
-
-          echo "===== SECRET-CHECK (ohne Preisgabe der Werte) ====="
-          echo "USER-Länge: ${#SFTP_USER} Zeichen"
-          if [ -z "$SFTP_PASS" ]; then echo "PASS: LEER!"; else echo "PASS: gesetzt (nicht leer)"; fi
-          if [ "$SFTP_USER" != "$(printf '%s' "$SFTP_USER" | tr -d '[:space:]')" ]; then echo "WARNUNG: SFTP_USER enthält Leerzeichen/Umbruch!"; else echo "USER: kein Whitespace – ok"; fi
-          if [ "$SFTP_PASS" != "$(printf '%s' "$SFTP_PASS" | tr -d '[:space:]')" ]; then echo "WARNUNG: SFTP_PASS enthält Leerzeichen/Umbruch!"; else echo "PASS: kein Whitespace – ok"; fi
-          echo "===== ENDE SECRET-CHECK ====="
-
-          echo "===== DIAGNOSE: SSH-Authentifizierung (ssh -v) ====="
-          # Zeigt genau, WARUM der Login klappt/scheitert. Das Passwort wird
-          # nirgends ausgegeben (ssh -v druckt es nicht). Nicht-fatal.
-          sshpass -p "$SFTP_PASS" ssh -v \
-            -o StrictHostKeyChecking=no -o PreferredAuthentications=password \
-            -o PubkeyAuthentication=no -o ConnectTimeout=20 \
-            -p "$PORT" "$SFTP_USER@$SFTP_HOST" "pwd; echo SSH_OK" 2>&1 \
-            | grep -iE 'debug1: (Authentications|Next authentication|Offering|Trying|Authenticated)|Permission denied|password|SSH_OK|Connection|refused|banner' \
-            || echo "(Diagnose-Kommando endete mit Fehler – siehe Zeilen oben)"
-          echo "===== ENDE DIAGNOSE ====="
-
           echo "Lade ./build nach $REMOTE auf $SFTP_HOST:$PORT ..."
-          lftp -c "set sftp:auto-confirm yes; set net:max-retries 1; set net:timeout 25; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms build/ \"$REMOTE\"; bye"
+          # Benutzer/Passwort getrennt über 'user' – robust gegen Sonderzeichen.
+          lftp -c "set sftp:auto-confirm yes; set net:max-retries 2; set net:timeout 25; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms --parallel=2 build/ \"$REMOTE\"; bye"
           echo "Deploy abgeschlossen."
