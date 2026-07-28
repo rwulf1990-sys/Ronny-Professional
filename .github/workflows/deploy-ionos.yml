@@ -22,8 +22,8 @@ jobs:
       - name: Build IONOS package
         run: bash scripts/build-ionos.sh
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: Install lftp + sshpass
+        run: sudo apt-get update && sudo apt-get install -y lftp sshpass
 
       - name: Deploy via SFTP
         env:
@@ -40,9 +40,18 @@ jobs:
           fi
           PORT="${SFTP_PORT:-22}"
           REMOTE="${REMOTE_DIR:-/}"
+
+          echo "===== DIAGNOSE: SSH-Authentifizierung (ssh -v) ====="
+          # Zeigt genau, WARUM der Login klappt/scheitert. Das Passwort wird
+          # nirgends ausgegeben (ssh -v druckt es nicht). Nicht-fatal.
+          sshpass -p "$SFTP_PASS" ssh -v \
+            -o StrictHostKeyChecking=no -o PreferredAuthentications=password \
+            -o PubkeyAuthentication=no -o ConnectTimeout=20 \
+            -p "$PORT" "$SFTP_USER@$SFTP_HOST" "pwd; echo SSH_OK" 2>&1 \
+            | grep -iE 'debug1: (Authentications|Next authentication|Offering|Trying|Authenticated)|Permission denied|password|SSH_OK|Connection|refused|banner' \
+            || echo "(Diagnose-Kommando endete mit Fehler – siehe Zeilen oben)"
+          echo "===== ENDE DIAGNOSE ====="
+
           echo "Lade ./build nach $REMOTE auf $SFTP_HOST:$PORT ..."
-          # Benutzer und Passwort getrennt über den lftp-'user'-Befehl –
-          # robust gegen Sonderzeichen (Komma, Leerzeichen) im Passwort.
-          # sftp:connect-program mit -v gibt bei Fehlern den echten SSH-Grund aus.
-          lftp -c "set sftp:auto-confirm yes; set sftp:connect-program 'ssh -a -x -v -o StrictHostKeyChecking=no -o PreferredAuthentications=password -o PubkeyAuthentication=no'; set net:max-retries 1; set net:timeout 25; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms build/ \"$REMOTE\"; bye"
+          lftp -c "set sftp:auto-confirm yes; set net:max-retries 1; set net:timeout 25; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms build/ \"$REMOTE\"; bye"
           echo "Deploy abgeschlossen."
