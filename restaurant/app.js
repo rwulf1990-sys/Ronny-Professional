@@ -616,7 +616,12 @@ function recordOrder(items, total, pickup, phone) {
    läuft trotzdem normal durch. */
 function sendOrderEmail(items, total, pickup, phone) {
   const CFG = window.DIS_EMAIL || {};
-  if (!CFG.publicKey || !CFG.serviceId || !CFG.templateId) return;
+  // Debug-Modus: Seite mit ?maildebug=1 öffnen -> Ergebnis als Popup.
+  const dbg = location.search.indexOf('maildebug') !== -1;
+  if (!CFG.publicKey || !CFG.serviceId || !CFG.templateId) {
+    if (dbg) alert('MAILDEBUG: EmailJS ist nicht konfiguriert (Werte fehlen).');
+    return;
+  }
   const lines = items
     .map((it) => {
       const det = it.details && it.details.length ? ' (' + it.details.join(', ') + ')' : '';
@@ -632,6 +637,7 @@ function sendOrderEmail(items, total, pickup, phone) {
     total: formatEUR(total),
     items: lines,
   };
+  if (dbg) alert('MAILDEBUG: sende an EmailJS …\nservice=' + CFG.serviceId + '\ntemplate=' + CFG.templateId);
   fetch('https://api.emailjs.com/api/v1.0/email/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -641,9 +647,17 @@ function sendOrderEmail(items, total, pickup, phone) {
       user_id: CFG.publicKey,
       template_params: params,
     }),
-  }).catch(() => {
-    /* Mailversand ist nur Zusatz – Bestellung ist bereits erfasst */
-  });
+  })
+    .then(async (res) => {
+      if (dbg) {
+        const t = await res.text().catch(() => '');
+        alert('MAILDEBUG: Antwort ' + res.status + ' ' + res.statusText + '\n' + (t || '(leer)'));
+      }
+    })
+    .catch((e) => {
+      // Mailversand ist nur Zusatz – Bestellung ist bereits erfasst
+      if (dbg) alert('MAILDEBUG: Netzwerk-/CORS-Fehler:\n' + e);
+    });
 }
 
 cartConfirm.addEventListener('click', () => {
