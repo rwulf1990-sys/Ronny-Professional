@@ -610,6 +610,42 @@ function recordOrder(items, total, pickup, phone) {
   saveLocalOrder(items, total, pickup, phone);
 }
 
+/* Schickt beim Absenden der Bestellung eine E-Mail an das
+   Restaurant (via EmailJS). Konfiguration in email-config.js.
+   Ist nichts konfiguriert, passiert nichts – die Bestellung
+   läuft trotzdem normal durch. */
+function sendOrderEmail(items, total, pickup, phone) {
+  const CFG = window.DIS_EMAIL || {};
+  if (!CFG.publicKey || !CFG.serviceId || !CFG.templateId) return;
+  const lines = items
+    .map((it) => {
+      const det = it.details && it.details.length ? ' (' + it.details.join(', ') + ')' : '';
+      return '• ' + it.dish + det + ' — ' + formatEUR(it.price);
+    })
+    .join('\n');
+  const params = {
+    to_email: CFG.to || 'info@dis-restaurant.de',
+    order_no: Date.now().toString(36).slice(-4).toUpperCase(),
+    order_time: new Date().toLocaleString('de-DE'),
+    pickup: pickup,
+    phone: phone,
+    total: formatEUR(total),
+    items: lines,
+  };
+  fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      service_id: CFG.serviceId,
+      template_id: CFG.templateId,
+      user_id: CFG.publicKey,
+      template_params: params,
+    }),
+  }).catch(() => {
+    /* Mailversand ist nur Zusatz – Bestellung ist bereits erfasst */
+  });
+}
+
 cartConfirm.addEventListener('click', () => {
   const cart = loadCart();
   if (!cart.length || !isOrderingDay()) return;
@@ -626,7 +662,9 @@ cartConfirm.addEventListener('click', () => {
   const pickup = pickupSelect.value === 'schnellstmoeglich'
     ? 'Schnellstmöglich'
     : pickupSelect.value;
-  recordOrder(cart, cart.reduce((s, i) => s + i.price, 0), pickup, phone);
+  const orderTotal = cart.reduce((s, i) => s + i.price, 0);
+  recordOrder(cart, orderTotal, pickup, phone);
+  sendOrderEmail(cart, orderTotal, pickup, phone);
   saveCart([]);
   renderCart();
   phoneInput.value = '';

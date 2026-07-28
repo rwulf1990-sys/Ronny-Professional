@@ -22,6 +22,7 @@ cp "$ROOT/restaurant/index.html"         "$B/index.html"
 cp "$ROOT/restaurant/app.js"             "$B/app.js"
 cp "$ROOT/restaurant/style.css"          "$B/style.css"
 cp "$ROOT/restaurant/supabase-config.js" "$B/supabase-config.js"
+cp "$ROOT/restaurant/email-config.js"    "$B/email-config.js"
 cp "$ROOT/restaurant/dashboard.html"     "$B/dashboard.html"
 cp "$ROOT/restaurant/mittagstisch.html"  "$B/mittagstisch.html"
 
