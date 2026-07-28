@@ -1,0 +1,52 @@
+name: Deploy to IONOS (dis-restaurant.de)
+
+# Läuft bei jeder Änderung am Branch – baut das Paket und lädt es
+# per SFTP automatisch zu IONOS hoch. Manuell startbar über den
+# "Run workflow"-Button (workflow_dispatch).
+on:
+  push:
+    branches: [ claude/3d-dis-branding-website-fuuefc ]
+  workflow_dispatch:
+
+concurrency:
+  group: ionos-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build IONOS package
+        run: bash scripts/build-ionos.sh
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy via SFTP
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
+        run: |
+          if [ -z "$SFTP_HOST" ] || [ -z "$SFTP_USER" ] || [ -z "$SFTP_PASS" ]; then
+            echo "::warning::SFTP-Secrets sind noch nicht gesetzt – Deploy wird übersprungen."
+            echo "Trage SFTP_HOST, SFTP_USER und SFTP_PASSWORD unter Settings → Secrets → Actions ein."
+            exit 0
+          fi
+          PORT="${SFTP_PORT:-22}"
+          REMOTE="${REMOTE_DIR:-/}"
+          echo "Lade ./build nach $REMOTE auf $SFTP_HOST:$PORT ..."
+          lftp -c "
+            set sftp:auto-confirm yes;
+            set net:max-retries 3;
+            set net:timeout 25;
+            set net:reconnect-interval-base 5;
+            open -u '$SFTP_USER','$SFTP_PASS' -p $PORT sftp://$SFTP_HOST;
+            mirror -R --verbose --no-perms --parallel=2 build/ '$REMOTE';
+          "
+          echo "Deploy abgeschlossen."
