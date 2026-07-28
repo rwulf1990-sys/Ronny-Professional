@@ -110,9 +110,63 @@
     .db-order-phone a:hover { color: var(--gold); }
     .db-order-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .db-order-total { font-size: 17px; font-weight: 700; }
+
+    /* ---- Passwort-Sperre ---- */
+    .lock-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at 50% 30%, #1a150c, #050403);
+    }
+    .lock-card {
+      width: 100%; max-width: 360px; text-align: center;
+      background: linear-gradient(160deg, #14110c, #0d0b08);
+      border: 1px solid rgba(229,168,46,.35);
+      border-radius: 22px; padding: 38px 30px 30px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.6);
+    }
+    .lock-card .lock-icon { font-size: 34px; }
+    .lock-card h1 { font-size: 18px; letter-spacing: 1.5px; margin: 12px 0 4px; color: var(--gold); }
+    .lock-card p { font-size: 12px; color: var(--gray); letter-spacing: .5px; margin-bottom: 20px; }
+    .lock-input {
+      width: 100%; padding: 14px 16px; margin-bottom: 12px;
+      border-radius: 14px; border: 1px solid rgba(229,168,46,.4);
+      background: #14110c; color: #fff; font-family: inherit; font-size: 15px;
+      text-align: center; letter-spacing: 2px;
+    }
+    .lock-input:focus { outline: 2px solid rgba(229,168,46,.5); }
+    .lock-input.invalid { border-color: #e0563e; }
+    .lock-btn {
+      width: 100%; padding: 14px; border: none; cursor: pointer;
+      border-radius: 14px; font-family: inherit; font-weight: 700;
+      letter-spacing: 1.5px; font-size: 14px; color: #1a1206;
+      background: linear-gradient(135deg, #f4c752, #e5a82e);
+    }
+    .lock-error { display: none; color: #f0876e; font-size: 12px; margin-top: 12px; letter-spacing: .5px; }
+    .lock-error.show { display: block; }
+    body.locked { overflow: hidden; }
+    body.locked .db-header, body.locked .db-wrap { filter: blur(7px); pointer-events: none; user-select: none; }
+    .db-lock-btn {
+      background: none; border: 1px solid rgba(255,255,255,.18); color: var(--gray-light);
+      border-radius: 10px; padding: 7px 12px; font-family: inherit; font-size: 11px;
+      letter-spacing: 1px; cursor: pointer; margin-left: 14px;
+    }
+    .db-lock-btn:hover { color: var(--gold); border-color: rgba(229,168,46,.5); }
   </style>
 </head>
-<body class="no-3d loaded">
+<body class="no-3d loaded locked">
+
+  <!-- Passwort-Sperre -->
+  <div class="lock-overlay" id="lock-overlay">
+    <form class="lock-card" id="lock-form" autocomplete="off">
+      <div class="lock-icon">🔒</div>
+      <h1>DIS BESTELL-DASHBOARD</h1>
+      <p>Bitte Passwort eingeben</p>
+      <input type="password" class="lock-input" id="lock-input" placeholder="Passwort" aria-label="Passwort" autocomplete="current-password">
+      <button type="submit" class="lock-btn">ENTSPERREN</button>
+      <p class="lock-error" id="lock-error">Falsches Passwort.</p>
+    </form>
+  </div>
 
   <header class="db-header">
     <div class="db-title">
@@ -128,6 +182,7 @@
     </div>
     <span class="db-clock" id="db-clock">--:--:--</span>
     <a class="db-back" href="index.html">← ZUR WEBSITE</a>
+    <button class="db-lock-btn" id="db-lock-btn">🔒 SPERREN</button>
   </header>
 
   <main class="db-wrap">
@@ -158,6 +213,53 @@
 
   <script src="supabase-config.js"></script>
   <script>
+    /* ---- Passwort-Sperre (clientseitig) ----
+       DASH_PW_HASH = SHA-256 des Dashboard-Passworts.
+       Aktuell ein Zufalls-Platzhalter -> Dashboard ist für alle
+       gesperrt, bis das echte Passwort gesetzt wird. */
+    const DASH_PW_HASH = 'ffb0f9ab3dd9a279a593554d16b0339ec958cf6e6f05505f03e03b04bedce32f';
+    const AUTH_KEY = 'dis-dash-auth';
+    const lockOverlay = document.getElementById('lock-overlay');
+    const lockForm = document.getElementById('lock-form');
+    const lockInput = document.getElementById('lock-input');
+    const lockError = document.getElementById('lock-error');
+
+    async function sha256Hex(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+    function unlockDash() {
+      document.body.classList.remove('locked');
+      lockOverlay.style.display = 'none';
+    }
+    function lockDash() {
+      try { localStorage.removeItem(AUTH_KEY); } catch (e) {}
+      document.body.classList.add('locked');
+      lockOverlay.style.display = 'flex';
+      lockInput.value = '';
+      setTimeout(() => lockInput.focus(), 50);
+    }
+    try { if (localStorage.getItem(AUTH_KEY) === DASH_PW_HASH) unlockDash(); } catch (e) {}
+    lockForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const h = await sha256Hex(lockInput.value);
+      if (h === DASH_PW_HASH) {
+        try { localStorage.setItem(AUTH_KEY, DASH_PW_HASH); } catch (e) {}
+        lockError.classList.remove('show');
+        unlockDash();
+      } else {
+        lockInput.classList.add('invalid');
+        lockError.classList.add('show');
+        lockInput.select();
+      }
+    });
+    lockInput.addEventListener('input', () => {
+      lockInput.classList.remove('invalid');
+      lockError.classList.remove('show');
+    });
+    document.getElementById('db-lock-btn').addEventListener('click', lockDash);
+    setTimeout(() => { if (document.body.classList.contains('locked')) lockInput.focus(); }, 60);
+
     const STORAGE_KEY = 'dis-orders';
     const STATUS_FLOW = { neu: 'arbeit', arbeit: 'fertig', fertig: 'abgeholt' };
     const STATUS_LABEL = { neu: 'NEU', arbeit: 'IN ARBEIT', fertig: 'FERTIG', abgeholt: 'ABGEHOLT' };
