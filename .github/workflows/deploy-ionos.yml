@@ -41,12 +41,7 @@ jobs:
           PORT="${SFTP_PORT:-22}"
           REMOTE="${REMOTE_DIR:-/}"
           echo "Lade ./build nach $REMOTE auf $SFTP_HOST:$PORT ..."
-          lftp -c "
-            set sftp:auto-confirm yes;
-            set net:max-retries 3;
-            set net:timeout 25;
-            set net:reconnect-interval-base 5;
-            open -u '$SFTP_USER','$SFTP_PASS' -p $PORT sftp://$SFTP_HOST;
-            mirror -R --verbose --no-perms --parallel=2 build/ '$REMOTE';
-          "
+          # Benutzer und Passwort getrennt über den lftp-'user'-Befehl –
+          # robust gegen Sonderzeichen (Komma, Leerzeichen) im Passwort.
+          lftp -c "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 25; set net:reconnect-interval-base 5; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms --parallel=2 build/ \"$REMOTE\"; bye"
           echo "Deploy abgeschlossen."
