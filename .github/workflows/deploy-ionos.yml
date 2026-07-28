@@ -41,6 +41,13 @@ jobs:
           PORT="${SFTP_PORT:-22}"
           REMOTE="${REMOTE_DIR:-/}"
 
+          echo "===== SECRET-CHECK (ohne Preisgabe der Werte) ====="
+          echo "USER-Länge: ${#SFTP_USER} Zeichen"
+          if [ -z "$SFTP_PASS" ]; then echo "PASS: LEER!"; else echo "PASS: gesetzt (nicht leer)"; fi
+          if [ "$SFTP_USER" != "$(printf '%s' "$SFTP_USER" | tr -d '[:space:]')" ]; then echo "WARNUNG: SFTP_USER enthält Leerzeichen/Umbruch!"; else echo "USER: kein Whitespace – ok"; fi
+          if [ "$SFTP_PASS" != "$(printf '%s' "$SFTP_PASS" | tr -d '[:space:]')" ]; then echo "WARNUNG: SFTP_PASS enthält Leerzeichen/Umbruch!"; else echo "PASS: kein Whitespace – ok"; fi
+          echo "===== ENDE SECRET-CHECK ====="
+
           echo "===== DIAGNOSE: SSH-Authentifizierung (ssh -v) ====="
           # Zeigt genau, WARUM der Login klappt/scheitert. Das Passwort wird
           # nirgends ausgegeben (ssh -v druckt es nicht). Nicht-fatal.
