@@ -43,5 +43,6 @@ jobs:
           echo "Lade ./build nach $REMOTE auf $SFTP_HOST:$PORT ..."
           # Benutzer und Passwort getrennt über den lftp-'user'-Befehl –
           # robust gegen Sonderzeichen (Komma, Leerzeichen) im Passwort.
-          lftp -c "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 25; set net:reconnect-interval-base 5; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms --parallel=2 build/ \"$REMOTE\"; bye"
+          # sftp:connect-program mit -v gibt bei Fehlern den echten SSH-Grund aus.
+          lftp -c "set sftp:auto-confirm yes; set sftp:connect-program 'ssh -a -x -v -o StrictHostKeyChecking=no -o PreferredAuthentications=password -o PubkeyAuthentication=no'; set net:max-retries 1; set net:timeout 25; open -p $PORT sftp://$SFTP_HOST; user \"$SFTP_USER\" \"$SFTP_PASS\"; mirror -R --verbose --no-perms build/ \"$REMOTE\"; bye"
           echo "Deploy abgeschlossen."
