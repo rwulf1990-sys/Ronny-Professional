@@ -509,7 +509,7 @@ window.removeFromCart = function (index) {
   renderCart();
 };
 
-/* Bestellannahme: Montag – Samstag, 11:00 – 19:30 Uhr (Sonntag geschlossen) */
+/* Bestellannahme: Montag – Samstag, 09:00 – 19:30 Uhr (Sonntag geschlossen) */
 function isOrderingDay() {
   return new Date().getDay() !== 0;
 }
@@ -534,7 +534,7 @@ function buildPickupOptions() {
   pickupSelect.appendChild(asap);
 
   const now = new Date();
-  for (let mins = 11 * 60; mins <= 19 * 60 + 30; mins += 15) {
+  for (let mins = 9 * 60; mins <= 19 * 60 + 30; mins += 15) {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
     const label = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
