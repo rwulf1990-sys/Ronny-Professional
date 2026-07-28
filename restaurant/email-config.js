@@ -16,8 +16,8 @@
    ============================================================ */
 
 window.DIS_EMAIL = {
-  publicKey: '',
-  serviceId: '',
-  templateId: '',
+  publicKey: 'tMMTRNxgCwo8nMOUgsWAz',
+  serviceId: 'service_xbyq9ih',
+  templateId: 'template_suwr2ug',
   to: 'info@dis-restaurant.de',
 };
