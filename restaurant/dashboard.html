@@ -203,6 +203,7 @@
         <option value="gong">🔔 Gong</option>
         <option value="glocke">🎐 Glocke</option>
         <option value="alarm">⏰ Alarm</option>
+        <option value="iphone">📱 iPhone-Style</option>
         <option value="klassik">▪️ Klassik</option>
       </select>
       <button class="db-btn" id="btn-sound-test">▶ TESTEN</button>
@@ -426,6 +427,21 @@
       // Der klassische Piepton – kräftiger & etwas länger
       klassik(ctx) {
         tone(ctx, 880, 0, 0.7, 0.3, 'triangle');
+      },
+      // Dem iPhone-Wecker nachempfunden: marimba-artiges, ansteigendes
+      // Muster, mehrfach wiederholt (eigene Synthese, nicht Apples Datei)
+      iphone(ctx) {
+        const figure = [659, 659, 880]; // E5, E5, A5 – ansteigend
+        const vol = 0.5;
+        let t = 0;
+        for (let rep = 0; rep < 4; rep++) {
+          figure.forEach((f) => {
+            tone(ctx, f, t, 0.3, vol, 'triangle');        // Marimba-Körper
+            tone(ctx, f * 2, t, 0.13, vol * 0.35, 'sine'); // Holz-Anschlag
+            t += 0.2;
+          });
+          t += 0.18; // Pause zwischen den Wiederholungen
+        }
       },
     };
     let currentSound = 'gong';
