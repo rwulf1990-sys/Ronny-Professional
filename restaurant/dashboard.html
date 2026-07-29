@@ -419,9 +419,9 @@
         tone(ctx, 1568, 0, 0.9, 0.10, 'sine');
         tone(ctx, 1046, 0.02, 1.0, 0.12, 'sine');
       },
-      // Dringlicher 3-fach-Alarm
+      // Dringlicher Alarm: 6× klingeln, laut
       alarm(ctx) {
-        for (let i = 0; i < 3; i++) tone(ctx, 950, i * 0.22, 0.14, 0.3, 'square');
+        for (let i = 0; i < 6; i++) tone(ctx, 950, i * 0.22, 0.14, 0.5, 'square');
       },
       // Der klassische Piepton – kräftiger & etwas länger
       klassik(ctx) {
