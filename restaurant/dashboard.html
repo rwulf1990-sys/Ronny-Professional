@@ -69,6 +69,8 @@
     .db-btn.danger { border-color: rgba(255, 100, 80, .4); color: #ff8a70; }
     .db-btn.danger:hover { background: rgba(255, 100, 80, .1); }
     .db-btn.toggled { background: var(--gold); color: #000; }
+    .db-select { color: var(--gold); background: #14110c; }
+    .db-select option { background: #14110c; color: #fff; }
 
     .db-empty {
       text-align: center; color: var(--gray);
@@ -197,6 +199,13 @@
       <button class="db-btn primary" id="btn-demo">+ DEMO-BESTELLUNG</button>
       <button class="db-btn" id="btn-auto">AUTO-DEMO: AUS</button>
       <button class="db-btn" id="btn-sound">TON: AN</button>
+      <select class="db-btn db-select" id="sound-select" title="Benachrichtigungston wählen">
+        <option value="gong">🔔 Gong</option>
+        <option value="glocke">🎐 Glocke</option>
+        <option value="alarm">⏰ Alarm</option>
+        <option value="klassik">▪️ Klassik</option>
+      </select>
+      <button class="db-btn" id="btn-sound-test">▶ TESTEN</button>
       <button class="db-btn danger" id="btn-clear">ABGEHOLTE LÖSCHEN</button>
     </div>
 
@@ -378,18 +387,58 @@
       return new Date(ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     }
 
+    /* ---- Benachrichtigungstöne (Web Audio) ---- */
+    let audioCtx = null;
+    function getCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+    // Ein Ton-Baustein
+    function tone(ctx, freq, start, dur, vol, type) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      osc.connect(gain); gain.connect(ctx.destination);
+      const t = ctx.currentTime + start;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.start(t); osc.stop(t + dur + 0.02);
+    }
+    const SOUNDS = {
+      // Freundliches Ding-Dong
+      gong(ctx) {
+        tone(ctx, 660, 0, 0.5, 0.28, 'sine');
+        tone(ctx, 520, 0.28, 0.7, 0.28, 'sine');
+      },
+      // Weiche Glocke mit Oberton, langer Nachklang
+      glocke(ctx) {
+        tone(ctx, 784, 0, 1.1, 0.26, 'sine');
+        tone(ctx, 1568, 0, 0.9, 0.10, 'sine');
+        tone(ctx, 1046, 0.02, 1.0, 0.12, 'sine');
+      },
+      // Dringlicher 3-fach-Alarm
+      alarm(ctx) {
+        for (let i = 0; i < 3; i++) tone(ctx, 950, i * 0.22, 0.14, 0.3, 'square');
+      },
+      // Der klassische Piepton – kräftiger & etwas länger
+      klassik(ctx) {
+        tone(ctx, 880, 0, 0.7, 0.3, 'triangle');
+      },
+    };
+    let currentSound = 'gong';
+    try { currentSound = localStorage.getItem('dis-dash-sound') || 'gong'; } catch (e) {}
+    if (!SOUNDS[currentSound]) currentSound = 'gong';
+
+    function playSound(name) {
+      try { (SOUNDS[name] || SOUNDS.gong)(getCtx()); }
+      catch (e) { /* Audio erst nach erster Interaktion erlaubt – ok */ }
+    }
     function beep() {
       if (!soundOn) return;
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        osc.start(); osc.stop(ctx.currentTime + 0.5);
-      } catch (e) { /* audio blocked until first interaction — fine */ }
+      playSound(currentSound);
     }
 
     async function render() {
@@ -476,7 +525,17 @@
     document.getElementById('btn-sound').addEventListener('click', function () {
       soundOn = !soundOn;
       this.textContent = soundOn ? 'TON: AN' : 'TON: AUS';
+      if (soundOn) playSound(currentSound); // kurzes Feedback beim Einschalten
     });
+
+    const soundSelect = document.getElementById('sound-select');
+    soundSelect.value = currentSound;
+    soundSelect.addEventListener('change', function () {
+      currentSound = this.value;
+      try { localStorage.setItem('dis-dash-sound', currentSound); } catch (e) {}
+      playSound(currentSound); // sofort vorhören
+    });
+    document.getElementById('btn-sound-test').addEventListener('click', () => playSound(currentSound));
 
     document.getElementById('btn-clear').addEventListener('click', async () => {
       await deletePickedUp();
