@@ -390,8 +390,23 @@
 
     /* ---- Benachrichtigungstöne (Web Audio) ---- */
     let audioCtx = null;
+    let masterGain = null;
+    const MASTER_VOL = 2.0; // doppelte Lautstärke – gut hörbar in der Küche
     function getCtx() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = MASTER_VOL;
+        // Limiter: verhindert hörbares Übersteuern trotz hoher Lautstärke
+        const limiter = audioCtx.createDynamicsCompressor();
+        limiter.threshold.value = -2;
+        limiter.knee.value = 0;
+        limiter.ratio.value = 20;
+        limiter.attack.value = 0.002;
+        limiter.release.value = 0.1;
+        masterGain.connect(limiter);
+        limiter.connect(audioCtx.destination);
+      }
       if (audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
@@ -401,7 +416,7 @@
       const gain = ctx.createGain();
       osc.type = type || 'sine';
       osc.frequency.value = freq;
-      osc.connect(gain); gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(masterGain);
       const t = ctx.currentTime + start;
       gain.gain.setValueAtTime(0.0001, t);
       gain.gain.exponentialRampToValueAtTime(vol, t + 0.01);
