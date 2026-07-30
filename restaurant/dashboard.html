@@ -204,7 +204,12 @@
         <option value="glocke">🎐 Glocke</option>
         <option value="alarm">⏰ Alarm</option>
         <option value="iphone">📱 iPhone-Style</option>
+        <option value="fanfare">🎺 Fanfare</option>
+        <option value="pling">✨ Pling</option>
         <option value="klassik">▪️ Klassik</option>
+        <option value="voice-chef">🗣️ Ansage: „Chef, Bestellung!“</option>
+        <option value="voice-neu">🗣️ Ansage: „Neue Bestellung“</option>
+        <option value="voice-kueche">🗣️ Ansage: „Achtung Küche“</option>
       </select>
       <button class="db-btn" id="btn-sound-test">▶ TESTEN</button>
       <button class="db-btn danger" id="btn-clear">ABGEHOLTE LÖSCHEN</button>
@@ -391,7 +396,7 @@
     /* ---- Benachrichtigungstöne (Web Audio) ---- */
     let audioCtx = null;
     let masterGain = null;
-    const MASTER_VOL = 2.0; // doppelte Lautstärke – gut hörbar in der Küche
+    const MASTER_VOL = 3.0; // sehr laut – für die Küche
     function getCtx() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -399,7 +404,7 @@
         masterGain.gain.value = MASTER_VOL;
         // Limiter: verhindert hörbares Übersteuern trotz hoher Lautstärke
         const limiter = audioCtx.createDynamicsCompressor();
-        limiter.threshold.value = -2;
+        limiter.threshold.value = -4;
         limiter.knee.value = 0;
         limiter.ratio.value = 20;
         limiter.attack.value = 0.002;
@@ -443,6 +448,23 @@
       klassik(ctx) {
         tone(ctx, 880, 0, 0.7, 0.3, 'triangle');
       },
+      // Kleine Fanfare – aufsteigend, festlich
+      fanfare(ctx) {
+        const v = 0.5;
+        tone(ctx, 523, 0.0, 0.18, v, 'triangle');   // C5
+        tone(ctx, 659, 0.16, 0.18, v, 'triangle');  // E5
+        tone(ctx, 784, 0.32, 0.18, v, 'triangle');  // G5
+        tone(ctx, 1046, 0.5, 0.55, v, 'triangle');  // C6
+        tone(ctx, 1568, 0.5, 0.45, v * 0.3, 'sine'); // Glanz
+      },
+      // Freundlicher Notification-Pling, zweifach
+      pling(ctx) {
+        const seq = [784, 988, 1319]; const v = 0.5;
+        [0, 1.0].forEach((off) => seq.forEach((f, i) => {
+          tone(ctx, f, off + i * 0.12, 0.28, v, 'sine');
+          tone(ctx, f * 2, off + i * 0.12, 0.12, v * 0.3, 'sine');
+        }));
+      },
       // Dem iPhone-Wecker nachempfunden: marimba-artiges, ansteigendes
       // Muster, mehrfach wiederholt (eigene Synthese, nicht Apples Datei)
       iphone(ctx) {
@@ -459,13 +481,39 @@
         }
       },
     };
+    // Gesprochene Ansagen (Sprachausgabe des Browsers)
+    const VOICE = {
+      'voice-chef': 'Chef, eine Bestellung ist angekommen!',
+      'voice-neu': 'Neue Bestellung eingegangen!',
+      'voice-kueche': 'Achtung Küche, neue Bestellung!',
+    };
+    function speak(text) {
+      try {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'de-DE';
+        u.rate = 1.0; u.pitch = 1.0; u.volume = 1;
+        const de = (window.speechSynthesis.getVoices() || []).find((v) => /^de/i.test(v.lang));
+        if (de) u.voice = de;
+        window.speechSynthesis.speak(u);
+      } catch (e) { /* Sprachausgabe nicht verfügbar – ok */ }
+    }
+
     let currentSound = 'gong';
     try { currentSound = localStorage.getItem('dis-dash-sound') || 'gong'; } catch (e) {}
-    if (!SOUNDS[currentSound]) currentSound = 'gong';
+    if (!SOUNDS[currentSound] && !VOICE[currentSound]) currentSound = 'gong';
 
     function playSound(name) {
-      try { (SOUNDS[name] || SOUNDS.gong)(getCtx()); }
-      catch (e) { /* Audio erst nach erster Interaktion erlaubt – ok */ }
+      try {
+        if (VOICE[name]) {
+          // kurzer Aufmerksamkeits-Ton, dann die Ansage
+          try { SOUNDS.pling(getCtx()); } catch (e) {}
+          setTimeout(() => speak(VOICE[name]), 650);
+          return;
+        }
+        (SOUNDS[name] || SOUNDS.gong)(getCtx());
+      } catch (e) { /* Audio erst nach erster Interaktion erlaubt – ok */ }
     }
     function beep() {
       if (!soundOn) return;
