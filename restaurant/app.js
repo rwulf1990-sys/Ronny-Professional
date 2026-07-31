@@ -376,8 +376,10 @@ const mittagstischFrame = document.getElementById('mittagstisch-frame');
 const MITTAGSTISCH_DRIVE_URL = 'https://drive.google.com/file/d/1q8bwmnGXHIzHqGrGQepbUzEX8N8aGOlb/preview';
 
 window.openMittagstisch = function () {
-  if (mittagstischFrame && !mittagstischFrame.src) {
-    mittagstischFrame.src = MITTAGSTISCH_DRIVE_URL;
+  if (mittagstischFrame) {
+    // Cache-Trick: bei jedem Öffnen frisch laden, damit nicht die alte
+    // (im Browser zwischengespeicherte) Vorschau angezeigt wird.
+    mittagstischFrame.src = MITTAGSTISCH_DRIVE_URL + '?cb=' + Date.now();
   }
   mittagstischOverlay.classList.add('open');
 };
