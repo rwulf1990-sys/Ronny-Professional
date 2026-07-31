@@ -25,6 +25,8 @@ cp "$ROOT/restaurant/supabase-config.js" "$B/supabase-config.js"
 cp "$ROOT/restaurant/email-config.js"    "$B/email-config.js"
 cp "$ROOT/restaurant/dashboard.html"     "$B/dashboard.html"
 cp "$ROOT/restaurant/mittagstisch.html"  "$B/mittagstisch.html"
+cp "$ROOT/restaurant/impressum.html"     "$B/impressum.html"
+cp "$ROOT/restaurant/datenschutz.html"   "$B/datenschutz.html"
 
 # --- Nur die tatsächlich genutzten Schriften (Montserrat) ---
 cp "$ROOT/fonts/montserrat-latin-400-normal.woff2" "$B/fonts/"
@@ -35,7 +37,7 @@ cp "$ROOT/fonts/montserrat-latin-700-normal.woff2" "$B/fonts/"
 cp "$ROOT/vendor/three.module.min.js" "$B/vendor/"
 
 # --- Pfade anpassen ---
-sed -i 's#\.\./fonts/#fonts/#g'   "$B/index.html" "$B/dashboard.html" "$B/mittagstisch.html" "$B/style.css"
+sed -i 's#\.\./fonts/#fonts/#g'   "$B/index.html" "$B/dashboard.html" "$B/mittagstisch.html" "$B/impressum.html" "$B/datenschutz.html" "$B/style.css"
 sed -i "s#from '\.\./vendor/three.module.min.js'#from './vendor/three.module.min.js'#" "$B/app.js"
 
 # --- "Dis Branding"-Preview-Badge entfernen (auf der echten Domain unpassend) ---
