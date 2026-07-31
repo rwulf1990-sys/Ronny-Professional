@@ -373,7 +373,7 @@ window.showTab = function (btn, id) {
 /* ---------- Mittagstisch Modal (Google Drive Karte) ---------- */
 const mittagstischOverlay = document.getElementById('mittagstisch-overlay');
 const mittagstischFrame = document.getElementById('mittagstisch-frame');
-const MITTAGSTISCH_DRIVE_URL = 'https://drive.google.com/file/d/1q8bwmnGXHIzHqGrGQepbUzEX8N8aGOlb/preview';
+const MITTAGSTISCH_DRIVE_URL = 'https://drive.google.com/file/d/16wPiPXgfeqrNh17Hhb7u12adB55q7jaQ/preview';
 
 window.openMittagstisch = function () {
   if (mittagstischFrame) {
