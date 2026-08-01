@@ -72,6 +72,27 @@
     .db-select { color: var(--gold); background: #14110c; }
     .db-select option { background: #14110c; color: #fff; }
 
+    /* ---- Statistik ---- */
+    .stat-h { font-size:14px; letter-spacing:1px; color:var(--gold); margin:26px 0 12px; font-weight:700; }
+    .stat-tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+    .stat-tile { background:rgba(255,255,255,.03); border:1px solid rgba(229,168,46,.2); border-radius:14px; padding:16px 18px; }
+    .stat-tile .l { font-size:10px; letter-spacing:1.5px; color:var(--gray); text-transform:uppercase; }
+    .stat-tile .v { font-size:22px; font-weight:700; margin-top:4px; color:var(--gold); }
+    .stat-tile .s { font-size:11px; color:var(--gray); margin-top:2px; }
+    .stat-bars { display:flex; flex-direction:column; gap:8px; }
+    .stat-bar-row { display:grid; grid-template-columns:46px 1fr 90px; align-items:center; gap:10px; font-size:12px; }
+    .stat-bar-row .bl { color:var(--gray-light); text-transform:capitalize; }
+    .stat-bar-track { background:rgba(255,255,255,.05); border-radius:100px; height:14px; overflow:hidden; }
+    .stat-bar-fill { height:100%; background:var(--gold-grad); border-radius:100px; min-width:2px; }
+    .stat-bar-row .bv { text-align:right; color:#fff; font-weight:700; }
+    .stat-day { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:14px 18px; margin-bottom:10px; }
+    .stat-day-head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .stat-day-date { font-weight:700; letter-spacing:.5px; }
+    .stat-day-meta { font-size:12px; color:var(--gold); font-weight:700; white-space:nowrap; }
+    .stat-day-dishes { font-size:13px; color:var(--gray-light); margin-top:8px; line-height:1.75; }
+    .stat-refresh { background:none; border:1px solid rgba(255,255,255,.18); color:var(--gray-light); border-radius:10px; padding:7px 12px; font-family:inherit; font-size:11px; letter-spacing:1px; cursor:pointer; }
+    .stat-refresh:hover { color:var(--gold); border-color:rgba(229,168,46,.5); }
+
     .db-empty {
       text-align: center; color: var(--gray);
       padding: 70px 20px; font-size: 14px;
@@ -212,6 +233,7 @@
         <option value="voice-kueche">🗣️ Ansage: „Achtung Küche“</option>
       </select>
       <button class="db-btn" id="btn-sound-test">▶ TESTEN</button>
+      <button class="db-btn" id="btn-stats">📊 STATISTIK</button>
       <button class="db-btn danger" id="btn-clear">ABGEHOLTE LÖSCHEN</button>
     </div>
 
@@ -224,6 +246,7 @@
       oder klicke „+ Demo-Bestellung" zum Ausprobieren.
     </div>
     <div class="db-orders" id="db-orders"></div>
+    <div class="db-statistik" id="db-statistik" style="display:none"></div>
   </main>
 
   <script src="supabase-config.js"></script>
@@ -281,6 +304,7 @@
     const SUPA = window.DIS_SUPABASE || {};
     const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
     let connOk = true; // reflects whether the last Supabase fetch succeeded
+    let statsOpen = false; // Statistik-Ansicht aktiv?
 
     const DEMO_ORDERS = [
       { items: [
@@ -525,7 +549,7 @@
       if (SUPA_ON) setConnState(connOk);
       const container = document.getElementById('db-orders');
       const empty = document.getElementById('db-empty');
-      empty.style.display = orders.length ? 'none' : 'block';
+      empty.style.display = (orders.length || statsOpen) ? 'none' : 'block';
 
       const currentIds = new Set(orders.map((o) => o.id));
       if (!firstRender) {
@@ -620,6 +644,111 @@
       await deletePickedUp();
       render();
     });
+
+    /* ---- Statistik ---- */
+    async function fetchOrdersForStats() {
+      if (SUPA_ON) {
+        try {
+          const res = await fetch(SUPA.url + '/rest/v1/orders?select=*&order=created_at.desc&limit=2000', { headers: supaHeaders() });
+          if (!res.ok) throw new Error(res.status);
+          const rows = await res.json();
+          return rows.map((r) => ({
+            id: String(r.id), ts: Date.parse(r.created_at), items: r.items,
+            total: parseFloat(r.total), pickup: r.pickup, phone: r.phone, status: r.status,
+          }));
+        } catch (e) { return []; }
+      }
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { return []; }
+    }
+    function orderDishes(o) {
+      if (o.items && o.items.length) return o.items.map((it) => it.dish);
+      if (o.dish) return [o.dish];
+      return [];
+    }
+    function renderStatistik(orders) {
+      const panel = document.getElementById('db-statistik');
+      const tile = (l, v, s) => '<div class="stat-tile"><div class="l">' + l + '</div><div class="v">' + v + '</div>' + (s ? '<div class="s">' + s + '</div>' : '') + '</div>';
+      const head = '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="stat-h" style="margin:6px 0">📊 Statistik</div><button class="stat-refresh" id="stat-refresh">↻ Aktualisieren</button></div>';
+      if (!orders.length) {
+        panel.innerHTML = head + '<p style="color:var(--gray)">Noch keine Daten vorhanden. Sobald Bestellungen eingehen, erscheint hier die Auswertung.</p>';
+        const rb0 = document.getElementById('stat-refresh'); if (rb0) rb0.addEventListener('click', openStats);
+        return;
+      }
+      const DAY = 86400000, now = Date.now();
+      const ts0 = new Date(); ts0.setHours(0, 0, 0, 0); const t0 = ts0.getTime();
+      const rev = { t: 0, w: 0, m: 0, a: 0 }, cnt = { t: 0, w: 0, m: 0, a: 0 };
+      orders.forEach((o) => {
+        const v = o.total || 0; rev.a += v; cnt.a++;
+        if (o.ts >= t0) { rev.t += v; cnt.t++; }
+        if (o.ts >= now - 7 * DAY) { rev.w += v; cnt.w++; }
+        if (o.ts >= now - 30 * DAY) { rev.m += v; cnt.m++; }
+      });
+      const avg = cnt.a ? rev.a / cnt.a : 0;
+      const last7 = [];
+      for (let i = 6; i >= 0; i--) {
+        const ds = t0 - i * DAY, de = ds + DAY; let r = 0;
+        orders.forEach((o) => { if (o.ts >= ds && o.ts < de) r += o.total || 0; });
+        last7.push({ label: new Date(ds).toLocaleDateString('de-DE', { weekday: 'short' }), rev: r });
+      }
+      const max7 = Math.max(1, ...last7.map((x) => x.rev));
+      const byDay = {};
+      orders.forEach((o) => {
+        const d = new Date(o.ts); d.setHours(0, 0, 0, 0); const k = d.getTime();
+        if (!byDay[k]) byDay[k] = { count: 0, revenue: 0, dishes: {} };
+        byDay[k].count++; byDay[k].revenue += o.total || 0;
+        orderDishes(o).forEach((n) => { byDay[k].dishes[n] = (byDay[k].dishes[n] || 0) + 1; });
+      });
+      const dayKeys = Object.keys(byDay).map(Number).sort((a, b) => b - a);
+
+      let html = head;
+      html += '<div class="stat-h">Umsatz (brutto)</div><div class="stat-tiles">'
+        + tile('Heute', formatEUR(rev.t), cnt.t + ' Best.')
+        + tile('Letzte 7 Tage', formatEUR(rev.w), cnt.w + ' Best.')
+        + tile('Letzte 30 Tage', formatEUR(rev.m), cnt.m + ' Best.')
+        + tile('Gesamt', formatEUR(rev.a), cnt.a + ' Best.')
+        + tile('Ø Bestellwert', formatEUR(avg), '')
+        + '</div>';
+      html += '<div class="stat-h">Umsatz – letzte 7 Tage</div><div class="stat-bars">';
+      last7.forEach((x) => {
+        const w = Math.round((x.rev / max7) * 100);
+        html += '<div class="stat-bar-row"><span class="bl">' + x.label + '</span>'
+          + '<span class="stat-bar-track"><span class="stat-bar-fill" style="width:' + w + '%"></span></span>'
+          + '<span class="bv">' + formatEUR(x.rev) + '</span></div>';
+      });
+      html += '</div>';
+      html += '<div class="stat-h">Bestellungen pro Tag – was wurde bestellt</div>';
+      dayKeys.forEach((k) => {
+        const day = byDay[k];
+        const dishStr = Object.entries(day.dishes).sort((a, b) => b[1] - a[1]).map((e) => e[1] + '× ' + e[0]).join(' · ');
+        html += '<div class="stat-day"><div class="stat-day-head">'
+          + '<span class="stat-day-date">' + new Date(k).toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) + '</span>'
+          + '<span class="stat-day-meta">' + day.count + ' Best. · ' + formatEUR(day.revenue) + '</span></div>'
+          + '<div class="stat-day-dishes">' + (dishStr || '–') + '</div></div>';
+      });
+      panel.innerHTML = html;
+      const rb = document.getElementById('stat-refresh'); if (rb) rb.addEventListener('click', openStats);
+    }
+
+    const statsPanel = document.getElementById('db-statistik');
+    const ordersEl = document.getElementById('db-orders');
+    const emptyEl = document.getElementById('db-empty');
+    const btnStats = document.getElementById('btn-stats');
+    async function openStats() {
+      statsOpen = true;
+      btnStats.textContent = '← BESTELLUNGEN'; btnStats.classList.add('toggled');
+      ordersEl.style.display = 'none'; emptyEl.style.display = 'none';
+      statsPanel.style.display = 'block';
+      statsPanel.innerHTML = '<p style="color:var(--gray);padding:20px 0">Lade Statistik …</p>';
+      renderStatistik(await fetchOrdersForStats());
+    }
+    function closeStats() {
+      statsOpen = false;
+      btnStats.textContent = '📊 STATISTIK'; btnStats.classList.remove('toggled');
+      statsPanel.style.display = 'none';
+      ordersEl.style.display = '';
+      render();
+    }
+    btnStats.addEventListener('click', () => (statsOpen ? closeStats() : openStats()));
 
     // Live updates: storage event (local mode, cross-tab) + poll
     window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) render(); });
