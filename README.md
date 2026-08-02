@@ -44,12 +44,11 @@ fonts/              # Syne & Space Grotesk (woff2, lokal)
 | Cyan | `#22d3ee` |
 | Magenta | `#ec4899` |
 
-## 🍽️ Mittagstisch-Speiseplan (Auto-Sync)
+## 🍽️ Mittagstisch-Speiseplan
 
 Die Restaurant-Seite (`restaurant/`) zeigt den wöchentlichen Speiseplan als
-Google-Drive-Vorschau (PDF) in einem Modal an. Der Workflow
-`.github/workflows/sync-speiseplan.yml` prüft mehrmals täglich einen
-freigegebenen Drive-Ordner und aktualisiert die verlinkte Datei-ID
-automatisch, sobald der Kunde eine neue PDF hochlädt — inklusive
-automatischem Deploy. Einrichtung siehe Kommentar am Anfang der
-Workflow-Datei.
+Google-Drive-Vorschau (PDF) in einem Modal an (`MITTAGSTISCH_DRIVE_URL` in
+`restaurant/app.js`). Der Kunde lädt die neue Wochen-PDF in Drive per
+"Neue Version hochladen" auf dieselbe Datei — der Freigabe-Link bleibt
+damit dauerhaft gleich, ein Code- oder Deploy-Schritt ist dafür nicht
+nötig.
