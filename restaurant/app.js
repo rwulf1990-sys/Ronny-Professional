@@ -489,7 +489,7 @@ function renderCart() {
   }
 
   cartTotalEl.textContent = formatEUR(cart.reduce((s, i) => s + i.price, 0));
-  cartConfirm.disabled = !cart.length || !isOrderingDay();
+  cartConfirm.disabled = !cart.length || !isOrderingOpen();
   cartConfirm.style.opacity = cart.length ? '1' : '.4';
 }
 
@@ -511,17 +511,22 @@ window.removeFromCart = function (index) {
   renderCart();
 };
 
-/* Bestellannahme: Montag – Samstag, 11:00 – 19:30 Uhr (Sonntag geschlossen) */
-function isOrderingDay() {
-  return new Date().getDay() !== 0;
+/* Bestellannahme: Montag – Samstag, 09:00 – 19:30 Uhr (Sonntag geschlossen) */
+function isOrderingOpen() {
+  const now = new Date();
+  if (now.getDay() === 0) return false;
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  return minutes >= 9 * 60 && minutes <= 19 * 60 + 30;
 }
 
 function buildPickupOptions() {
   pickupSelect.innerHTML = '';
 
-  if (!isOrderingDay()) {
+  if (!isOrderingOpen()) {
     const closed = document.createElement('option');
-    closed.textContent = 'Sonntag geschlossen – Bestellungen Mo–Sa möglich';
+    closed.textContent = new Date().getDay() === 0
+      ? 'Sonntag geschlossen – Bestellungen Mo–Sa möglich'
+      : 'Aktuell geschlossen – Bestellungen Mo–Sa 09:00–19:30 Uhr möglich';
     closed.disabled = true;
     closed.selected = true;
     pickupSelect.appendChild(closed);
@@ -536,7 +541,7 @@ function buildPickupOptions() {
   pickupSelect.appendChild(asap);
 
   const now = new Date();
-  for (let mins = 11 * 60; mins <= 19 * 60 + 30; mins += 15) {
+  for (let mins = 9 * 60; mins <= 19 * 60 + 30; mins += 15) {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
     const label = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
@@ -650,7 +655,13 @@ function sendOrderEmail(items, total, pickup, phone) {
 
 cartConfirm.addEventListener('click', () => {
   const cart = loadCart();
-  if (!cart.length || !isOrderingDay()) return;
+  if (!cart.length) return;
+  if (!isOrderingOpen()) {
+    showToast('Aktuell geschlossen', 'Bestellungen sind Mo–Sa 09:00–19:30 Uhr möglich.');
+    buildPickupOptions();
+    cartConfirm.disabled = true;
+    return;
+  }
 
   // Telefonnummer ist Pflicht – ohne gültige Nummer keine Bestellung
   const phone = phoneInput.value.trim();
