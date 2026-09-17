@@ -27,6 +27,9 @@ cp "$ROOT/restaurant/dashboard.html"     "$B/dashboard.html"
 cp "$ROOT/restaurant/mittagstisch.html"  "$B/mittagstisch.html"
 cp "$ROOT/restaurant/impressum.html"     "$B/impressum.html"
 cp "$ROOT/restaurant/datenschutz.html"   "$B/datenschutz.html"
+cp "$ROOT/restaurant/robots.txt"         "$B/robots.txt"
+cp "$ROOT/restaurant/sitemap.xml"        "$B/sitemap.xml"
+cp "$ROOT/restaurant/og-image.jpg"       "$B/og-image.jpg"
 
 # --- Nur die tatsächlich genutzten Schriften (Montserrat) ---
 cp "$ROOT/fonts/montserrat-latin-400-normal.woff2" "$B/fonts/"
