@@ -175,6 +175,63 @@
       letter-spacing: 1px; cursor: pointer; margin-left: 14px;
     }
     .db-lock-btn:hover { color: var(--gold); border-color: rgba(229,168,46,.5); }
+
+    /* Neue-Bestellung-Alarm: großflächig, bleibt bis Bestätigung sichtbar */
+    .order-alert-flash {
+      position: fixed; inset: 0; z-index: 2500; pointer-events: none;
+      background: rgba(229,168,46,.35); opacity: 0;
+    }
+    .order-alert-flash.flashing { animation: orderFlash 1s ease-out 3; }
+    @keyframes orderFlash {
+      0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 0; }
+    }
+    .order-alert-overlay {
+      position: fixed; inset: 0; z-index: 2600;
+      display: none; align-items: flex-start; justify-content: center;
+      padding: clamp(16px, 4vw, 48px) 20px;
+      background: rgba(3,2,1,.72); backdrop-filter: blur(3px);
+    }
+    .order-alert-overlay.show { display: flex; }
+    .order-alert-card {
+      width: 100%; max-width: 480px; margin-top: clamp(8px, 4vh, 64px);
+      background: linear-gradient(160deg, #1c160c, #0c0906);
+      border: 2px solid var(--gold); border-radius: 22px;
+      padding: 28px 26px 24px;
+      box-shadow: 0 0 0 6px rgba(229,168,46,.12), 0 20px 60px rgba(0,0,0,.6);
+      animation: orderAlertIn .35s cubic-bezier(.2,.9,.3,1.3), orderAlertPulse 1.4s ease-in-out infinite 0.4s;
+      text-align: center;
+    }
+    @keyframes orderAlertIn { from { opacity: 0; transform: translateY(-28px) scale(.96); } }
+    @keyframes orderAlertPulse {
+      0%, 100% { box-shadow: 0 0 0 6px rgba(229,168,46,.12), 0 20px 60px rgba(0,0,0,.6); }
+      50% { box-shadow: 0 0 0 14px rgba(229,168,46,.22), 0 20px 70px rgba(0,0,0,.6); }
+    }
+    .order-alert-icon { font-size: 44px; line-height: 1; margin-bottom: 6px; animation: orderAlertBell 1.4s ease-in-out infinite; }
+    @keyframes orderAlertBell {
+      0%, 100% { transform: rotate(0); } 10% { transform: rotate(-14deg); } 20% { transform: rotate(11deg); }
+      30% { transform: rotate(-8deg); } 40% { transform: rotate(5deg); } 50% { transform: rotate(0); }
+    }
+    .order-alert-title {
+      font-size: 22px; font-weight: 700; letter-spacing: 1px; color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .order-alert-count { font-size: 13px; color: var(--gray-light); margin-bottom: 18px; }
+    .order-alert-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 20px; }
+    .order-alert-item {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(229,168,46,.25);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    }
+    .order-alert-item:last-child { margin-bottom: 0; }
+    .order-alert-item .t { font-size: 11px; color: var(--gray); letter-spacing: 1px; margin-bottom: 6px; }
+    .order-alert-item .d { font-size: 14px; color: #fff; font-weight: 600; margin-bottom: 2px; }
+    .order-alert-item .p { font-size: 12px; color: var(--gray-light); margin-top: 6px; }
+    .order-alert-item .sum { font-size: 13px; color: var(--gold); font-weight: 700; margin-top: 8px; }
+    .order-alert-btn {
+      width: 100%; padding: 16px; border: none; cursor: pointer;
+      border-radius: 14px; font-family: inherit; font-weight: 700;
+      letter-spacing: 1.5px; font-size: 14px; color: #1a1206;
+      background: linear-gradient(135deg, #f4c752, #e5a82e);
+    }
   </style>
 </head>
 <body class="no-3d loaded locked">
@@ -189,6 +246,18 @@
       <button type="submit" class="lock-btn">ENTSPERREN</button>
       <p class="lock-error" id="lock-error">Falsches Passwort.</p>
     </form>
+  </div>
+
+  <!-- Neue-Bestellung-Alarm -->
+  <div class="order-alert-flash" id="order-alert-flash"></div>
+  <div class="order-alert-overlay" id="order-alert-overlay">
+    <div class="order-alert-card">
+      <div class="order-alert-icon">🔔</div>
+      <div class="order-alert-title">NEUE BESTELLUNG!</div>
+      <div class="order-alert-count" id="order-alert-count">1 neue Bestellung</div>
+      <div class="order-alert-list" id="order-alert-list"></div>
+      <button type="button" class="order-alert-btn" id="order-alert-dismiss">GESEHEN</button>
+    </div>
   </div>
 
   <header class="db-header">
@@ -544,6 +613,46 @@
       playSound(currentSound);
     }
 
+    /* ---------- Neue-Bestellung-Alarm ----------
+       Bleibt sichtbar, bis manuell bestätigt – damit eine Bestellung
+       nicht übersehen wird, auch wenn man nur am Dashboard vorbeiläuft. */
+    const orderAlertFlash = document.getElementById('order-alert-flash');
+    const orderAlertOverlay = document.getElementById('order-alert-overlay');
+    const orderAlertCount = document.getElementById('order-alert-count');
+    const orderAlertList = document.getElementById('order-alert-list');
+    let pendingAlertOrders = [];
+
+    function renderOrderAlert() {
+      const n = pendingAlertOrders.length;
+      orderAlertCount.textContent = n === 1 ? '1 neue Bestellung' : n + ' neue Bestellungen';
+      orderAlertList.innerHTML = pendingAlertOrders.map((o) => {
+        const dishes = (o.items && o.items.length ? o.items.map((it) => it.dish) : [o.dish || '—']).join(', ');
+        return `
+          <div class="order-alert-item">
+            <div class="t">${formatTime(o.ts)} Uhr · #${o.id.slice(-4).toUpperCase()}</div>
+            <div class="d">${dishes}</div>
+            ${o.pickup ? `<div class="p">🕛 Abholung: ${o.pickup}</div>` : ''}
+            <div class="sum">${formatEUR(o.total)}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function showOrderAlert(newOrders) {
+      pendingAlertOrders = pendingAlertOrders.concat(newOrders);
+      renderOrderAlert();
+      orderAlertOverlay.classList.add('show');
+      orderAlertFlash.classList.remove('flashing');
+      // Reflow erzwingen, damit die Flash-Animation bei mehrfachem Trigger neu startet
+      void orderAlertFlash.offsetWidth;
+      orderAlertFlash.classList.add('flashing');
+    }
+
+    document.getElementById('order-alert-dismiss').addEventListener('click', () => {
+      pendingAlertOrders = [];
+      orderAlertOverlay.classList.remove('show');
+      orderAlertFlash.classList.remove('flashing');
+    });
+
     async function render() {
       const orders = (await fetchOrders()).sort((a, b) => b.ts - a.ts);
       if (SUPA_ON) setConnState(connOk);
@@ -553,8 +662,10 @@
 
       const currentIds = new Set(orders.map((o) => o.id));
       if (!firstRender) {
-        for (const o of orders) {
-          if (!knownIds.has(o.id)) { beep(); break; }
+        const newOrders = orders.filter((o) => !knownIds.has(o.id));
+        if (newOrders.length) {
+          beep();
+          showOrderAlert(newOrders);
         }
       }
       knownIds = currentIds;
