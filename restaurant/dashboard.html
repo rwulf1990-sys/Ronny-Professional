@@ -621,6 +621,7 @@
     const orderAlertCount = document.getElementById('order-alert-count');
     const orderAlertList = document.getElementById('order-alert-list');
     let pendingAlertOrders = [];
+    let alertSoundTimer = null;
 
     function renderOrderAlert() {
       const n = pendingAlertOrders.length;
@@ -645,12 +646,19 @@
       // Reflow erzwingen, damit die Flash-Animation bei mehrfachem Trigger neu startet
       void orderAlertFlash.offsetWidth;
       orderAlertFlash.classList.add('flashing');
+
+      // Ton wiederholt klingeln lassen, bis mit "GESEHEN" bestätigt wird
+      if (!alertSoundTimer) {
+        alertSoundTimer = setInterval(beep, 4000);
+      }
     }
 
     document.getElementById('order-alert-dismiss').addEventListener('click', () => {
       pendingAlertOrders = [];
       orderAlertOverlay.classList.remove('show');
       orderAlertFlash.classList.remove('flashing');
+      clearInterval(alertSoundTimer);
+      alertSoundTimer = null;
     });
 
     async function render() {
