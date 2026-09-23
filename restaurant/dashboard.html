@@ -347,15 +347,32 @@
     try { if (localStorage.getItem(AUTH_KEY) === DASH_PW_HASH) unlockDash(); } catch (e) {}
     lockForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const h = await sha256Hex(lockInput.value);
-      if (h === DASH_PW_HASH) {
-        try { localStorage.setItem(AUTH_KEY, DASH_PW_HASH); } catch (e) {}
-        lockError.classList.remove('show');
-        unlockDash();
-      } else {
+      // Manche Tablet-Tastaturen hängen beim Autovervollständigen ein
+      // Leerzeichen an – trimmen, damit das Passwort trotzdem passt.
+      const value = lockInput.value.trim();
+      try {
+        if (!('crypto' in window) || !window.crypto.subtle) {
+          throw new Error('no-subtle-crypto');
+        }
+        const h = await sha256Hex(value);
+        if (h === DASH_PW_HASH) {
+          try { localStorage.setItem(AUTH_KEY, DASH_PW_HASH); } catch (e) {}
+          lockError.textContent = 'Falsches Passwort.';
+          lockError.classList.remove('show');
+          unlockDash();
+        } else {
+          lockInput.classList.add('invalid');
+          lockError.textContent = 'Falsches Passwort.';
+          lockError.classList.add('show');
+          lockInput.select();
+        }
+      } catch (err) {
+        // crypto.subtle gibt es nur über eine sichere Verbindung
+        // (https://) oder in sehr veralteten Browsern gar nicht -
+        // ohne das hier würde die Eingabe sonst lautlos ins Leere laufen.
         lockInput.classList.add('invalid');
+        lockError.textContent = 'Passwort-Prüfung fehlgeschlagen. Bitte die Seite über https:// öffnen und den Browser aktualisieren.';
         lockError.classList.add('show');
-        lockInput.select();
       }
     });
     lockInput.addEventListener('input', () => {
