@@ -505,7 +505,6 @@
         masterGain.connect(limiter);
         limiter.connect(audioCtx.destination);
       }
-      if (audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
     // Ein Ton-Baustein
@@ -598,15 +597,26 @@
     if (!SOUNDS[currentSound] && !VOICE[currentSound]) currentSound = 'gong';
 
     function playSound(name) {
-      try {
-        if (VOICE[name]) {
-          // kurzer Aufmerksamkeits-Ton, dann die Ansage
-          try { SOUNDS.pling(getCtx()); } catch (e) {}
-          setTimeout(() => speak(VOICE[name]), 650);
-          return;
-        }
-        (SOUNDS[name] || SOUNDS.gong)(getCtx());
-      } catch (e) { /* Audio erst nach erster Interaktion erlaubt – ok */ }
+      const ctx = getCtx();
+      const run = () => {
+        try {
+          if (VOICE[name]) {
+            // kurzer Aufmerksamkeits-Ton, dann die Ansage
+            try { SOUNDS.pling(ctx); } catch (e) {}
+            setTimeout(() => speak(VOICE[name]), 650);
+            return;
+          }
+          (SOUNDS[name] || SOUNDS.gong)(ctx);
+        } catch (e) { /* Audio erst nach erster Interaktion erlaubt – ok */ }
+      };
+      // Der Browser pausiert die Audioverbindung nach Inaktivität automatisch
+      // (Energiesparen). Erst nach abgeschlossenem Aufwecken darf ein Ton
+      // geplant werden – sonst verstummt er lautlos, ohne Fehlermeldung.
+      if (ctx.state === 'suspended') {
+        ctx.resume().then(run).catch(() => {});
+      } else {
+        run();
+      }
     }
     function beep() {
       if (!soundOn) return;
