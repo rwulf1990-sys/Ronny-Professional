@@ -499,6 +499,15 @@
     }
 
     function formatEUR(v) { return v.toFixed(2).replace('.', ',') + ' €'; }
+    // Bestelldaten kommen direkt aus der Datenbank und könnten auch über
+    // die API statt über die Website eingetragen worden sein - vor dem
+    // Einsetzen in innerHTML immer escapen, sonst drohen eingeschleuste
+    // <script>/<img onerror>-Inhalte im Dashboard auszuführen.
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      }[c]));
+    }
     function formatTime(ts) {
       return new Date(ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     }
@@ -654,12 +663,12 @@
       const n = pendingAlertOrders.length;
       orderAlertCount.textContent = n === 1 ? '1 neue Bestellung' : n + ' neue Bestellungen';
       orderAlertList.innerHTML = pendingAlertOrders.map((o) => {
-        const dishes = (o.items && o.items.length ? o.items.map((it) => it.dish) : [o.dish || '—']).join(', ');
+        const dishes = escapeHtml((o.items && o.items.length ? o.items.map((it) => it.dish) : [o.dish || '—']).join(', '));
         return `
           <div class="order-alert-item">
-            <div class="t">${formatTime(o.ts)} Uhr · #${o.id.slice(-4).toUpperCase()}</div>
+            <div class="t">${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</div>
             <div class="d">${dishes}</div>
-            ${o.pickup ? `<div class="p">🕛 Abholung: ${o.pickup}</div>` : ''}
+            ${o.pickup ? `<div class="p">🕛 Abholung: ${escapeHtml(o.pickup)}</div>` : ''}
             <div class="sum">${formatEUR(o.total)}</div>
           </div>`;
       }).join('');
@@ -707,23 +716,23 @@
       firstRender = false;
 
       container.innerHTML = orders.map((o) => `
-        <div class="db-order status-${o.status}">
+        <div class="db-order status-${escapeHtml(o.status)}">
           <div class="db-order-top">
-            <span class="db-order-time">${formatTime(o.ts)} Uhr · #${o.id.slice(-4).toUpperCase()}</span>
-            <span class="db-badge ${o.status}">${STATUS_LABEL[o.status]}</span>
+            <span class="db-order-time">${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</span>
+            <span class="db-badge ${escapeHtml(o.status)}">${escapeHtml(STATUS_LABEL[o.status] || o.status)}</span>
           </div>
           ${(o.items && o.items.length
               ? o.items.map((it) => `
-                <p class="db-order-dish">${it.dish}</p>
-                <p class="db-order-details">${(it.details || []).join(' · ') || '—'}</p>`).join('')
-              : `<p class="db-order-dish">${o.dish || '—'}</p>
-                 <p class="db-order-details">${(o.details || []).join(' · ') || '—'}</p>`)}
-          ${o.pickup ? `<p class="db-order-pickup">🕛 Abholung: ${o.pickup}</p>` : ''}
-          ${o.phone ? `<p class="db-order-phone">📞 <a href="tel:${String(o.phone).replace(/[\s/()\-.]/g, '')}">${o.phone}</a></p>` : ''}
+                <p class="db-order-dish">${escapeHtml(it.dish)}</p>
+                <p class="db-order-details">${escapeHtml((it.details || []).join(' · ')) || '—'}</p>`).join('')
+              : `<p class="db-order-dish">${escapeHtml(o.dish) || '—'}</p>
+                 <p class="db-order-details">${escapeHtml((o.details || []).join(' · ')) || '—'}</p>`)}
+          ${o.pickup ? `<p class="db-order-pickup">🕛 Abholung: ${escapeHtml(o.pickup)}</p>` : ''}
+          ${o.phone ? `<p class="db-order-phone">📞 <a href="tel:${escapeHtml(String(o.phone).replace(/[\s/()\-.]/g, ''))}">${escapeHtml(o.phone)}</a></p>` : ''}
           <div class="db-order-foot">
             <span class="db-order-total">${formatEUR(o.total)}</span>
             ${o.status !== 'abgeholt'
-              ? `<button class="db-btn primary" onclick="advance('${o.id}', '${o.status}')">${NEXT_LABEL[o.status]}</button>`
+              ? `<button class="db-btn primary" data-advance-id="${escapeHtml(o.id)}" data-advance-status="${escapeHtml(o.status)}">${escapeHtml(NEXT_LABEL[o.status] || '?')}</button>`
               : ''}
           </div>
         </div>`).join('');
@@ -742,6 +751,14 @@
         render();
       }
     };
+    // Per Event-Delegation statt onclick="..." - verhindert, dass ein
+    // manipulierter Status-Wert aus der Datenbank Code im onclick-Attribut
+    // einschleusen kann.
+    document.getElementById('db-orders').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-advance-id]');
+      if (!btn) return;
+      advance(btn.dataset.advanceId, btn.dataset.advanceStatus);
+    });
 
     async function addDemoOrder() {
       const demo = DEMO_ORDERS[Math.floor(Math.random() * DEMO_ORDERS.length)];
@@ -865,7 +882,7 @@
       html += '<div class="stat-h">Bestellungen pro Tag – was wurde bestellt</div>';
       dayKeys.forEach((k) => {
         const day = byDay[k];
-        const dishStr = Object.entries(day.dishes).sort((a, b) => b[1] - a[1]).map((e) => e[1] + '× ' + e[0]).join(' · ');
+        const dishStr = Object.entries(day.dishes).sort((a, b) => b[1] - a[1]).map((e) => e[1] + '× ' + escapeHtml(e[0])).join(' · ');
         html += '<div class="stat-day"><div class="stat-day-head">'
           + '<span class="stat-day-date">' + new Date(k).toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) + '</span>'
           + '<span class="stat-day-meta">' + day.count + ' Best. · ' + formatEUR(day.revenue) + '</span></div>'
