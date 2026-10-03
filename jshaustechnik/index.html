@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="logo-badge.jpg">
+<title>JSHaustechnik</title>
+<meta name="description" content="JSHaustechnik – J. Strunck. Badezimmer, Sanitär und Heizung. Ihr Fachbetrieb seit 2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky full-screen 3D montage stage (marble, gold, navy) → light service sheet → navy process band → contact on marble */
+:root{
+  --marble:#08090c;
+  --marble-2:#14161b;
+  --navy:#0a2e5c;
+  --navy-deep:#061a36;
+  --gold:#c9a050;
+  --gold-hi:#ecd08a;
+  --paper:#eef1f5;
+  --paper-2:#e2e7ee;
+  --ink:#0b1626;
+  --ink-soft:#44506a;
+  --mist:#a7afbd;
+  --white:#ffffff;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gutter:clamp(16px,4vw,56px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--marble);color:var(--white);font-family:var(--f-body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+.wrap{max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+
+/* ---------- Nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:30;padding-top:env(safe-area-inset-top,0px);transition:background .3s}
+.nav.solid{background:rgba(6,10,18,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand img{height:46px;width:auto;display:block}
+.brand b{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:28px;font-weight:500;font-size:15px}
+.nav-links a{text-decoration:none;opacity:.85}
+.nav-links a:hover{opacity:1;color:var(--gold-hi)}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:12px 22px;border:1.5px solid var(--gold);color:var(--gold-hi);background:transparent;cursor:pointer;transition:background .2s,color .2s}
+.btn:hover{background:var(--gold);color:var(--marble)}
+.btn.fill{background:var(--gold);color:var(--marble)}
+.btn.fill:hover{background:var(--gold-hi)}
+@media (max-width:760px){.nav-links a:not(.btn){display:none}.brand b{display:none}.btn{padding:10px 16px;font-size:15px}}
+
+/* ---------- Montage stage ---------- */
+#montage{position:relative;height:560vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--marble)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#marble{opacity:.95}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 65% 45%,transparent 35%,rgba(0,0,0,.55) 100%)}
+.labels{position:absolute;inset:0;pointer-events:none}
+.plabel{position:absolute;left:0;top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.04em;color:var(--gold-hi);white-space:nowrap;display:flex;align-items:center;gap:8px;will-change:transform,opacity}
+.plabel::before{content:"";width:28px;height:1px;background:var(--gold)}
+.plabel.left{flex-direction:row-reverse}
+.plabel em{font-style:normal}
+.plabel span{color:var(--mist)}
+
+.caps{position:absolute;left:var(--gutter);top:50%;transform:translateY(-46%);width:min(460px,40vw);pointer-events:none}
+.cap{position:absolute;left:0;top:0;width:100%;transform:translateY(calc(-50% + 18px));opacity:0;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.cap.on{opacity:1;transform:translateY(-50%);pointer-events:auto}
+.cap .eyebrow{color:var(--gold)}
+.cap h1,.cap h2{font-family:var(--f-display);font-weight:700;text-transform:uppercase;line-height:.92;letter-spacing:.01em;margin:.25em 0 .35em;text-wrap:balance}
+.cap h1{font-size:clamp(46px,6.4vw,96px)}
+.cap h2{font-size:clamp(40px,5vw,76px)}
+.cap h1 em,.cap h2 em{font-style:normal;color:var(--gold-hi)}
+.cap p{margin:0;color:#c9cfda;max-width:40ch;font-size:18px}
+.cap .hero-logo{width:150px;height:auto;display:block;margin-bottom:18px}
+.cap .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+
+.rail{position:absolute;right:var(--gutter);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:18px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
+.rail li{list-style:none;display:flex;align-items:center;gap:12px;justify-content:flex-end;transition:color .3s}
+.rail li i{width:22px;height:2px;background:currentColor;opacity:.5;transition:width .3s,opacity .3s}
+.rail li.on{color:var(--gold-hi)}
+.rail li.on i{width:44px;opacity:1}
+.rail ol{margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
+
+.readout{position:absolute;right:var(--gutter);bottom:28px;font-family:var(--f-mono);font-size:12px;color:var(--mist);text-align:right;line-height:1.7;font-variant-numeric:tabular-nums}
+.readout b{color:var(--white);font-weight:500}
+.hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);display:flex;flex-direction:column;align-items:center;gap:10px;transition:opacity .4s}
+.hint::after{content:"";width:1px;height:38px;background:linear-gradient(var(--gold),transparent);animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.nogl{position:absolute;right:var(--gutter);bottom:90px;max-width:300px;font-size:14px;color:var(--mist)}
+
+@media (max-width:860px){
+  .caps{top:auto;bottom:0;left:0;right:0;width:auto;transform:none;height:44%;padding-inline:var(--gutter);background:linear-gradient(transparent,rgba(5,7,10,.88) 28%)}
+  .cap{left:var(--gutter);right:var(--gutter);width:auto;top:auto;bottom:24px;transform:translateY(16px)}
+  .cap.on{transform:none}
+  .cap h1{font-size:clamp(40px,11vw,60px)}
+  .cap h2{font-size:clamp(36px,10vw,54px)}
+  .cap p{font-size:16px}
+  .cap .hero-logo{width:96px;margin-bottom:10px}
+  .cap .row{margin-top:16px}
+  .rail{top:96px;transform:none}
+  .rail li span{display:none}
+  .readout{display:none}
+  .hint{display:none}
+}
+
+/* ---------- Leistungen ---------- */
+.sheet{background:var(--paper);color:var(--ink)}
+.sheet .eyebrow{color:var(--navy)}
+section.block{padding-block:clamp(72px,10vw,130px)}
+.head{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px 64px;align-items:end;margin-bottom:56px}
+.head h2{font-family:var(--f-display);font-weight:700;text-transform:uppercase;font-size:clamp(40px,5.2vw,78px);line-height:.9;margin:.2em 0 0;color:var(--navy);text-wrap:balance;hyphens:auto}
+.head p{margin:0;color:var(--ink-soft);max-width:46ch}
+@media (max-width:760px){.head{grid-template-columns:1fr}}
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:40px}
+.svc{border-top:3px solid var(--navy);padding-top:26px;min-width:0}
+.svc svg{width:64px;height:48px;color:var(--navy);display:block}
+.svc h3{font-family:var(--f-display);font-weight:700;font-size:34px;text-transform:uppercase;letter-spacing:.02em;margin:18px 0 8px;color:var(--navy)}
+.svc p{margin:0 0 18px;color:var(--ink-soft)}
+.svc ul{margin:0;padding:0;list-style:none;display:grid;gap:0}
+.svc li{padding-block:10px;border-bottom:1px solid var(--paper-2);display:flex;justify-content:space-between;gap:12px;font-weight:500}
+.svc li small{font-family:var(--f-mono);font-size:11px;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;padding-top:3px;white-space:nowrap}
+
+/* ---------- Ablauf ---------- */
+.band{background:var(--navy);color:var(--white)}
+.band .eyebrow{color:var(--gold-hi)}
+.band .head h2{color:var(--white)}
+.band .head p{color:#c3cde0}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{padding:28px 28px 8px 0;border-top:1px solid rgba(255,255,255,.22);position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--f-display);font-weight:700;font-size:64px;line-height:1;color:var(--gold);display:block;margin-bottom:14px}
+.steps li::after{content:"";position:absolute;left:0;top:-2px;width:36px;height:3px;background:var(--gold)}
+.steps h3{font-family:var(--f-display);font-size:26px;text-transform:uppercase;letter-spacing:.03em;margin:0 0 6px}
+.steps p{margin:0;color:#c3cde0;font-size:16px}
+@media (max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:32px}}
+@media (max-width:520px){.steps{grid-template-columns:1fr}}
+
+/* ---------- Über ---------- */
+.about{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center}
+.about img{width:100%;max-width:420px;height:auto;display:block}
+.about h2{font-family:var(--f-display);font-weight:700;text-transform:uppercase;font-size:clamp(40px,5vw,72px);line-height:.92;color:var(--navy);margin:.2em 0 .4em;text-wrap:balance}
+.about p{color:var(--ink-soft);max-width:56ch;margin:0 0 14px}
+.sig{font-family:var(--f-display);font-size:22px;color:var(--navy);font-weight:600;letter-spacing:.04em;margin-top:22px}
+.facts{display:flex;flex-wrap:wrap;gap:12px 36px;margin-top:28px;padding-top:22px;border-top:1px solid var(--paper-2)}
+.facts div{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.facts b{display:block;font-family:var(--f-display);font-size:30px;color:var(--navy);letter-spacing:0;font-weight:700}
+@media (max-width:760px){.about{grid-template-columns:1fr;gap:28px}.about img{max-width:260px}}
+
+/* ---------- Kontakt ---------- */
+.contact{position:relative;background:var(--marble-2);overflow:hidden}
+.contact .head h2{color:var(--white)}
+.contact .head p{color:#b9c0cc}
+.contact .eyebrow{color:var(--gold)}
+.cgrid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:56px}
+.cinfo dl{margin:0;display:grid;gap:22px}
+.cinfo dt{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.cinfo dd{margin:4px 0 0;font-family:var(--f-display);font-size:28px;font-weight:600;letter-spacing:.02em}
+.cinfo dd.tbd{color:var(--mist);font-size:22px}
+.cinfo .note{margin-top:26px;font-size:14px;color:var(--mist);max-width:36ch}
+form{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+form .full{grid-column:1/-1}
+label{display:grid;gap:6px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
+input,select,textarea{font:inherit;font-family:var(--f-body);font-size:16px;letter-spacing:0;text-transform:none;color:var(--white);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);padding:13px 14px;border-radius:0;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+select option{background:var(--marble-2)}
+textarea{min-height:130px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips span{display:inline-block;padding:9px 14px;border:1px solid rgba(255,255,255,.2);font-family:var(--f-body);font-size:15px;letter-spacing:0;text-transform:none;color:#d7dce5;cursor:pointer}
+.chips input:checked+span{border-color:var(--gold);background:rgba(201,160,80,.14);color:var(--gold-hi)}
+.chips input:focus-visible+span{outline:2px solid var(--gold-hi);outline-offset:2px}
+.status{grid-column:1/-1;font-size:15px;color:var(--gold-hi);min-height:1.5em;margin:0}
+@media (max-width:860px){.cgrid{grid-template-columns:1fr}}
+@media (max-width:520px){form{grid-template-columns:1fr}}
+
+footer{background:var(--marble);color:var(--mist);font-size:14px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:18px;padding-block:28px;border-top:1px solid rgba(255,255,255,.08)}
+.foot img{height:54px;width:auto;display:block}
+.foot nav{display:flex;gap:22px}
+.foot a{text-decoration:none}
+.foot a:hover{color:var(--gold-hi)}
+.preview-tag{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(255,255,255,.15);padding:4px 8px}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.cap,.hint::after{transition:none;animation:none}}
+</style>
+</head>
+<body>
+
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="JSHaustechnik Startseite"><img src="logo-white.png" alt=""><b>JSHaustechnik</b></a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#leistungen">Leistungen</a>
+      <a href="#ablauf">Ablauf</a>
+      <a href="#ueber">Über uns</a>
+      <a class="btn" href="#kontakt">Anfrage</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" lang="de">
+  <section id="montage" aria-label="Armatur – Montage-Animation">
+    <div class="stage" id="stage">
+      <canvas id="marble" aria-hidden="true"></canvas>
+      <canvas id="gl" aria-hidden="true"></canvas>
+      <div class="vignette"></div>
+      <div class="labels" id="labels" aria-hidden="true"></div>
+
+      <div class="caps">
+        <div class="cap on" data-step="0">
+          <img class="hero-logo" src="logo-white.png" alt="JSHaustechnik – J. Strunck, Est. 2025">
+          <h1>Bad. Sanitär. <em>Heizung.</em></h1>
+          <p>Wir kennen jede Armatur bis zur letzten Dichtung. Deshalb finden wir die Ursache, statt nur Teile zu tauschen.</p>
+        </div>
+        <div class="cap" data-step="1">
+          <span class="eyebrow">Schritt 2 · Montage</span>
+          <h2>Teil für Teil <em>an seinen Platz.</em></h2>
+          <p>Kartusche, Dichtungen, Strahlregler, Befestigung: fachgerecht in der richtigen Reihenfolge verbaut, mit dem passenden Drehmoment.</p>
+        </div>
+        <div class="cap" data-step="2">
+          <span class="eyebrow">Schritt 3 · Prüfung</span>
+          <h2>Dicht. Geprüft. <em>Sauber übergeben.</em></h2>
+          <p>Anschlüsse kontrolliert, Druck getestet, Baustelle aufgeräumt. Sie bekommen ein fertiges Bad, keine Baustelle.</p>
+        </div>
+        <div class="cap" data-step="3">
+          <span class="eyebrow">Schritt 4 · Inbetriebnahme</span>
+          <h2>Wasser <em>marsch.</em></h2>
+          <p>Ob tropfender Hahn, neues Badezimmer oder Heizung, die nicht warm wird: Wir kommen vorbei und machen es richtig.</p>
+          <div class="row"><a class="btn fill" href="#kontakt">Termin anfragen</a><a class="btn" href="#leistungen">Leistungen</a></div>
+        </div>
+      </div>
+
+      <div class="rail" aria-hidden="true">
+        <ol>
+          <li data-step="0" class="on"><span>Zerlegt</span><i></i></li>
+          <li data-step="1"><span>Montage</span><i></i></li>
+          <li data-step="2"><span>Prüfung</span><i></i></li>
+          <li data-step="3"><span>Wasser</span><i></i></li>
+        </ol>
+      </div>
+
+      <div class="readout" aria-hidden="true">
+        Fließdruck <b id="ro-bar">3,0 bar</b><br>
+        Durchfluss <b id="ro-flow">0,0 l/min</b><br>
+        Teile montiert <b id="ro-parts">0 / 0</b>
+      </div>
+      <div class="hint" id="hint">Scrollen zum Montieren</div>
+      <p class="nogl" id="nogl" hidden>Die 3D-Ansicht braucht WebGL. In diesem Browser ist es nicht verfügbar.</p>
+    </div>
+  </section>
+
+  <section class="sheet block" id="leistungen">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <span class="eyebrow">Leistungen</span>
+          <h2>Drei Gewerke, ein Ansprechpartner.</h2>
+        </div>
+        <p>Vom tropfenden Wasserhahn bis zum kompletten Badumbau. Sie haben einen festen Kontakt, der die Arbeit plant, ausführt und dafür geradesteht.</p>
+      </div>
+      <div class="services">
+        <article class="svc">
+          <svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22h52"/><path d="M10 22v6c0 7 6 12 13 12h18c7 0 13-5 13-12v-6"/><path d="M18 40l-3 5M46 40l3 5"/><path d="M14 22v-12a4 4 0 0 1 8 0"/></svg>
+          <h3>Badezimmer</h3>
+          <p>Planung, Rückbau, Vorwandinstallation und Montage aus einer Hand.</p>
+          <ul>
+            <li>Komplettsanierung <small>Bad &amp; Gäste-WC</small></li>
+            <li>Bodengleiche Dusche <small>barrierearm</small></li>
+            <li>Waschtisch, WC, Wanne <small>Montage</small></li>
+            <li>Armaturen <small>Auswahl &amp; Einbau</small></li>
+          </ul>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16h22a6 6 0 0 1 6 6v20"/><path d="M4 26h16a2 2 0 0 1 2 2v14"/><path d="M26 42h12"/><path d="M40 6l14 14-6 6-14-14z"/><path d="M47 13l12-7"/></svg>
+          <h3>Sanitär &amp; Klempner</h3>
+          <p>Wenn es tropft, rauscht oder nicht mehr abläuft.</p>
+          <ul>
+            <li>Armaturen reparieren <small>Kartusche, Dichtung</small></li>
+            <li>Trinkwasserleitungen <small>Neu &amp; Austausch</small></li>
+            <li>Abfluss &amp; Abwasser <small>Rohr, Siphon</small></li>
+            <li>Undichtigkeiten <small>Ortung</small></li>
+          </ul>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="6" width="9" height="36" rx="4.5"/><rect x="21" y="6" width="9" height="36" rx="4.5"/><rect x="34" y="6" width="9" height="36" rx="4.5"/><rect x="47" y="6" width="9" height="36" rx="4.5"/><path d="M56 36h5"/></svg>
+          <h3>Heizung</h3>
+          <p>Damit es warm wird, wenn es kalt ist, und die Rechnung nicht unnötig steigt.</p>
+          <ul>
+            <li>Heizkörper <small>Tausch &amp; Versetzen</small></li>
+            <li>Wartung &amp; Störung <small>Therme, Kessel</small></li>
+            <li>Hydraulischer Abgleich <small>Effizienz</small></li>
+            <li>Modernisierung <small>Beratung</small></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band block" id="ablauf">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <span class="eyebrow">So arbeiten wir</span>
+          <h2>Vom Anruf bis zum ersten Wasser.</h2>
+        </div>
+        <p>Klare Schritte, feste Termine und ein Angebot, das Sie verstehen. Bevor wir anfangen, wissen Sie, was passiert.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Anfrage</h3><p>Sie schildern kurz, worum es geht, per Telefon oder Formular.</p></li>
+        <li><h3>Termin vor Ort</h3><p>Wir sehen uns alles an, messen auf und beraten Sie ehrlich.</p></li>
+        <li><h3>Angebot</h3><p>Schriftlich, transparent und Position für Position nachvollziehbar.</p></li>
+        <li><h3>Ausführung</h3><p>Sauber montiert, geprüft und mit Ihnen gemeinsam übergeben.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sheet block" id="ueber">
+    <div class="wrap about">
+      <img src="logo-navy.png" alt="Logo JSHaustechnik – J. Strunck, Est. 2025" loading="lazy">
+      <div>
+        <span class="eyebrow">Über uns</span>
+        <h2>Ein junger Betrieb mit altem Handwerk.</h2>
+        <p>Hinter JSHaustechnik steht J. Strunck. Gegründet 2025, mit einem klaren Anspruch: ehrliche Beratung, saubere Arbeit und eine Person, die erreichbar bleibt, auch nach der Übergabe.</p>
+        <p>Wir arbeiten mit Markenarmaturen und Ersatzteilen, die man auch in zehn Jahren noch bekommt. Was wir einbauen, können wir später auch reparieren.</p>
+        <div class="sig">J. Strunck · Inhaber</div>
+        <div class="facts">
+          <div><b>2025</b>gegründet</div>
+          <div><b>3</b>Gewerke</div>
+          <div><b>1</b>fester Ansprechpartner</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact block" id="kontakt">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <span class="eyebrow">Kontakt</span>
+          <h2>Was dürfen wir für Sie tun?</h2>
+        </div>
+        <p>Schreiben Sie uns kurz, worum es geht. Wir melden uns mit einem Terminvorschlag.</p>
+      </div>
+      <div class="cgrid">
+        <div class="cinfo">
+          <dl>
+            <div><dt>Telefon</dt><dd class="tbd">wird ergänzt</dd></div>
+            <div><dt>E-Mail</dt><dd class="tbd">wird ergänzt</dd></div>
+            <div><dt>Einsatzgebiet</dt><dd class="tbd">wird ergänzt</dd></div>
+          </dl>
+          <p class="note">Vorschau: Kontaktdaten, Einsatzgebiet und Öffnungszeiten trage ich ein, sobald sie feststehen.</p>
+        </div>
+        <form id="form" novalidate>
+          <label for="f-name">Name<input id="f-name" name="name" autocomplete="name" placeholder="Vor- und Nachname"></label>
+          <label for="f-contact">Telefon oder E-Mail<input id="f-contact" name="contact" autocomplete="email" placeholder="Wie erreichen wir Sie?"></label>
+          <div class="full" role="group" aria-label="Anliegen">
+            <span class="eyebrow" style="display:block;margin-bottom:8px;color:var(--mist)">Anliegen</span>
+            <div class="chips">
+              <label><input type="radio" name="topic" id="t-bad" value="Badezimmer" checked><span>Badezimmer</span></label>
+              <label><input type="radio" name="topic" id="t-san" value="Sanitär"><span>Sanitär / Klempner</span></label>
+              <label><input type="radio" name="topic" id="t-hz" value="Heizung"><span>Heizung</span></label>
+              <label><input type="radio" name="topic" id="t-other" value="Sonstiges"><span>Sonstiges</span></label>
+            </div>
+          </div>
+          <label class="full" for="f-msg">Nachricht<textarea id="f-msg" name="msg" placeholder="z. B. Waschtischarmatur tropft, Kartusche tauschen?"></textarea></label>
+          <div class="full"><button class="btn fill" type="submit">Anfrage senden</button></div>
+          <p class="status" id="status" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <img src="logo-white.png" alt="JSHaustechnik">
+    <span>© 2025 JSHaustechnik · J. Strunck</span>
+    <nav aria-label="Rechtliches"><a href="#kontakt">Impressum</a><a href="#kontakt">Datenschutz</a></nav>
+    <span class="preview-tag">Vorschau</span>
+  </div>
+</footer>
+
+<script src="three.min.js"></script>
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+var nav = document.getElementById('nav');
+var section = document.getElementById('montage');
+var stage = document.getElementById('stage');
+var glCanvas = document.getElementById('gl');
+var marbleCanvas = document.getElementById('marble');
+var labelsEl = document.getElementById('labels');
+var caps = [].slice.call(document.querySelectorAll('.cap'));
+var rails = [].slice.call(document.querySelectorAll('.rail li'));
+var hint = document.getElementById('hint');
+var roFlow = document.getElementById('ro-flow');
+var roBar = document.getElementById('ro-bar');
+var roParts = document.getElementById('ro-parts');
+
+/* ---------- Form (preview only) ---------- */
+document.getElementById('form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var n = document.getElementById('f-name').value.trim();
+  var c = document.getElementById('f-contact').value.trim();
+  var s = document.getElementById('status');
+  if(!n || !c){ s.textContent = 'Bitte Name und Telefon oder E-Mail angeben, damit wir Sie erreichen.'; return; }
+  s.textContent = 'Danke, ' + n + '. In dieser Vorschau wird noch nichts verschickt. Nach dem Livegang landet die Anfrage direkt im Postfach.';
+});
+
+/* ---------- Helpers ---------- */
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function ease(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+function smooth(a,b,v){ var t=clamp((v-a)/(b-a),0,1); return t*t*(3-2*t); }
+function rng(seed){ return function(){ seed = (seed + 0x6D2B79F5)|0; var t = Math.imul(seed ^ (seed>>>15), 1|seed); t = (t + Math.imul(t ^ (t>>>7), 61|t)) ^ t; return ((t ^ (t>>>14))>>>0)/4294967296; }; }
+
+function paintMarble(cv, w, h, seed, base, light){
+  var c = cv.getContext('2d'); cv.width = w; cv.height = h;
+  var g = c.createRadialGradient(w*.65,h*.42,0,w*.6,h*.5,Math.max(w,h)*.85);
+  g.addColorStop(0, light); g.addColorStop(1, base);
+  c.fillStyle = g; c.fillRect(0,0,w,h);
+  var r = rng(seed), s = Math.max(w,h)/1400;
+  for(var i=0;i<26;i++){
+    var x=r()*w, y=r()*h, a=r()*Math.PI*2, gold=r()<.62, len=140+r()*260;
+    c.lineWidth = (.35 + r()*r()*2.8)*s;
+    c.strokeStyle = gold ? 'rgba(201,160,80,'+(.10+r()*.32).toFixed(2)+')' : 'rgba(214,218,228,'+(.03+r()*.07).toFixed(2)+')';
+    c.shadowColor = gold ? 'rgba(236,208,138,.55)' : 'rgba(0,0,0,0)';
+    c.shadowBlur = gold ? 7*s : 0;
+    c.beginPath(); c.moveTo(x,y);
+    for(var k=0;k<len;k++){ a += (r()-.5)*.55; x += Math.cos(a)*6*s; y += Math.sin(a)*6*s; c.lineTo(x,y); }
+    c.stroke();
+  }
+}
+
+/* ---------- Nav state ---------- */
+function navState(){ nav.classList.toggle('solid', window.scrollY > section.offsetHeight - window.innerHeight*1.05); }
+
+/* ---------- Scroll progress ---------- */
+var pTarget = 0, pNow = 0;
+function readScroll(){
+  var r = section.getBoundingClientRect();
+  var span = r.height - window.innerHeight;
+  pTarget = span > 0 ? clamp(-r.top/span,0,1) : 0;
+  navState();
+}
+window.addEventListener('scroll', readScroll, {passive:true});
+
+function stepFor(p){ return p < .2 ? 0 : p < .58 ? 1 : p < .72 ? 2 : 3; }
+var curStep = 0;
+function setStep(s){
+  if(s===curStep) return; curStep = s;
+  caps.forEach(function(el){ el.classList.toggle('on', +el.dataset.step===s); });
+  rails.forEach(function(el){ el.classList.toggle('on', +el.dataset.step===s); });
+}
+
+/* ---------- WebGL ---------- */
+var renderer;
+try {
+  if(!window.THREE) throw new Error('three missing');
+  renderer = new THREE.WebGLRenderer({canvas:glCanvas, antialias:true, alpha:true});
+} catch(err){
+  document.getElementById('nogl').hidden = false;
+  paintMarble(marbleCanvas, 1200, 800, 7, '#08090c', '#16181d');
+  readScroll();
+  window.addEventListener('scroll', function(){ setStep(stepFor(pTarget)); }, {passive:true});
+  return;
+}
+
+var T = THREE, V3 = T.Vector3, V2 = T.Vector2;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+renderer.outputEncoding = T.sRGBEncoding;
+renderer.toneMapping = T.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.setClearColor(0x000000, 0);
+
+var scene = new T.Scene();
+var camera = new T.PerspectiveCamera(32, 1, .1, 120);
+
+/* Studio environment for reflections: softboxes around the subject */
+(function(){
+  var pm = new T.PMREMGenerator(renderer);
+  var env = new T.Scene();
+  env.background = new T.Color(0x030303);
+  function box(w,h,d,col,k,x,y,z){
+    var m = new T.Mesh(new T.BoxGeometry(w,h,d), new T.MeshBasicMaterial({color:new T.Color(col).multiplyScalar(k)}));
+    m.position.set(x,y,z); env.add(m);
+  }
+  box(12,.5,6,0xffffff,3.2, 0,9,1);
+  box(.5,7,7,0xffdba0,2.4, -9,2,3);
+  box(.5,6,6,0xd2e2ff,1.6, 9,3,-2);
+  box(8,3,.5,0xffffff,1.3, 1,1.5,10);
+  box(30,.3,30,0x1a140c,1, 0,-7,0);
+  box(4,10,.5,0xffe7bf,.9, -2,2,-10);
+  scene.environment = pm.fromScene(env,.04).texture;
+  pm.dispose();
+})();
+
+scene.add(new T.HemisphereLight(0xdfe8ff, 0x1a1208, .55));
+var key = new T.DirectionalLight(0xfff0d8, 1.7); key.position.set(4,9,7); scene.add(key);
+var rim = new T.DirectionalLight(0xbcd2ff, .9); rim.position.set(-7,4,-5); scene.add(rim);
+
+function col(h){ return new T.Color(h).convertSRGBToLinear(); }
+function std(o){ var m = new T.MeshStandardMaterial(o); m.color = col(o.color); return m; }
+var M = {
+  black: std({color:0x0d0e10, metalness:.55, roughness:.28}),
+  gold: std({color:0xe2b45c, metalness:1, roughness:.16}),
+  brass: std({color:0xc49a4a, metalness:1, roughness:.34}),
+  rubber: std({color:0x18191b, metalness:0, roughness:.75}),
+  chrome: std({color:0xdcdfe4, metalness:1, roughness:.14}),
+  white: std({color:0xf2f2ee, metalness:0, roughness:.42}),
+  blue: std({color:0x1d6ee0, metalness:0, roughness:.32}),
+  ceramic: std({color:0xf6f6f3, metalness:0, roughness:.12}),
+  navy: std({color:0x0a2e5c, metalness:.1, roughness:.38})
+};
+
+/* Wire-mesh texture for strainers, braid texture for hoses */
+function canvasTex(size, draw, rep){
+  var c = document.createElement('canvas'); c.width = c.height = size;
+  draw(c.getContext('2d'), size);
+  var t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping;
+  if(rep) t.repeat.set(rep[0], rep[1]);
+  return t;
+}
+var gridTex = canvasTex(64, function(c,s){ c.fillStyle='#000'; c.fillRect(0,0,s,s); c.fillStyle='#fff'; for(var i=0;i<s;i+=8){ c.fillRect(i,0,3,s); c.fillRect(0,i,s,3); } }, [6,3]);
+M.mesh = new T.MeshStandardMaterial({color:col(0xd6d9de), metalness:1, roughness:.3, alphaMap:gridTex, alphaTest:.5, side:T.DoubleSide});
+var braidTex = canvasTex(64, function(c,s){ c.fillStyle='#777'; c.fillRect(0,0,s,s); c.strokeStyle='#e8e8e8'; c.lineWidth=3; for(var i=-s;i<2*s;i+=8){ c.beginPath(); c.moveTo(i,0); c.lineTo(i+s,s); c.stroke(); c.beginPath(); c.moveTo(i+s,0); c.lineTo(i,s); c.stroke(); } }, [2,40]);
+M.braid = new T.MeshStandardMaterial({color:col(0xffffff), map:braidTex, bumpMap:braidTex, bumpScale:.015, metalness:.9, roughness:.4});
+braidTex.encoding = T.sRGBEncoding;
+
+function ring(ro, ri, h, mat){
+  var b = Math.min(.012, h*.25);
+  var pts = [new V2(ri,0), new V2(ro-b,0), new V2(ro,b), new V2(ro,h-b), new V2(ro-b,h), new V2(ri,h), new V2(ri,0)];
+  var m = new T.Mesh(new T.LatheGeometry(pts, 72), mat);
+  return m;
+}
+function torus(r, tube, mat){ var m = new T.Mesh(new T.TorusGeometry(r, tube, 16, 72), mat); m.rotation.x = Math.PI/2; var g = new T.Group(); g.add(m); return g; }
+function cyl(rt, rb, h, mat, seg, y){ var m = new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg||48), mat); m.position.y = (y||0) + h/2; return m; }
+function group(){ var g = new T.Group(); for(var i=0;i<arguments.length;i++) g.add(arguments[i]); return g; }
+
+var root = new T.Group(); scene.add(root);
+var parts = [];
+var ASSEMBLY_START = .06, ASSEMBLY_END = .55, DUR = .11;
+function part(obj, home, ex, o){
+  o = o||{};
+  var hr = o.rot || [0,0,0], er = o.exRot || [hr[0]+.25, hr[1]+.5, hr[2]+.15];
+  var p = {obj:obj, home:new V3().fromArray(home), ex:new V3().fromArray(ex), hr:hr, er:er, order:o.order||0, hide:!!o.hide, fixed:!!o.fixed};
+  obj.position.copy(p.ex);
+  parts.push(p); root.add(obj); return p;
+}
+
+/* --- Body: cylinder, gold spiral, flange, spout --- */
+var bodyG = new T.Group();
+bodyG.add(cyl(.55,.55,2.6,M.black,72));
+var helix = [];
+for(var i=0;i<=90;i++){ var t=i/90, a=-.4 + t*Math.PI*1.55; helix.push(new V3(Math.cos(a)*.553, .22 + t*2.2, Math.sin(a)*.553)); }
+bodyG.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(helix), 160, .028, 10), M.gold));
+bodyG.add(ring(.64,.5,.14,M.gold));
+var spoutCurve = new T.CatmullRomCurve3([new V3(.2,2.25,0), new V3(1.0,2.32,0), new V3(1.9,2.33,0), new V3(2.36,2.27,0), new V3(2.56,2.12,0), new V3(2.6,1.98,0)]);
+bodyG.add(new T.Mesh(new T.TubeGeometry(spoutCurve, 96, .21, 32), M.black));
+var accentCurve = new T.CatmullRomCurve3([new V3(.35,2.44,0), new V3(1.0,2.52,0), new V3(1.9,2.53,0), new V3(2.38,2.47,0), new V3(2.64,2.28,0)]);
+bodyG.add(new T.Mesh(new T.TubeGeometry(accentCurve, 80, .026, 10), M.gold));
+part(bodyG, [0,0,0], [0,0,0], {fixed:true});
+
+/* --- Top stack --- */
+var cart = group(
+  ring(.37,.28,.12,M.gold),
+  cyl(.31,.31,.4,M.white,48,.12),
+  cyl(.35,.35,.13,M.blue,48,.52),
+  cyl(.07,.07,.3,M.white,16,.65)
+);
+var pCart = part(cart, [0,2.3,0], [0,3.55,0], {order:5});
+part(ring(.34,.27,.04,M.rubber), [0,2.28,0], [0,3.1,0], {order:4, hide:true});
+part(torus(.42,.03,M.rubber), [0,2.62,0], [0,4.45,0], {order:6, hide:true});
+part(ring(.5,.36,.22,M.gold), [0,2.6,0], [0,4.8,0], {order:7});
+part(ring(.48,.36,.03,M.rubber), [0,2.82,0], [0,5.22,0], {order:8});
+var coverPts = [new V2(.2,0), new V2(.5,0), new V2(.49,.05), new V2(.43,.2), new V2(.37,.22), new V2(.2,.22), new V2(.2,0)];
+part(new T.Mesh(new T.LatheGeometry(coverPts,72), M.gold), [0,2.85,0], [0,5.55,0], {order:9});
+
+var leverShape = new T.Shape();
+leverShape.moveTo(0,-.1); leverShape.lineTo(2.05,.0); leverShape.quadraticCurveTo(2.32,.03,2.26,.14); leverShape.lineTo(0,.15); leverShape.lineTo(0,-.1);
+var leverGeo = new T.ExtrudeGeometry(leverShape, {depth:.26, bevelEnabled:true, bevelThickness:.03, bevelSize:.03, bevelSegments:3, curveSegments:16});
+leverGeo.translate(0,0,-.13);
+var lever = new T.Mesh(leverGeo, M.gold); lever.position.set(.12,.1,0);
+var inlay = new T.Mesh(new T.BoxGeometry(1.55,.03,.16), M.black); inlay.position.set(1.2,.275,0); inlay.rotation.z = -.004;
+var handle = group(cyl(.27,.27,.28,M.gold,48), lever, inlay);
+var pHandle = part(handle, [0,3.07,0], [0,6.25,0], {order:12, exRot:[.15,.6,.18]});
+var axisX = [0,0,Math.PI/2];
+part(cyl(.11,.11,.05,M.gold,32), [-.24,3.24,0], [-1.4,6.45,0], {order:13, rot:axisX, exRot:[0,.3,Math.PI/2], hide:true});
+part(ring(.06,.03,.03,M.brass), [-.2,3.24,0], [-1.0,6.45,0], {order:13.5, rot:axisX, exRot:[0,.3,Math.PI/2], hide:true});
+part(group(cyl(.045,.045,.16,M.brass,16), cyl(.065,.065,.03,M.brass,16,.16)), [-.05,3.24,0], [-.62,6.45,0], {order:14, rot:axisX, exRot:[0,.3,Math.PI/2], hide:true});
+
+/* --- Spout internals (flow regulator) pulled out sideways --- */
+var spoutAxis = [0,0,-Math.PI/2];
+var pFlow = part(group(cyl(.13,.13,.34,M.brass,32), cyl(.09,.09,.16,M.brass,24,.34)), [1.15,2.33,0], [.75,2.62,1.9], {order:1, rot:spoutAxis, exRot:[.1,.3,-Math.PI/2], hide:true});
+part(torus(.12,.028,M.rubber), [1.6,2.33,0], [1.42,2.62,1.9], {order:1.5, rot:spoutAxis, exRot:[.1,.3,-Math.PI/2], hide:true});
+part(new T.Mesh(new T.CylinderGeometry(.13,.13,.28,32,1,true), M.mesh), [1.8,2.33,0], [1.8,2.62,1.9], {order:2, rot:spoutAxis, exRot:[.1,.3,-Math.PI/2], hide:true});
+part(ring(.15,.11,.1,M.gold), [2.0,2.33,0], [2.2,2.62,1.9], {order:2.5, rot:spoutAxis, exRot:[.1,.3,-Math.PI/2], hide:true});
+
+/* --- Aerator stack below the outlet --- */
+var aer = [
+  [ring(.17,.12,.04,M.rubber), true],
+  [ring(.17,.12,.04,M.rubber), true],
+  [new T.Mesh(new T.CylinderGeometry(.16,.16,.08,32,1,true), M.mesh), true],
+  [ring(.17,.12,.04,M.rubber), true],
+  [ring(.215,.17,.2,M.gold), false],
+  [ring(.17,.12,.04,M.rubber), true],
+  [ring(.2,.15,.08,M.gold), true]
+];
+var pAerator;
+aer.forEach(function(a, i){
+  var p = part(a[0], [2.6, a[1] ? 1.86 : 1.8, 0], [2.78 + i*.11, 1.35 - i*.42, .25], {order:2 + i*.45, rot:[0,0,0], exRot:[.38,.2,-.12], hide:a[1]});
+  if(!a[1]) pAerator = p;
+});
+
+/* --- Under-counter mounting --- */
+part(ring(.62,.2,.05,M.rubber), [0,-.05,0], [0,-.55,0], {order:3});
+part(ring(.6,.2,.08,M.gold), [0,-.53,0], [0,-.98,0], {order:7});
+part(ring(.56,.2,.05,M.rubber), [0,-.58,0], [0,-1.3,0], {order:7.5});
+var shoe = new T.Mesh(new T.LatheGeometry([new V2(.2,0), new V2(.55,0), new V2(.55,.07), new V2(.2,.07), new V2(.2,0)], 48, .45, Math.PI*2 - .9), M.chrome);
+part(shoe, [0,-.66,0], [-.35,-1.65,.1], {order:8, exRot:[.3,.8,.12]});
+var thread = new T.Group();
+thread.add(cyl(.15,.15,1.2,M.brass,32,-1.2));
+for(var j=0;j<16;j++){ var tr = new T.Mesh(new T.TorusGeometry(.152,.012,6,32), M.brass); tr.rotation.x = Math.PI/2; tr.position.y = -1.15 + j*.06; thread.add(tr); }
+var pShank = part(thread, [0,0,0], [0,-1.95,0], {order:4});
+part(new T.Mesh(new T.CylinderGeometry(.27,.27,.2,6), M.brass), [0,-.9,0], [0,-3.45,0], {order:9});
+part(cyl(.035,.035,1.1,M.chrome,12,-1.1), [-.36,0,0], [-1.25,-.85,.1], {order:5, exRot:[.1,0,.22]});
+part(cyl(.035,.035,1.1,M.chrome,12,-1.1), [.36,0,0], [1.3,-1.1,.2], {order:5.5, exRot:[.1,0,-.2]});
+var hoses = new T.Group();
+[-1,1].forEach(function(s){
+  var c = new T.CatmullRomCurve3([new V3(s*.07,-1.2,0), new V3(s*.12,-1.8,.05), new V3(s*.35,-2.4,.15), new V3(s*.55,-3.0,.1)]);
+  hoses.add(new T.Mesh(new T.TubeGeometry(c, 48, .055, 12), M.braid));
+  var cr = new T.Mesh(new T.CylinderGeometry(.075,.075,.14,24), M.brass); cr.position.set(s*.07,-1.25,0); hoses.add(cr);
+  var hex = new T.Mesh(new T.CylinderGeometry(.11,.11,.2,6), M.brass); hex.position.set(s*.55,-3.08,.1); hex.rotation.z = s*.28; hoses.add(hex);
+});
+var pHoses = part(hoses, [0,0,0], [0,-2.25,0], {order:6});
+
+/* Assembly timing per part */
+var orders = parts.filter(function(p){ return !p.fixed; }).map(function(p){ return p.order; });
+var oMax = Math.max.apply(null, orders);
+parts.forEach(function(p){ p.s = ASSEMBLY_START + (p.order/oMax)*(ASSEMBLY_END - DUR - ASSEMBLY_START); });
+var movable = parts.filter(function(p){ return !p.fixed; }).length;
+
+/* --- Vanity: marble top, navy cabinet, vessel basin --- */
+var topCanvas = document.createElement('canvas');
+paintMarble(topCanvas, 1024, 512, 21, '#0a0b0e', '#1b1d22');
+var topTex = new T.CanvasTexture(topCanvas); topTex.encoding = T.sRGBEncoding;
+var counterMat = new T.MeshStandardMaterial({map:topTex, metalness:0, roughness:.4, envMapIntensity:.45, transparent:true, opacity:0});
+var counter = new T.Mesh(new T.BoxGeometry(8,.4,5.6), counterMat); counter.position.set(1.6,-.25,.6);
+var cabMat = M.navy.clone(); cabMat.transparent = true; cabMat.opacity = 0;
+var cabinet = new T.Mesh(new T.BoxGeometry(7.6,3.6,5.2), cabMat); cabinet.position.set(1.6,-2.25,.55);
+var bowlPts = [new V2(0,0), new V2(.62,0), new V2(1.0,.12), new V2(1.2,.36), new V2(1.28,.68), new V2(1.3,.78), new V2(1.24,.78), new V2(1.2,.52), new V2(1.04,.26), new V2(.68,.1), new V2(0,.08)];
+var bowlMat = M.ceramic.clone(); bowlMat.transparent = true; bowlMat.opacity = 0; bowlMat.side = T.DoubleSide;
+var bowl = new T.Mesh(new T.LatheGeometry(bowlPts, 96), bowlMat); bowl.position.set(2.6,-.05,0);
+var vanity = group(counter, cabinet, bowl); scene.add(vanity);
+var vanityMats = [counterMat, cabMat, bowlMat];
+
+/* --- Water --- */
+var WATER_TOP = 1.8, WATER_BOT = .03, WL = WATER_TOP - WATER_BOT;
+var streamMat = new T.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{uTime:{value:0}, uLen:{value:0}, uAlpha:{value:0}},
+  vertexShader:[
+    'uniform float uTime; varying vec2 vUv; varying vec3 vN; varying vec3 vV;',
+    'void main(){ vUv=uv; vec3 p=position; float y=1.0-uv.y;',
+    ' p.x += sin(y*9.0 - uTime*6.0)*0.006*y; p.z += cos(y*7.0 - uTime*5.0)*0.006*y;',
+    ' vec4 mv=modelViewMatrix*vec4(p,1.0); vN=normalize(normalMatrix*normal); vV=normalize(-mv.xyz); gl_Position=projectionMatrix*mv; }'
+  ].join('\n'),
+  fragmentShader:[
+    'uniform float uTime; uniform float uLen; uniform float uAlpha; varying vec2 vUv; varying vec3 vN; varying vec3 vV;',
+    'void main(){ float y=1.0-vUv.y; if(y>uLen) discard;',
+    ' float fres=pow(1.0-abs(dot(normalize(vN),normalize(vV))),2.0);',
+    ' float flow=sin(y*46.0 - uTime*20.0 + vUv.x*18.85)*0.5+0.5;',
+    ' float streak=sin(vUv.x*37.7 + y*3.0)*0.5+0.5;',
+    ' float edge=smoothstep(uLen, uLen-0.05, y);',
+    ' float a=(0.16 + 0.62*fres + 0.22*flow*streak)*uAlpha*edge;',
+    ' vec3 c=mix(vec3(0.70,0.84,1.0), vec3(1.0), clamp(fres*0.7+flow*0.25,0.0,1.0));',
+    ' gl_FragColor=vec4(c,a); }'
+  ].join('\n')
+});
+var stream = new T.Mesh(new T.CylinderGeometry(.068,.05,WL,28,48,true), streamMat);
+stream.position.set(2.6, WATER_TOP - WL/2, 0);
+var core = new T.Mesh(new T.CylinderGeometry(.035,.03,WL,16,48,true), streamMat);
+core.position.copy(stream.position);
+scene.add(stream); scene.add(core);
+
+var poolMat = new T.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{uTime:{value:0}, uAlpha:{value:0}},
+  vertexShader:'varying vec2 vP; void main(){ vP=position.xy; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+  fragmentShader:[
+    'uniform float uTime; uniform float uAlpha; varying vec2 vP;',
+    'void main(){ float d=length(vP); float r=sin(d*38.0 - uTime*9.0)*0.5+0.5;',
+    ' float fall=smoothstep(0.95,0.2,d); float a=(0.10+0.32*r*fall + 0.4*smoothstep(0.14,0.0,d))*uAlpha;',
+    ' gl_FragColor=vec4(vec3(0.78,0.9,1.0)+r*0.15, a); }'
+  ].join('\n')
+});
+var pool = new T.Mesh(new T.CircleGeometry(.98,64), poolMat);
+pool.rotation.x = -Math.PI/2; pool.position.set(2.6, WATER_BOT + .085, 0);
+scene.add(pool);
+
+var DROPS = 90;
+var dropGeo = new T.BufferGeometry();
+var dropPos = new Float32Array(DROPS*3);
+dropGeo.setAttribute('position', new T.BufferAttribute(dropPos, 3));
+var dropSeed = []; var dr = rng(5);
+for(var d=0; d<DROPS; d++) dropSeed.push([dr(), dr()*Math.PI*2, .4+dr()*.8, .5+dr()*.8]);
+var dropMat = new T.PointsMaterial({color:0xe4f1ff, size:.035, transparent:true, opacity:0, depthWrite:false});
+var drops = new T.Points(dropGeo, dropMat); scene.add(drops);
+
+/* --- Part labels (exploded view) --- */
+var labelDefs = [
+  [pCart, [.55,.4,0], 'Keramik-Kartusche', 'Ø 35 mm'],
+  [pFlow, [-.35,.35,0], 'Durchflussbegrenzer', '5 l/min', true],
+  [pAerator, [.35,0,0], 'Strahlregler', 'M24 × 1'],
+  [pShank, [-.3,-.6,0], 'Gewindeschaft', 'M10 / G ½', true],
+  [pHoses, [.75,-2.6,0], 'Flexschläuche', '3/8″ · 500 mm']
+];
+var labels = labelDefs.map(function(L){
+  var el = document.createElement('div');
+  el.className = 'plabel' + (L[4] ? ' left' : '');
+  el.innerHTML = '<em>' + L[2] + ' <span>' + L[3] + '</span></em>';
+  labelsEl.appendChild(el);
+  return {el:el, part:L[0], off:new V3().fromArray(L[1]), left:!!L[4]};
+});
+
+/* --- Camera framing --- */
+var W=1, H=1, aspect=1, tanV = Math.tan(T.MathUtils.degToRad(16));
+var frames = {ex:{c:new V3(1.3,.95,0), hh:7.6, hw:3.4}, as:{c:new V3(1.65,1.55,0), hh:2.9, hw:3.4}};
+function fit(f){
+  var desktop = aspect > 1.15, mobile = aspect < .85;
+  var hh = f.hh / (mobile ? .58 : 1), hw = f.hw / (desktop ? .62 : 1);
+  var dist = Math.max(hh/tanV, hw/(tanV*aspect));
+  var c = f.c.clone();
+  if(desktop) c.x -= tanV*aspect*dist*.36;
+  if(mobile) c.y -= tanV*dist*.38;
+  return {c:c, d:dist};
+}
+var fEx, fAs;
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight; aspect = W/H;
+  renderer.setSize(W, H, false);
+  camera.aspect = aspect; camera.updateProjectionMatrix();
+  fEx = fit(frames.ex); fAs = fit(frames.as);
+  paintMarble(marbleCanvas, Math.round(W), Math.round(H), 7, '#07080b', '#17191e');
+  readScroll();
+}
+window.addEventListener('resize', resize);
+
+var mx=0, my=0, mxs=0, mys=0;
+if(!reduce) window.addEventListener('pointermove', function(e){ mx = e.clientX/window.innerWidth - .5; my = e.clientY/window.innerHeight - .5; }, {passive:true});
+
+var visible = true;
+if('IntersectionObserver' in window) new IntersectionObserver(function(es){ visible = es[0].isIntersecting; }, {rootMargin:'100px'}).observe(stage);
+
+var tmp = new V3(), camTarget = new V3();
+var clock = new T.Clock(), time = 0;
+var fmt = new Intl.NumberFormat('de-DE', {minimumFractionDigits:1, maximumFractionDigits:1});
+
+function frame(){
+  requestAnimationFrame(frame);
+  var dt = Math.min(clock.getDelta(), .05);
+  if(!visible) return;
+  time += dt;
+  pNow += (pTarget - pNow) * (reduce ? 1 : 1 - Math.pow(.0015, dt));
+  var p = pNow;
+
+  setStep(stepFor(p));
+  hint.style.opacity = p < .03 ? 1 : 0;
+
+  /* parts */
+  var placed = 0;
+  for(var i=0;i<parts.length;i++){
+    var pt = parts[i];
+    if(pt.fixed) continue;
+    var t = ease(clamp((p - pt.s)/DUR, 0, 1));
+    if(t >= .999) placed++;
+    pt.obj.position.lerpVectors(pt.ex, pt.home, t);
+    if(!reduce) pt.obj.position.y += Math.sin(time*.9 + i*1.7) * .05 * (1-t);
+    pt.obj.rotation.set(lerp(pt.er[0],pt.hr[0],t), lerp(pt.er[1],pt.hr[1],t) + (reduce?0:(1-t)*Math.sin(time*.4+i)*.15), lerp(pt.er[2],pt.hr[2],t));
+    pt.obj.visible = !(pt.hide && t >= .999);
+  }
+  roParts.textContent = placed + ' / ' + movable;
+
+  /* vanity fades in, lever lifts, water runs */
+  var v = smooth(.56, .66, p);
+  vanityMats.forEach(function(m){ m.opacity = v; m.transparent = v < .999; m.depthWrite = v > .5; });
+  vanity.visible = v > .001;
+  vanity.position.y = (1-v) * -.25;
+  var lift = smooth(.66, .74, p);
+  handle.rotation.z += lift * .24;
+  var w = smooth(.72, .8, p);
+  streamMat.uniforms.uTime.value = time; streamMat.uniforms.uLen.value = smooth(.72,.79,p)*1.06; streamMat.uniforms.uAlpha.value = w;
+  stream.visible = core.visible = w > .001;
+  var wp = smooth(.78, .86, p);
+  poolMat.uniforms.uTime.value = time; poolMat.uniforms.uAlpha.value = wp;
+  pool.visible = wp > .001;
+  dropMat.opacity = wp * .85; drops.visible = wp > .001;
+  if(drops.visible){
+    for(var k=0;k<DROPS;k++){
+      var s = dropSeed[k], life = (time*s[3]*1.6 + s[0]) % 1;
+      var rr = .06 + life*.32*s[2];
+      dropPos[k*3] = 2.6 + Math.cos(s[1])*rr;
+      dropPos[k*3+1] = WATER_BOT + .1 + 4*life*(1-life)*.22*s[2];
+      dropPos[k*3+2] = Math.sin(s[1])*rr;
+    }
+    dropGeo.attributes.position.needsUpdate = true;
+  }
+  roFlow.textContent = fmt.format(5*w) + ' l/min';
+  roBar.textContent = fmt.format(3 - .4*w) + ' bar';
+
+  /* camera */
+  var k = ease(clamp((p-.04)/.5, 0, 1));
+  var k2 = smooth(.6, .95, p);
+  camTarget.lerpVectors(fEx.c, fAs.c, k);
+  camTarget.y -= k2*.25;
+  var dist = lerp(fEx.d, fAs.d, k) * (1 + k2*.04);
+  mxs += (mx - mxs)*.05; mys += (my - mys)*.05;
+  var az = lerp(.62, .26, k) - k2*.2 + mxs*.18 + (reduce ? 0 : Math.sin(time*.15)*.03*(1-k));
+  var el = lerp(.08, .24, k) + k2*.12 - mys*.08;
+  camera.position.set(camTarget.x + Math.sin(az)*Math.cos(el)*dist, camTarget.y + Math.sin(el)*dist, camTarget.z + Math.cos(az)*Math.cos(el)*dist);
+  camera.lookAt(camTarget);
+  camera.updateMatrixWorld();
+
+  /* labels */
+  var la = 1 - smooth(.05, .14, p);
+  var showLabels = la > .01 && W > 640;
+  labels.forEach(function(L){
+    if(!showLabels){ L.el.style.opacity = 0; return; }
+    tmp.copy(L.part.obj.position).add(L.off).project(camera);
+    var x = (tmp.x*.5+.5)*W, y = (-tmp.y*.5+.5)*H;
+    L.el.style.opacity = la;
+    L.el.style.transform = 'translate(' + (L.left ? 'calc(' + x.toFixed(1) + 'px - 100%)' : x.toFixed(1)+'px') + ',' + (y-8).toFixed(1) + 'px)';
+  });
+
+  renderer.render(scene, camera);
+}
+resize();
+frame();
+})();
+</script>
+
+</body>
+</html>
