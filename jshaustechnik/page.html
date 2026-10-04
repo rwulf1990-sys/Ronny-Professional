@@ -49,7 +49,7 @@ a{color:inherit}
 @media (max-width:760px){.nav-links a:not(.btn){display:none}.brand b{display:none}.btn{padding:10px 16px;font-size:15px}}
 
 /* ---------- Montage stage ---------- */
-#montage{position:relative;height:560vh}
+#montage{position:relative;height:1220vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--marble)}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #marble{opacity:.95}
@@ -73,18 +73,28 @@ a{color:inherit}
 .cap .hero-logo{width:150px;height:auto;display:block;margin-bottom:18px}
 .cap .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
 
-.rail{position:absolute;right:var(--gutter);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:18px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
+.rail{text-shadow:0 1px 6px rgba(0,0,0,.9);position:absolute;right:var(--gutter);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:18px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
 .rail li{list-style:none;display:flex;align-items:center;gap:12px;justify-content:flex-end;transition:color .3s}
 .rail li i{width:22px;height:2px;background:currentColor;opacity:.5;transition:width .3s,opacity .3s}
 .rail li.on{color:var(--gold-hi)}
 .rail li.on i{width:44px;opacity:1}
 .rail ol{margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
 
-.readout{position:absolute;right:var(--gutter);bottom:28px;font-family:var(--f-mono);font-size:12px;color:var(--mist);text-align:right;line-height:1.7;font-variant-numeric:tabular-nums}
+.readout{transition:opacity .4s;position:absolute;right:var(--gutter);bottom:28px;font-family:var(--f-mono);font-size:12px;color:var(--mist);text-align:right;line-height:1.7;font-variant-numeric:tabular-nums}
 .readout b{color:var(--white);font-weight:500}
 .hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);display:flex;flex-direction:column;align-items:center;gap:10px;transition:opacity .4s}
 .hint::after{content:"";width:1px;height:38px;background:linear-gradient(var(--gold),transparent);animation:drip 1.8s ease-in-out infinite}
 @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.gallery{position:absolute;inset:0;background:#000;opacity:0;visibility:hidden;perspective:1300px;perspective-origin:62% 50%;overflow:hidden;pointer-events:none}
+.g-photo{position:absolute;left:0;top:0;background-size:100% 100%;opacity:0;will-change:transform,opacity}
+.g-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.82),rgba(0,0,0,.35) 42%,transparent 62%);opacity:0}
+.tile{position:absolute;left:0;top:0;background-size:cover;background-position:center;opacity:0;box-shadow:0 30px 80px rgba(0,0,0,.7);outline:1px solid rgba(236,208,138,.25);outline-offset:-1px;will-change:transform,opacity;backface-visibility:hidden}
+.finale{padding-top:28px;background:radial-gradient(ellipse 60% 70% at 50% 65%,rgba(0,0,0,.55),transparent 75%);position:absolute;left:50%;bottom:clamp(20px,5vh,56px);transform:translate(-50%,20px);width:min(720px,calc(100% - 2*var(--gutter)));text-align:center;opacity:0;transition:opacity .6s ease,transform .7s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.finale.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.finale .eyebrow{color:var(--gold-hi);text-shadow:0 1px 12px rgba(0,0,0,.8)}
+.finale h2{font-family:var(--f-display);font-weight:700;text-transform:uppercase;font-size:clamp(30px,4vw,52px);line-height:.95;margin:.2em 0 .5em;text-shadow:0 2px 24px rgba(0,0,0,.85)}
+.finale h2 em{font-style:normal;color:var(--gold-hi)}
+.finale .row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 .nogl{position:absolute;right:var(--gutter);bottom:90px;max-width:300px;font-size:14px;color:var(--mist)}
 
 @media (max-width:860px){
@@ -99,6 +109,8 @@ a{color:inherit}
   .rail{top:96px;transform:none}
   .rail li span{display:none}
   .readout{display:none}
+  .g-shade{background:none}
+  .finale h2{font-size:clamp(26px,8vw,38px)}
   .hint{display:none}
 }
 
@@ -202,6 +214,23 @@ footer{background:var(--marble);color:var(--mist);font-size:14px}
       <div class="vignette"></div>
       <div class="labels" id="labels" aria-hidden="true"></div>
 
+      <div class="gallery" id="gallery" aria-hidden="true">
+        <div class="g-photo" id="gphoto" style="background-image:url({{IMG:img/bad.jpg}})"></div>
+        <div class="g-shade" id="gshade"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-00.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-01.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-02.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-03.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-04.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-05.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-06.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-07.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-08.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-09.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-10.jpg}})"></div>
+        <div class="tile" style="background-image:url({{IMG:img/tile-11.jpg}})"></div>
+      </div>
+
       <div class="caps">
         <div class="cap on" data-step="0">
           <img class="hero-logo" src="{{LOGO_WHITE}}" alt="JSHaustechnik – J. Strunck, Est. 2025">
@@ -224,6 +253,22 @@ footer{background:var(--marble);color:var(--mist);font-size:14px}
           <p>Ob tropfender Hahn, neues Badezimmer oder Heizung, die nicht warm wird: Wir kommen vorbei und machen es richtig.</p>
           <div class="row"><a class="btn fill" href="#kontakt">Termin anfragen</a><a class="btn" href="#leistungen">Leistungen</a></div>
         </div>
+        <div class="cap" data-step="4">
+          <span class="eyebrow">Schritt 5 · Planung</span>
+          <h2>Jedes Detail <em>geplant.</em></h2>
+          <p>Regendusche, beleuchtete Nische, Aufsatzbecken, LED-Sockel: Wir planen Ihr Bad Stück für Stück, bevor die erste Fliese verlegt wird.</p>
+        </div>
+        <div class="cap" data-step="5">
+          <span class="eyebrow">Schritt 6 · Übergabe</span>
+          <h2>Ihr Bad. <em>Fertig.</em></h2>
+          <p>Aus vielen Einzelteilen wird ein Raum, in dem man gern Zeit verbringt. Geplant, installiert und übergeben von einem Betrieb.</p>
+        </div>
+      </div>
+
+      <div class="finale" id="finale">
+        <span class="eyebrow">JSHaustechnik · J. Strunck</span>
+        <h2>Ihr Bad. <em>Unser Handwerk.</em></h2>
+        <div class="row"><a class="btn fill" href="#kontakt">Termin anfragen</a><a class="btn" href="#leistungen">Leistungen ansehen</a></div>
       </div>
 
       <div class="rail" aria-hidden="true">
@@ -232,10 +277,13 @@ footer{background:var(--marble);color:var(--mist);font-size:14px}
           <li data-step="1"><span>Montage</span><i></i></li>
           <li data-step="2"><span>Prüfung</span><i></i></li>
           <li data-step="3"><span>Wasser</span><i></i></li>
+          <li data-step="4"><span>Details</span><i></i></li>
+          <li data-step="5"><span>Ihr Bad</span><i></i></li>
+          <li data-step="6"><span>Ankommen</span><i></i></li>
         </ol>
       </div>
 
-      <div class="readout" aria-hidden="true">
+      <div class="readout" id="readout" aria-hidden="true">
         Fließdruck <b id="ro-bar">3,0 bar</b><br>
         Durchfluss <b id="ro-flow">0,0 l/min</b><br>
         Teile montiert <b id="ro-parts">0 / 0</b>
@@ -442,11 +490,17 @@ function readScroll(){
 }
 window.addEventListener('scroll', readScroll, {passive:true});
 
-function stepFor(p){ return p < .2 ? 0 : p < .58 ? 1 : p < .72 ? 2 : 3; }
+var SPLIT = .46;
+function stepFor(P){
+  if(P < SPLIT){ var p = P/SPLIT; return p < .2 ? 0 : p < .58 ? 1 : p < .72 ? 2 : 3; }
+  return P < .70 ? 4 : P < .875 ? 5 : 6;
+}
+var finale = document.getElementById('finale');
 var curStep = 0;
 function setStep(s){
   if(s===curStep) return; curStep = s;
   caps.forEach(function(el){ el.classList.toggle('on', +el.dataset.step===s); });
+  finale.classList.toggle('on', s===6);
   rails.forEach(function(el){ el.classList.toggle('on', +el.dataset.step===s); });
 }
 
@@ -722,6 +776,206 @@ var labels = labelDefs.map(function(L){
 
 /* --- Camera framing --- */
 var W=1, H=1, aspect=1, tanV = Math.tan(T.MathUtils.degToRad(16));
+/* =========================================================
+   Chapter 2: collage tiles fly in on black, settle into the
+   finished bathroom photo, then the camera rises above the
+   bathtub and looks straight down onto the floating logo.
+   ========================================================= */
+var gallery = document.getElementById('gallery'), gphoto = document.getElementById('gphoto'), gshade = document.getElementById('gshade');
+var readout = document.getElementById('readout');
+var tiles = [].slice.call(document.querySelectorAll('.tile'));
+var IMG_W = 1374, IMG_H = 1145, COL_W = 1536, COL_H = 1024;
+var SRC_COLS = [[0,379],[385,776],[782,1161],[1171,1536]], SRC_ROWS = [[0,382],[388,721],[728,1024]];
+/* where each collage tile belongs in the finished bathroom photo (px in the photo) */
+var TARGETS = [
+  [20,545,745,945],   /* Badewanne */
+  [735,135,985,680],  /* Dusche */
+  [1045,330,1374,620],/* Aufsatzbecken */
+  [1120,840,1374,1145],/* WC */
+  [255,495,470,610],  /* Wannenarmatur */
+  [850,140,1010,330], /* Regenbrause */
+  [1140,40,1374,440], /* Spiegel */
+  [430,700,1120,1000],/* LED-Boden */
+  [250,0,1020,130],   /* Decke */
+  [735,260,810,350],  /* Nische */
+  [90,450,510,540],   /* Ablage */
+  [0,140,140,900]     /* Pflanze */
+];
+var tileRnd = tiles.map(function(_, i){ var r = rng(100+i); return {x:(r()-.5)*1.7, y:(r()-.5)*1.5, z:1500+r()*2400, rx:(r()-.5)*80, ry:(r()-.5)*100, rz:(r()-.5)*50}; });
+tiles.forEach(function(el, i){ var t = TARGETS[i]; el.style.zIndex = 100 - Math.round((t[2]-t[0])*(t[3]-t[1])/10000); });
+var lay = {cells:[], targets:[], zoom:[0,0]};
+function layoutGallery(){
+  var narrow = W <= 860, ax0, ax1, ay0, ay1;
+  if(narrow){ ax0 = 16; ax1 = W-16; ay0 = 84; ay1 = H*.56; }
+  else { ax0 = W*.42; ax1 = W - 170; ay0 = 96; ay1 = H - 70; }
+  var cw = Math.min(ax1-ax0, (ay1-ay0)*COL_W/COL_H), ch = cw*COL_H/COL_W;
+  var cx = ax0 + (ax1-ax0-cw)/2, cy = ay0 + (ay1-ay0-ch)/2;
+  var s = Math.max(W/IMG_W, H/IMG_H), ox = (W-IMG_W*s)/2, oy = (H-IMG_H*s)/2;
+  lay.cells = []; lay.targets = [];
+  SRC_ROWS.forEach(function(r){ SRC_COLS.forEach(function(c){
+    lay.cells.push({x:cx + c[0]/COL_W*cw, y:cy + r[0]/COL_H*ch, w:(c[1]-c[0])/COL_W*cw, h:(r[1]-r[0])/COL_H*ch});
+  }); });
+  TARGETS.forEach(function(t){ lay.targets.push({x:ox+t[0]*s, y:oy+t[1]*s, w:(t[2]-t[0])*s, h:(t[3]-t[1])*s}); });
+  gphoto.style.left = ox+'px'; gphoto.style.top = oy+'px'; gphoto.style.width = IMG_W*s+'px'; gphoto.style.height = IMG_H*s+'px';
+  gphoto.style.transformOrigin = (400*s)+'px '+(700*s)+'px';
+}
+function updateGallery(P){
+  var go = smooth(SPLIT-.005, SPLIT+.045, P) * (1 - smooth(.885, .925, P));
+  gallery.style.opacity = go.toFixed(3);
+  gallery.style.visibility = go > .001 ? 'visible' : 'hidden';
+  if(go <= .001) return;
+  var q = clamp((P-.49)/.17, 0, 1), r = clamp((P-.70)/.10, 0, 1);
+  var fade = 1 - smooth(.775, .815, P);
+  tiles.forEach(function(el, i){
+    var a = ease(clamp((q - i*.04)/.52, 0, 1)), b = ease(clamp((r - i*.03)/.6, 0, 1));
+    var c = lay.cells[i], t = lay.targets[i], R = tileRnd[i], inv = 1-a;
+    el.style.left = lerp(c.x,t.x,b).toFixed(1)+'px'; el.style.top = lerp(c.y,t.y,b).toFixed(1)+'px';
+    el.style.width = lerp(c.w,t.w,b).toFixed(1)+'px'; el.style.height = lerp(c.h,t.h,b).toFixed(1)+'px';
+    el.style.transform = inv > .0005 ? 'translate3d('+(R.x*W*inv).toFixed(1)+'px,'+(R.y*H*inv).toFixed(1)+'px,'+(-R.z*inv).toFixed(1)+'px) rotateX('+(R.rx*inv).toFixed(2)+'deg) rotateY('+(R.ry*inv).toFixed(2)+'deg) rotateZ('+(R.rz*inv).toFixed(2)+'deg)' : 'none';
+    el.style.opacity = (smooth(0, .3, a) * fade).toFixed(3);
+  });
+  var ph = smooth(.76, .81, P);
+  gphoto.style.opacity = ph.toFixed(3);
+  gshade.style.opacity = (ph * (1 - smooth(.855, .88, P))).toFixed(3);
+  gphoto.style.transform = 'scale(' + (1 + ease(clamp((P-.855)/.075, 0, 1))*1.9).toFixed(4) + ')';
+}
+
+/* --- Scene B: bathtub from above --- */
+var sceneB = new T.Scene();
+sceneB.background = new T.Color(0x050405);
+sceneB.fog = new T.Fog(0x050405, 12, 26);
+sceneB.environment = scene.environment;
+sceneB.add(new T.HemisphereLight(0xffe2b8, 0x0c0703, .45));
+var keyB = new T.DirectionalLight(0xfff1dc, .8); keyB.position.set(2,10,4); sceneB.add(keyB);
+var camB = new T.PerspectiveCamera(40, 1, .1, 60);
+
+function marbleTex(size, seed, rep){
+  var c = document.createElement('canvas');
+  paintMarble(c, size, size, seed, '#060607', '#16171a');
+  var t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(rep, rep);
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+}
+var floorB = new T.Mesh(new T.PlaneGeometry(40,40), new T.MeshStandardMaterial({map:marbleTex(1024, 33, 4), roughness:.16, metalness:0, envMapIntensity:.5}));
+floorB.rotation.x = -Math.PI/2; floorB.position.y = -.62; sceneB.add(floorB);
+
+function rrect(w, h, r){
+  var s = new T.Shape(), x = -w/2, y = -h/2;
+  s.moveTo(x+r, y); s.lineTo(x+w-r, y); s.quadraticCurveTo(x+w, y, x+w, y+r); s.lineTo(x+w, y+h-r); s.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  s.lineTo(x+r, y+h); s.quadraticCurveTo(x, y+h, x, y+h-r); s.lineTo(x, y+r); s.quadraticCurveTo(x, y, x+r, y);
+  return s;
+}
+function flat(geo){ geo.rotateX(-Math.PI/2); return geo; }
+var TUB_O = [4.3, 2.5, .4], TUB_I = [3.8, 2.0, .78], DECK = [5.4, 3.4];
+var deckShape = rrect(DECK[0], DECK[1], .04); deckShape.holes.push(rrect(TUB_O[0]-.02, TUB_O[1]-.02, TUB_O[2]));
+var deckTex = marbleTex(1024, 44, .2);
+var deck = new T.Mesh(flat(new T.ExtrudeGeometry(deckShape, {depth:.58, bevelEnabled:false, curveSegments:24})), new T.MeshStandardMaterial({map:deckTex, roughness:.18, envMapIntensity:.7}));
+deck.position.y = -.6; sceneB.add(deck);
+var rimShape = rrect(TUB_O[0], TUB_O[1], TUB_O[2]); rimShape.holes.push(rrect(TUB_I[0], TUB_I[1], TUB_I[2]));
+var rim = new T.Mesh(flat(new T.ExtrudeGeometry(rimShape, {depth:.04, bevelEnabled:true, bevelThickness:.02, bevelSize:.02, bevelSegments:3, curveSegments:32})), M.ceramic);
+rim.position.y = -.02; sceneB.add(rim);
+var basinMat = M.ceramic.clone(); basinMat.side = T.BackSide;
+var basin = new T.Mesh(flat(new T.ExtrudeGeometry(rrect(TUB_I[0], TUB_I[1], TUB_I[2]), {depth:.56, bevelEnabled:false, curveSegments:32})), basinMat);
+basin.position.y = -.56; sceneB.add(basin);
+
+var waterB = new T.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{uTime:{value:0}},
+  vertexShader:'varying vec2 vP; void main(){ vP=position.xy; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+  fragmentShader:[
+    'uniform float uTime; varying vec2 vP;',
+    'void main(){',
+    ' vec2 q=vec2(vP.x*.62, vP.y); float d=length(q);',
+    ' float rip=sin(d*24.0 - uTime*2.4)*0.5+0.5; rip*=smoothstep(1.25,0.55,d);',
+    ' float c1=sin(vP.x*8.0+uTime*1.2+sin(vP.y*6.0+uTime*.8))*sin(vP.y*9.0-uTime*1.05+sin(vP.x*5.0-uTime*.6));',
+    ' float caust=pow(abs(c1),3.0)*0.35;',
+    ' vec3 deep=vec3(0.30,0.62,0.66), light=vec3(0.74,0.92,0.92);',
+    ' vec3 col=mix(deep,light,0.35+0.35*rip)+caust*0.45+vec3(1.0,0.78,0.45)*0.06;',
+    ' gl_FragColor=vec4(col,0.70+0.15*rip); }'
+  ].join('\n')
+});
+var waterMesh = new T.Mesh(new T.ShapeGeometry(rrect(TUB_I[0]-.02, TUB_I[1]-.02, TUB_I[2]-.01), 32), waterB);
+waterMesh.rotation.x = -Math.PI/2; waterMesh.position.y = -.15; sceneB.add(waterMesh);
+
+/* LED glow around the deck plinth */
+var glowCv = document.createElement('canvas'); glowCv.width = 740; glowCv.height = 540;
+(function(c){ c.shadowColor='rgba(255,186,90,1)'; c.strokeStyle='rgba(255,206,130,1)';
+  for(var k=0;k<3;k++){ c.shadowBlur = 30+k*25; c.lineWidth = 8; c.strokeRect(100,100,540,340); } })(glowCv.getContext('2d'));
+var glowTex = new T.CanvasTexture(glowCv);
+var glow = new T.Mesh(flat(new T.PlaneGeometry(7.4,5.4)), new T.MeshBasicMaterial({map:glowTex, transparent:true, blending:T.AdditiveBlending, depthWrite:false, toneMapped:false, opacity:.9}));
+glow.position.y = -.615; sceneB.add(glow);
+
+/* gold tub filler + headrests + candles */
+var filler = new T.Group();
+var fb = new T.Mesh(new T.BoxGeometry(.95,.05,.2), M.gold); fb.position.y = .025; filler.add(fb);
+var sp = new T.Mesh(new T.BoxGeometry(.16,.07,.42), M.gold); sp.position.set(0,.09,.12); filler.add(sp);
+[-.32,.32].forEach(function(x){ var h = cyl(.045,.045,.14,M.gold,20); h.position.set(x,.05,0); filler.add(h); var lv = new T.Mesh(new T.BoxGeometry(.05,.03,.16), M.gold); lv.position.set(x,.2,.04); filler.add(lv); });
+var hs = cyl(.035,.035,.32,M.gold,16); hs.rotation.z = Math.PI/2; hs.position.set(.62,.06,0); filler.add(hs);
+filler.position.set(0,0,-1.42); sceneB.add(filler);
+var cushionMat = std({color:0x141416, metalness:0, roughness:.6});
+[-1, 1].forEach(function(s){
+  var c = new T.Mesh(new T.ExtrudeGeometry(rrect(.28,.75,.12), {depth:.08, bevelEnabled:true, bevelThickness:.04, bevelSize:.04, bevelSegments:4}), cushionMat);
+  c.geometry.rotateX(-Math.PI/2); c.position.set(s*1.78, .02, 0); sceneB.add(c);
+});
+var waxMat = std({color:0xf4ead8, metalness:0, roughness:.7}); waxMat.emissive = col(0x3a2410);
+var flameMat = new T.MeshBasicMaterial({color:0xffc46b, toneMapped:false});
+var flames = [];
+[[-2.3,-1.35,.16],[-2.05,-1.45,.11],[2.3,1.38,.14],[-2.32,1.35,.1]].forEach(function(c){
+  var cd = cyl(.07,.07,c[2],waxMat,20); cd.position.set(c[0],0,c[1]); sceneB.add(cd);
+  var fl = new T.Mesh(new T.SphereGeometry(.03,10,8), flameMat); fl.scale.set(1,1.8,1); fl.position.set(c[0],c[2]+.05,c[1]); sceneB.add(fl); flames.push(fl);
+});
+var candleLight = new T.PointLight(0xffb060, .9, 5, 2); candleLight.position.set(-2.2,.5,-1.4); sceneB.add(candleLight);
+var candleLight2 = new T.PointLight(0xffb060, .6, 4, 2); candleLight2.position.set(2.3,.5,1.4); sceneB.add(candleLight2);
+
+/* floating logo */
+var logoGroup = new T.Group(); sceneB.add(logoGroup);
+var LOGO_W = 1.8, LOGO_H = LOGO_W*864/1024;
+var shCv = document.createElement('canvas'); shCv.width = shCv.height = 128;
+(function(c){ var g = c.createRadialGradient(64,64,4,64,64,64); g.addColorStop(0,'rgba(0,30,60,.55)'); g.addColorStop(1,'rgba(0,30,60,0)'); c.fillStyle = g; c.fillRect(0,0,128,128); })(shCv.getContext('2d'));
+var logoShadow = new T.Mesh(new T.PlaneGeometry(LOGO_W*1.25, LOGO_H*1.25), new T.MeshBasicMaterial({map:new T.CanvasTexture(shCv), transparent:true, depthWrite:false}));
+logoShadow.rotation.x = -Math.PI/2; logoShadow.position.set(.04,-.145,.06); logoGroup.add(logoShadow);
+var logoMat = new T.MeshBasicMaterial({transparent:true, toneMapped:false, opacity:0});
+var logoMesh = new T.Mesh(new T.PlaneGeometry(LOGO_W, LOGO_H), logoMat); logoGroup.add(logoMesh);
+new T.TextureLoader().load('{{IMG:img/logo-badge.png}}', function(tx){ tx.encoding = T.sRGBEncoding; tx.anisotropy = renderer.capabilities.getMaxAnisotropy(); logoMat.map = tx; logoMat.opacity = 1; logoMat.needsUpdate = true; });
+
+/* foam specks circling slowly */
+var FOAM = 160, foamPos = new Float32Array(FOAM*3), foamSeed = [], fr = rng(77);
+for(var f=0; f<FOAM; f++) foamSeed.push([fr()*Math.PI*2, .45+fr()*.55, (.05+fr()*.12)*(fr()<.5?-1:1)]);
+var foamGeo = new T.BufferGeometry(); foamGeo.setAttribute('position', new T.BufferAttribute(foamPos, 3));
+var foam = new T.Points(foamGeo, new T.PointsMaterial({color:0xffffff, size:.028, transparent:true, opacity:.55, depthWrite:false})); sceneB.add(foam);
+
+var azF = 0, dF = 5, tgtB = new V3(0,-.15,0), lookB = new V3();
+function fitB(){
+  camB.aspect = aspect; camB.updateProjectionMatrix();
+  var tv = Math.tan(T.MathUtils.degToRad(20));
+  var portrait = aspect < .9;
+  azF = portrait ? Math.PI/2 : 0;
+  logoGroup.rotation.y = azF;
+  dF = portrait ? Math.max(2.3/tv, 1.35/(tv*aspect)) : Math.max(2.35/tv, 1.6/(tv*aspect));
+  var off = portrait ? .5 : .62;
+  tgtB.set(Math.sin(azF)*off, -.15, Math.cos(azF)*off);
+}
+function updateB(P){
+  var e = ease(clamp((P-.885)/.1, 0, 1));
+  var az = lerp(.5, azF, e) + (reduce ? 0 : (1-e)*Math.sin(time*.2)*.04);
+  var el = lerp(.34, Math.PI/2 - .0006, e), d = lerp(8.6, dF, e);
+  lookB.set(0,-.15,0).lerp(tgtB, e);
+  camB.position.set(lookB.x + Math.sin(az)*Math.cos(el)*d, lookB.y + Math.sin(el)*d, lookB.z + Math.cos(az)*Math.cos(el)*d);
+  camB.lookAt(lookB);
+  waterB.uniforms.uTime.value = time;
+  logoGroup.position.y = reduce ? 0 : Math.sin(time*1.1)*.008;
+  logoMesh.rotation.set(-Math.PI/2, 0, reduce ? 0 : Math.sin(time*.45)*.025);
+  logoMesh.position.y = -.12;
+  for(var k=0;k<FOAM;k++){
+    var s = foamSeed[k], a = s[0] + time*s[2];
+    foamPos[k*3] = Math.cos(a)*s[1]*1.75; foamPos[k*3+1] = -.145; foamPos[k*3+2] = Math.sin(a)*s[1]*.88;
+  }
+  foamGeo.attributes.position.needsUpdate = true;
+  var fl = reduce ? 1 : .85 + Math.sin(time*13)*.08 + Math.sin(time*7.3)*.07;
+  candleLight.intensity = .9*fl; candleLight2.intensity = .6*fl;
+  flames.forEach(function(m, i){ m.scale.y = 1.8*(reduce ? 1 : .9 + Math.sin(time*11 + i*2)*.12); });
+}
+
 var frames = {ex:{c:new V3(1.3,.95,0), hh:7.6, hw:3.4}, as:{c:new V3(1.65,1.55,0), hh:2.9, hw:3.4}};
 function fit(f){
   var desktop = aspect > 1.15, mobile = aspect < .85;
@@ -738,6 +992,7 @@ function resize(){
   renderer.setSize(W, H, false);
   camera.aspect = aspect; camera.updateProjectionMatrix();
   fEx = fit(frames.ex); fAs = fit(frames.as);
+  fitB(); layoutGallery();
   paintMarble(marbleCanvas, Math.round(W), Math.round(H), 7, '#07080b', '#17191e');
   readScroll();
 }
@@ -759,10 +1014,12 @@ function frame(){
   if(!visible) return;
   time += dt;
   pNow += (pTarget - pNow) * (reduce ? 1 : 1 - Math.pow(.0015, dt));
-  var p = pNow;
+  var P = pNow, p = clamp(P/SPLIT, 0, 1);
 
-  setStep(stepFor(p));
-  hint.style.opacity = p < .03 ? 1 : 0;
+  setStep(stepFor(P));
+  hint.style.opacity = P < .015 ? 1 : 0;
+  readout.style.opacity = P < SPLIT ? 1 : 0;
+  updateGallery(P);
 
   /* parts */
   var placed = 0;
@@ -829,7 +1086,8 @@ function frame(){
     L.el.style.transform = 'translate(' + (L.left ? 'calc(' + x.toFixed(1) + 'px - 100%)' : x.toFixed(1)+'px') + ',' + (y-8).toFixed(1) + 'px)';
   });
 
-  renderer.render(scene, camera);
+  if(P < SPLIT + .05) renderer.render(scene, camera);
+  else if(P > .875){ updateB(P); renderer.render(sceneB, camB); }
 }
 resize();
 frame();
