@@ -23,5 +23,5 @@
 window.DIS_SUPABASE = {
   url: 'https://cjcysqefchfnyryrdsbo.supabase.co',
   anonKey: 'sb_publishable_S7sshUv_5VIUcdXow1Zakw_fDUaaYx9',
-  staffEmail: 'dashboard@dis-restaurant.de',
+  staffEmail: 'info@dis-restaurant.de',
 };
