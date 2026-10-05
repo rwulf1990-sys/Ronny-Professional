@@ -18,15 +18,30 @@ alter table public.orders add column if not exists phone text;
 
 alter table public.orders enable row level security;
 
--- Kunden (anonym) dürfen Bestellungen aufgeben; das Dashboard
--- (ebenfalls anonym, kein Login) darf lesen, Status ändern und
--- abgeholte Bestellungen löschen. Gespeichert wird nur die
--- Telefonnummer zur Rückfrage – keine Zahlungsdaten.
-create policy "anon_insert" on public.orders
-  for insert to anon with check (true);
-create policy "anon_select" on public.orders
-  for select to anon using (true);
-create policy "anon_update" on public.orders
-  for update to anon using (true) with check (true);
-create policy "anon_delete" on public.orders
-  for delete to anon using (true);
+-- Hinweis: Dieses Skript ist für ein NEUES Projekt gedacht. Läuft
+-- hier schon ein Projekt mit den alten, offenen "anon_*"-Policies,
+-- stattdessen restaurant/supabase-harden-rls.sql ausführen (räumt
+-- die alten Policies sauber ab, statt sie doppelt anzulegen).
+
+-- Kunden (anonym, ohne eigenen Account) dürfen Bestellungen
+-- aufgeben - aber nur mit plausiblen Werten (Status 'neu', Betrag
+-- nicht negativ, Abholzeit/Telefon nicht überlang). Gespeichert
+-- wird nur die Telefonnummer zur Rückfrage – keine Zahlungsdaten.
+create policy "insert_orders" on public.orders
+  for insert to anon, authenticated with check (
+    status = 'neu'
+    and total >= 0
+    and char_length(coalesce(pickup, '')) <= 100
+    and char_length(coalesce(phone, '')) <= 40
+  );
+
+-- Lesen, Status ändern und abgeholte Bestellungen löschen nur für
+-- angemeldetes Personal (Supabase-Login übers Dashboard-Passwort,
+-- Account unter "Authentication" → "Users" anlegen - E-Mail wie in
+-- restaurant/supabase-config.js unter "staffEmail").
+create policy "staff_select" on public.orders
+  for select to authenticated using (true);
+create policy "staff_update" on public.orders
+  for update to authenticated using (true) with check (true);
+create policy "staff_delete" on public.orders
+  for delete to authenticated using (true);

@@ -320,14 +320,67 @@
 
   <script src="supabase-config.js"></script>
   <script>
-    /* ---- Passwort-Sperre (clientseitig) ----
-       DASH_PW_HASH = SHA-256 des Dashboard-Passworts. */
+    const SUPA = window.DIS_SUPABASE || {};
+    const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
+    const STAFF_EMAIL = SUPA.staffEmail || 'dashboard@dis-restaurant.de';
+
+    /* ---- Anmeldung ----
+       Mit Supabase (SUPA_ON): echte serverseitige Anmeldung über
+       Supabase Auth - das eingegebene Passwort wird gegen den in
+       Supabase angelegten Nutzer geprüft, und nur das daraus
+       resultierende Sitzungs-Token (nicht mehr der öffentliche
+       anonKey) darf laut Datenbank-Regeln Bestellungen lesen/
+       ändern/löschen. Ohne Supabase (lokaler Demo-Modus, kein
+       echtes Backend) bleibt die alte rein clientseitige
+       Passwortprüfung als Fallback bestehen. */
     const DASH_PW_HASH = 'dd750756f2b4745472c251236d7f82d3b8cd6fb5ceaec3e0617a2956e3b8c48c';
     const AUTH_KEY = 'dis-dash-auth';
+    const SESSION_KEY = 'dis-dash-session';
     const lockOverlay = document.getElementById('lock-overlay');
     const lockForm = document.getElementById('lock-form');
     const lockInput = document.getElementById('lock-input');
     const lockError = document.getElementById('lock-error');
+
+    let session = null; // { access_token, refresh_token, expires_at }
+    function loadSession() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return null; }
+    }
+    function saveSession(s) {
+      session = s;
+      try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {}
+    }
+    function clearSession() {
+      session = null;
+      try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+    }
+    async function authTokenRequest(body) {
+      const res = await fetch(SUPA.url + '/auth/v1/token?grant_type=' + body.grant_type, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPA.anonKey },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (!data.access_token) return false;
+      saveSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_at: Date.now() + (data.expires_in || 3600) * 1000,
+      });
+      return true;
+    }
+    function authLogin(password) {
+      return authTokenRequest({ grant_type: 'password', email: STAFF_EMAIL, password });
+    }
+    function authRefresh() {
+      const s = session || loadSession();
+      if (!s || !s.refresh_token) return Promise.resolve(false);
+      return authTokenRequest({ grant_type: 'refresh_token', refresh_token: s.refresh_token })
+        .catch(() => false);
+    }
 
     async function sha256Hex(str) {
       const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -339,18 +392,48 @@
     }
     function lockDash() {
       try { localStorage.removeItem(AUTH_KEY); } catch (e) {}
+      clearSession();
       document.body.classList.add('locked');
       lockOverlay.style.display = 'flex';
       lockInput.value = '';
       setTimeout(() => lockInput.focus(), 50);
     }
-    try { if (localStorage.getItem(AUTH_KEY) === DASH_PW_HASH) unlockDash(); } catch (e) {}
+
+    (async () => {
+      if (SUPA_ON) {
+        session = loadSession();
+        if (session && await authRefresh()) unlockDash();
+        else clearSession();
+      } else {
+        try { if (localStorage.getItem(AUTH_KEY) === DASH_PW_HASH) unlockDash(); } catch (e) {}
+      }
+    })();
+
+    // Zugangstoken läuft nach rund einer Stunde ab - das Dashboard bleibt
+    // aber oft den ganzen Tag offen, daher proaktiv alle 50 Minuten erneuern.
+    setInterval(async () => {
+      if (!SUPA_ON || document.body.classList.contains('locked')) return;
+      if (!(await authRefresh())) lockDash();
+    }, 50 * 60 * 1000);
+
     lockForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       // Manche Tablet-Tastaturen hängen beim Autovervollständigen ein
       // Leerzeichen an – trimmen, damit das Passwort trotzdem passt.
       const value = lockInput.value.trim();
       try {
+        if (SUPA_ON) {
+          if (await authLogin(value)) {
+            lockError.classList.remove('show');
+            unlockDash();
+          } else {
+            lockInput.classList.add('invalid');
+            lockError.textContent = 'Falsches Passwort.';
+            lockError.classList.add('show');
+            lockInput.select();
+          }
+          return;
+        }
         if (!('crypto' in window) || !window.crypto.subtle) {
           throw new Error('no-subtle-crypto');
         }
@@ -371,7 +454,7 @@
         // (https://) oder in sehr veralteten Browsern gar nicht -
         // ohne das hier würde die Eingabe sonst lautlos ins Leere laufen.
         lockInput.classList.add('invalid');
-        lockError.textContent = 'Passwort-Prüfung fehlgeschlagen. Bitte die Seite über https:// öffnen und den Browser aktualisieren.';
+        lockError.textContent = 'Anmeldung fehlgeschlagen. Bitte die Seite über https:// öffnen, Internetverbindung prüfen und den Browser aktualisieren.';
         lockError.classList.add('show');
       }
     });
@@ -387,8 +470,6 @@
     const STATUS_LABEL = { neu: 'NEU', arbeit: 'IN ARBEIT', fertig: 'FERTIG', abgeholt: 'ABGEHOLT' };
     const NEXT_LABEL = { neu: 'ANNEHMEN', arbeit: 'FERTIG MELDEN', fertig: 'ABGEHOLT' };
 
-    const SUPA = window.DIS_SUPABASE || {};
-    const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
     let connOk = true; // reflects whether the last Supabase fetch succeeded
     let statsOpen = false; // Statistik-Ansicht aktiv?
 
@@ -414,10 +495,14 @@
 
     /* ---------- Data layer: Supabase (live) or localStorage (demo) ---------- */
     function supaHeaders() {
+      // apikey identifiziert nur das Projekt (bleibt der öffentliche
+      // Schlüssel). Authorization trägt jetzt das Sitzungs-Token aus der
+      // echten Anmeldung - nur damit lassen die Datenbank-Regeln Lesen/
+      // Ändern/Löschen zu, nicht mehr mit dem öffentlichen Schlüssel allein.
       return {
         'Content-Type': 'application/json',
         apikey: SUPA.anonKey,
-        Authorization: 'Bearer ' + SUPA.anonKey,
+        Authorization: 'Bearer ' + (session && session.access_token ? session.access_token : SUPA.anonKey),
       };
     }
 
