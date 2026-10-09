@@ -718,7 +718,7 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
 
 /* ---------- Warenkorb ---------- */
 #cart-fab {
-  position: fixed; bottom: 20px; right: 78px; z-index: 160;
+  position: fixed; bottom: 20px; right: 86px; z-index: 160;
   display: flex; align-items: center; gap: 8px;
   padding: 12px 20px;
   border: none; border-radius: 100px;
@@ -843,6 +843,9 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
 @media (max-width: 640px) {
   .extras-modal.modal-doc { padding: 24px 18px; }
   .modal-doc-frame { aspect-ratio: 3 / 4; }
+  /* Auf schmalen Screens überschneidet sich der Preview-Badge sonst mit
+     dem Warenkorb-Button - eine Zeile höher setzen statt daneben. */
+  .preview-badge { bottom: 76px; }
 }
 .extras-close {
   position: absolute; top: 18px; right: 18px;
