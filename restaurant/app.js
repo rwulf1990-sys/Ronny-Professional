@@ -519,6 +519,11 @@ function isOrderingOpen() {
   return minutes >= 11 * 60 && minutes <= 19 * 60 + 30;
 }
 
+/* Burger sind täglich nur bis 17:00 Uhr bestellbar. */
+function isBurgerTime() {
+  return new Date().getHours() < 17;
+}
+
 function buildPickupOptions() {
   pickupSelect.innerHTML = '';
 
@@ -841,6 +846,10 @@ function updateBunsTotal() {
 }
 
 window.openBuns = function (name) {
+  if (!isBurgerTime()) {
+    showToast('Burger sind heute leider ausverkauft', 'Täglich nur bis 17:00 Uhr bestellbar.');
+    return;
+  }
   bunsTitle.textContent = name;
   document.getElementById('order-einzeln').checked = true;
   document.getElementById('bun-brioche').checked = true;
