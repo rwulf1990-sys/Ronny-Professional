@@ -323,12 +323,13 @@
         <div class="stat-h" style="margin:6px 0">🕛 Mittagskarte</div>
       </div>
       <p style="font-size:13px;color:var(--gray-light);line-height:1.7;margin:0 0 20px">
-        Hier die aktuelle Mittagskarte (PDF) hochladen – ersetzt automatisch die bisherige. Die Website zeigt
-        danach sofort die neue Karte, kein Google Drive mehr nötig.
+        Hier die aktuelle Mittagskarte als <strong>Bild</strong> (JPG/PNG, kein PDF) hochladen – ersetzt
+        automatisch die bisherige. Die Website zeigt danach sofort die neue Karte. Ein Bild statt PDF, damit
+        die Karte auf jedem Handy (auch iPhone/Safari) zuverlässig komplett angezeigt wird.
       </p>
       <div style="display:flex;flex-direction:column;gap:14px;max-width:420px">
         <div id="mk-current" style="font-size:13px;color:var(--gray)">Lade aktuellen Stand …</div>
-        <input type="file" id="mk-file" accept="application/pdf" class="db-select" style="padding:10px">
+        <input type="file" id="mk-file" accept="image/*" class="db-select" style="padding:10px">
         <button class="db-btn primary" id="mk-upload" style="width:100%">⬆ NEUE KARTE HOCHLADEN</button>
         <p id="mk-status" style="font-size:12px;color:var(--gray);min-height:16px;margin:0"></p>
       </div>
@@ -1018,7 +1019,7 @@
 
     /* ---------- Mittagskarte (Supabase Storage statt Google Drive) ---------- */
     const MK_BUCKET = 'mittagstisch';
-    const MK_PATH = 'aktuelle-karte.pdf';
+    const MK_PATH = 'aktuelle-karte';
     const MK_PUBLIC_URL = SUPA.url ? (SUPA.url + '/storage/v1/object/public/' + MK_BUCKET + '/' + MK_PATH) : '';
 
     const mkPanel = document.getElementById('db-mittagskarte');

@@ -833,16 +833,19 @@ body.loaded .hero .reveal { opacity: 1; transform: none; }
 .modal-doc-frame {
   margin-top: 20px;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  max-height: 75vh;
+  overflow-y: auto;
   border-radius: 14px;
-  overflow: hidden;
   border: 1px solid rgba(229, 168, 46, .25);
   background: rgba(255, 255, 255, .03);
 }
-.modal-doc-frame iframe { width: 100%; height: 100%; border: 0; }
+/* Bild statt PDF/iframe: fließt in voller Breite, keine feste
+   Höhe/Seitenverhältnis mehr nötig - zeigt in jedem Browser
+   zuverlässig die komplette Karte statt einen zugeschnittenen
+   Ausschnitt (iOS Safari ignoriert PDF-Viewer-Fit-Parameter). */
+.modal-doc-frame img { display: block; width: 100%; height: auto; }
 @media (max-width: 640px) {
   .extras-modal.modal-doc { padding: 24px 18px; }
-  .modal-doc-frame { aspect-ratio: 3 / 4; }
   /* Auf schmalen Screens überschneidet sich der Preview-Badge sonst mit
      dem Warenkorb-Button - eine Zeile höher setzen statt daneben. */
   .preview-badge { bottom: 76px; }

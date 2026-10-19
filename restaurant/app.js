@@ -371,27 +371,24 @@ window.showTab = function (btn, id) {
 };
 
 /* ---------- Mittagstisch Modal ----------
-   Liegt jetzt in Supabase Storage statt Google Drive: die Karte wird
-   übers Dashboard hochgeladen (Reiter "Mittagskarte") und landet
-   immer unter demselben Pfad. Google Drives /preview-Einbettung
-   cachte serverseitig und zeigte oft tagelang die alte Woche, egal
-   welchen Cache-Busting-Parameter wir anhängten - Supabase Storage
-   ist ein normaler Dateispeicher ohne diesen Render-Cache. */
+   Liegt in Supabase Storage, hochgeladen übers Dashboard (Reiter
+   "Mittagskarte"). Bewusst ein BILD, kein PDF: iOS Safari ignoriert
+   die PDF-Fit-Parameter in iframes komplett (zeigt die Karte in
+   echter Größe an, man sieht nur die ersten ein, zwei Wochentage) -
+   ein Bild verhält sich dagegen in jedem Browser gleich zuverlässig.
+   Kein fester Dateiname-Suffix: Supabase speichert den Content-Type
+   beim Upload, die Dateiendung im Pfad ist egal. */
 const mittagstischOverlay = document.getElementById('mittagstisch-overlay');
 const mittagstischFrame = document.getElementById('mittagstisch-frame');
 const MITTAGSTISCH_BUCKET = 'mittagstisch';
-const MITTAGSTISCH_PATH = 'aktuelle-karte.pdf';
+const MITTAGSTISCH_PATH = 'aktuelle-karte';
 
 window.openMittagstisch = function () {
   if (mittagstischFrame && SUPA.url) {
     // Cache-Trick: bei jedem Öffnen frisch laden, damit nicht die alte
-    // (im Browser zwischengespeicherte) Vorschau angezeigt wird.
-    // #view=FitH (PDF-Standardparameter) sorgt dafür, dass der
-    // Browser-eigene PDF-Viewer die Seite auf die volle Breite
-    // einpasst, statt in echter Größe zu zeigen - sonst sieht man auf
-    // dem Handy nur die ersten ein, zwei Wochentage der Karte.
+    // (im Browser zwischengespeicherte) Karte angezeigt wird.
     mittagstischFrame.src = SUPA.url + '/storage/v1/object/public/' + MITTAGSTISCH_BUCKET
-      + '/' + MITTAGSTISCH_PATH + '?cb=' + Date.now() + '#toolbar=0&view=FitH';
+      + '/' + MITTAGSTISCH_PATH + '?cb=' + Date.now();
   }
   mittagstischOverlay.classList.add('open');
 };
