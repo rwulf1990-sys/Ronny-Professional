@@ -303,6 +303,7 @@
       </select>
       <button class="db-btn" id="btn-sound-test">▶ TESTEN</button>
       <button class="db-btn" id="btn-stats">📊 STATISTIK</button>
+      <button class="db-btn" id="btn-mittagskarte">🕛 MITTAGSKARTE</button>
       <button class="db-btn danger" id="btn-clear">ABGEHOLTE LÖSCHEN</button>
     </div>
 
@@ -316,6 +317,22 @@
     </div>
     <div class="db-orders" id="db-orders"></div>
     <div class="db-statistik" id="db-statistik" style="display:none"></div>
+
+    <div class="db-statistik" id="db-mittagskarte" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="stat-h" style="margin:6px 0">🕛 Mittagskarte</div>
+      </div>
+      <p style="font-size:13px;color:var(--gray-light);line-height:1.7;margin:0 0 20px">
+        Hier die aktuelle Mittagskarte (PDF) hochladen – ersetzt automatisch die bisherige. Die Website zeigt
+        danach sofort die neue Karte, kein Google Drive mehr nötig.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:420px">
+        <div id="mk-current" style="font-size:13px;color:var(--gray)">Lade aktuellen Stand …</div>
+        <input type="file" id="mk-file" accept="application/pdf" class="db-select" style="padding:10px">
+        <button class="db-btn primary" id="mk-upload" style="width:100%">⬆ NEUE KARTE HOCHLADEN</button>
+        <p id="mk-status" style="font-size:12px;color:var(--gray);min-height:16px;margin:0"></p>
+      </div>
+    </div>
   </main>
 
   <script src="supabase-config.js"></script>
@@ -985,6 +1002,7 @@
       statsOpen = true;
       btnStats.textContent = '← BESTELLUNGEN'; btnStats.classList.add('toggled');
       ordersEl.style.display = 'none'; emptyEl.style.display = 'none';
+      if (typeof mkOpen !== 'undefined' && mkOpen) closeMittagskarte();
       statsPanel.style.display = 'block';
       statsPanel.innerHTML = '<p style="color:var(--gray);padding:20px 0">Lade Statistik …</p>';
       renderStatistik(await fetchOrdersForStats());
@@ -997,6 +1015,73 @@
       render();
     }
     btnStats.addEventListener('click', () => (statsOpen ? closeStats() : openStats()));
+
+    /* ---------- Mittagskarte (Supabase Storage statt Google Drive) ---------- */
+    const MK_BUCKET = 'mittagstisch';
+    const MK_PATH = 'aktuelle-karte.pdf';
+    const MK_PUBLIC_URL = SUPA.url ? (SUPA.url + '/storage/v1/object/public/' + MK_BUCKET + '/' + MK_PATH) : '';
+
+    const mkPanel = document.getElementById('db-mittagskarte');
+    const btnMittagskarte = document.getElementById('btn-mittagskarte');
+    const mkCurrent = document.getElementById('mk-current');
+    const mkFile = document.getElementById('mk-file');
+    const mkUploadBtn = document.getElementById('mk-upload');
+    const mkStatus = document.getElementById('mk-status');
+    let mkOpen = false;
+
+    function renderMkCurrent() {
+      if (!SUPA_ON) {
+        mkCurrent.textContent = 'Nur mit Supabase verfügbar (Demo-Modus ohne Verbindung).';
+        return;
+      }
+      mkCurrent.innerHTML = '<a href="' + MK_PUBLIC_URL + '?v=' + Date.now()
+        + '" target="_blank" rel="noopener" style="color:var(--gold)">Aktuelle Karte ansehen ↗</a>';
+    }
+
+    function openMittagskarte() {
+      mkOpen = true;
+      btnMittagskarte.textContent = '← BESTELLUNGEN'; btnMittagskarte.classList.add('toggled');
+      ordersEl.style.display = 'none'; emptyEl.style.display = 'none';
+      if (statsOpen) closeStats();
+      mkPanel.style.display = 'block';
+      renderMkCurrent();
+    }
+    function closeMittagskarte() {
+      mkOpen = false;
+      btnMittagskarte.textContent = '🕛 MITTAGSKARTE'; btnMittagskarte.classList.remove('toggled');
+      mkPanel.style.display = 'none';
+      ordersEl.style.display = '';
+      render();
+    }
+    btnMittagskarte.addEventListener('click', () => (mkOpen ? closeMittagskarte() : openMittagskarte()));
+
+    mkUploadBtn.addEventListener('click', async () => {
+      const file = mkFile.files[0];
+      if (!file) { mkStatus.textContent = 'Bitte zuerst eine PDF-Datei auswählen.'; return; }
+      if (!SUPA_ON) { mkStatus.textContent = 'Nicht verfügbar im Demo-Modus.'; return; }
+      mkUploadBtn.disabled = true;
+      mkStatus.textContent = 'Lädt hoch …';
+      try {
+        const res = await fetch(SUPA.url + '/storage/v1/object/' + MK_BUCKET + '/' + MK_PATH, {
+          method: 'POST',
+          headers: {
+            'Content-Type': file.type || 'application/pdf',
+            apikey: SUPA.anonKey,
+            Authorization: 'Bearer ' + (session && session.access_token ? session.access_token : SUPA.anonKey),
+            'x-upsert': 'true',
+          },
+          body: file,
+        });
+        if (!res.ok) throw new Error(await res.text());
+        mkStatus.textContent = '✓ Neue Karte ist jetzt live.';
+        mkFile.value = '';
+        renderMkCurrent();
+      } catch (e) {
+        mkStatus.textContent = 'Fehler beim Hochladen – bitte erneut versuchen.';
+      } finally {
+        mkUploadBtn.disabled = false;
+      }
+    });
 
     // Live updates: storage event (local mode, cross-tab) + poll
     window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) render(); });
