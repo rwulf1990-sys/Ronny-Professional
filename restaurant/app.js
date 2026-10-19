@@ -370,25 +370,24 @@ window.showTab = function (btn, id) {
   document.getElementById(id).classList.add('active');
 };
 
-/* ---------- Mittagstisch Modal (Google Drive Karte) ----------
-   Bewusst NICHT /file/d/<id>/preview: dieser Endpunkt rendert eine
-   eigene Vorschau, die Google serverseitig cached - unabhängig vom
-   Dateiinhalt und unabhängig von jedem Cache-Busting-Parameter, den
-   wir hier anhängen. Eine wöchentlich ausgetauschte PDF (gleiche
-   Datei-ID) blieb dadurch oft tagelang auf dem alten Stand hängen.
-   /uc?export=view&id=<id> liefert die Roh-Datei direkt (kein
-   gerendertes/gecachtes Vorschaubild), der Browser zeigt das PDF mit
-   seinem eigenen PDF-Viewer an - reagiert zuverlässiger auf neuen
-   Dateiinhalt. */
+/* ---------- Mittagstisch Modal ----------
+   Liegt jetzt in Supabase Storage statt Google Drive: die Karte wird
+   übers Dashboard hochgeladen (Reiter "Mittagskarte") und landet
+   immer unter demselben Pfad. Google Drives /preview-Einbettung
+   cachte serverseitig und zeigte oft tagelang die alte Woche, egal
+   welchen Cache-Busting-Parameter wir anhängten - Supabase Storage
+   ist ein normaler Dateispeicher ohne diesen Render-Cache. */
 const mittagstischOverlay = document.getElementById('mittagstisch-overlay');
 const mittagstischFrame = document.getElementById('mittagstisch-frame');
-const MITTAGSTISCH_DRIVE_URL = 'https://drive.google.com/uc?export=view&id=16wPiPXgfeqrNh17Hhb7u12adB55q7jaQ';
+const MITTAGSTISCH_BUCKET = 'mittagstisch';
+const MITTAGSTISCH_PATH = 'aktuelle-karte.pdf';
 
 window.openMittagstisch = function () {
-  if (mittagstischFrame) {
+  if (mittagstischFrame && SUPA.url) {
     // Cache-Trick: bei jedem Öffnen frisch laden, damit nicht die alte
     // (im Browser zwischengespeicherte) Vorschau angezeigt wird.
-    mittagstischFrame.src = MITTAGSTISCH_DRIVE_URL + '&cb=' + Date.now();
+    mittagstischFrame.src = SUPA.url + '/storage/v1/object/public/' + MITTAGSTISCH_BUCKET
+      + '/' + MITTAGSTISCH_PATH + '?cb=' + Date.now();
   }
   mittagstischOverlay.classList.add('open');
 };
