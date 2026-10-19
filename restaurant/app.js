@@ -386,8 +386,12 @@ window.openMittagstisch = function () {
   if (mittagstischFrame && SUPA.url) {
     // Cache-Trick: bei jedem Öffnen frisch laden, damit nicht die alte
     // (im Browser zwischengespeicherte) Vorschau angezeigt wird.
+    // #view=FitH (PDF-Standardparameter) sorgt dafür, dass der
+    // Browser-eigene PDF-Viewer die Seite auf die volle Breite
+    // einpasst, statt in echter Größe zu zeigen - sonst sieht man auf
+    // dem Handy nur die ersten ein, zwei Wochentage der Karte.
     mittagstischFrame.src = SUPA.url + '/storage/v1/object/public/' + MITTAGSTISCH_BUCKET
-      + '/' + MITTAGSTISCH_PATH + '?cb=' + Date.now();
+      + '/' + MITTAGSTISCH_PATH + '?cb=' + Date.now() + '#toolbar=0&view=FitH';
   }
   mittagstischOverlay.classList.add('open');
 };
