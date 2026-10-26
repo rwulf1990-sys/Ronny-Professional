@@ -721,7 +721,7 @@ renderCart();
 
 /* ---------- Buns Modal (Burger customization) ---------- */
 const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
-const BUN_PRICES = { brioche: 0, rustikal: 0, glutenfrei: 1 };
+const BUN_PRICES = { rustikal: 0, glutenfrei: 1 };
 const DOUBLE_PRICE = 4;
 const POMMES_PRICE = 4.5;
 const SAUCE_PRICES = {
@@ -861,7 +861,7 @@ window.openBuns = function (name) {
   }
   bunsTitle.textContent = name;
   document.getElementById('order-einzeln').checked = true;
-  document.getElementById('bun-brioche').checked = true;
+  document.getElementById('bun-rustikal').checked = true;
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
   dipChecks.forEach((cb) => { cb.checked = false; });
