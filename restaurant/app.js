@@ -721,7 +721,7 @@ renderCart();
 
 /* ---------- Buns Modal (Burger customization) ---------- */
 const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
-const BUN_PRICES = { rustikal: 0, glutenfrei: 1 };
+const BUN_PRICES = { rustikal: 0 };
 const DOUBLE_PRICE = 4;
 const POMMES_PRICE = 4.5;
 const SAUCE_PRICES = {
