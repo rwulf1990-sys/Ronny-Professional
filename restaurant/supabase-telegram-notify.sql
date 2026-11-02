@@ -6,6 +6,11 @@
 -- ist, der Ton an ist oder der Browser-Tab im Hintergrund läuft.
 -- Läuft direkt in der Datenbank (Trigger), nicht im Browser.
 --
+-- Die Nachricht enthält dieselben Infos wie das Dashboard:
+-- Bestell-Nr., Datum/Uhrzeit, jedes Gericht mit allen Details
+-- (Extras/Anpassungen), Abholzeit, Telefonnummer, Kundennachricht
+-- und Gesamtbetrag.
+--
 -- Einmalige Einrichtung vorher (ca. 3 Minuten):
 -- 1. In Telegram den Bot "@BotFather" öffnen, "/newbot" senden,
 --    einen Namen vergeben -> man bekommt einen BOT-TOKEN
@@ -41,17 +46,39 @@ as $$
 declare
   bot_token text := 'DEIN-BOT-TOKEN-HIER';
   chat_id   text := 'DEINE-CHAT-ID-HIER';
-  dishes    text;
+  items_txt text;
   msg       text;
 begin
-  select string_agg(coalesce(item->>'dish', '–'), ', ')
-    into dishes
-    from jsonb_array_elements(coalesce(new.items, '[]'::jsonb)) as item;
+  -- Jedes bestellte Gericht mit seinen Details (Extras/Anpassungen),
+  -- genauso wie es im Dashboard pro Bestellung aufgelistet wird.
+  select string_agg(
+           '• ' || coalesce(entry.item->>'dish', '–')
+           || case
+                when jsonb_typeof(entry.item->'details') = 'array'
+                     and jsonb_array_length(entry.item->'details') > 0
+                then chr(10) || '   ' || (
+                       select string_agg(d, ', ')
+                       from jsonb_array_elements_text(entry.item->'details') as d
+                     )
+                else ''
+              end,
+           chr(10)
+           order by entry.ord
+         )
+    into items_txt
+    from jsonb_array_elements(coalesce(new.items, '[]'::jsonb)) with ordinality as entry(item, ord);
 
   msg := '🔔 Neue Bestellung – DIS Restaurant' || chr(10)
-      || coalesce(dishes, '–') || chr(10)
-      || 'Abholung: ' || coalesce(new.pickup, '–') || chr(10)
-      || 'Betrag: ' || to_char(new.total, 'FM999990.00') || ' €';
+      || '🧾 #' || upper(right(new.id::text, 4))
+      || ' · ' || to_char(new.created_at, 'DD.MM.YYYY, HH24:MI') || ' Uhr'
+      || chr(10) || chr(10)
+      || coalesce(items_txt, '–')
+      || chr(10) || chr(10)
+      || coalesce('🕛 Abholung: ' || nullif(trim(new.pickup), '') || chr(10), '')
+      || coalesce('📞 Telefon: ' || nullif(trim(new.phone), '') || chr(10), '')
+      || coalesce('💬 Hinweis: ' || nullif(trim(new.note), '') || chr(10), '')
+      || chr(10)
+      || '💰 Gesamt: ' || to_char(new.total, 'FM999990.00') || ' €';
 
   perform net.http_post(
     url  := 'https://api.telegram.org/bot' || bot_token || '/sendMessage',
