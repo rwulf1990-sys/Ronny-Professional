@@ -614,6 +614,9 @@
     function formatTime(ts) {
       return new Date(ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     }
+    function formatDate(ts) {
+      return new Date(ts).toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
+    }
 
     /* ---- Benachrichtigungstöne (Web Audio) ---- */
     let audioCtx = null;
@@ -769,7 +772,7 @@
         const dishes = escapeHtml((o.items && o.items.length ? o.items.map((it) => it.dish) : [o.dish || '—']).join(', '));
         return `
           <div class="order-alert-item">
-            <div class="t">${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</div>
+            <div class="t">${formatDate(o.ts)} · ${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</div>
             <div class="d">${dishes}</div>
             ${o.pickup ? `<div class="p">🕛 Abholung: ${escapeHtml(o.pickup)}</div>` : ''}
             <div class="sum">${formatEUR(o.total)}</div>
@@ -821,7 +824,7 @@
       container.innerHTML = orders.map((o) => `
         <div class="db-order status-${escapeHtml(o.status)}">
           <div class="db-order-top">
-            <span class="db-order-time">${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</span>
+            <span class="db-order-time">${formatDate(o.ts)} · ${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</span>
             <span class="db-badge ${escapeHtml(o.status)}">${escapeHtml(STATUS_LABEL[o.status] || o.status)}</span>
           </div>
           ${(o.items && o.items.length
