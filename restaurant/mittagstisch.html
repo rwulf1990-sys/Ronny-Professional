@@ -79,6 +79,16 @@
     }
     .mt-contact a { color: var(--gold); text-decoration: none; }
     .mt-contact a:hover { text-decoration: underline; }
+    .mt-karte-img {
+      display: block; width: 100%; max-height: 65vh;
+      object-fit: contain; border-radius: 12px;
+      background: rgba(255, 255, 255, .03);
+      margin-bottom: 26px;
+    }
+    .mt-karte-fallback {
+      color: var(--gray-light); font-size: 14px; line-height: 1.7;
+      margin-bottom: 26px;
+    }
   </style>
 </head>
 <body class="no-3d loaded">
@@ -94,9 +104,12 @@
     <p class="mt-sub">Täglich wechselnde Gerichte</p>
 
     <div class="mt-card">
-      <p class="mt-card-eyebrow">IN VORBEREITUNG</p>
-      <h2>Unsere Mittagskarte wird gerade zusammengestellt</h2>
-      <p>Schaut in Kürze wieder vorbei — hier findet ihr dann Gerichte, Preise und Zeiten unseres täglich wechselnden Mittagstischs.</p>
+      <p class="mt-card-eyebrow">AKTUELLE KARTE</p>
+      <h2>Unsere Mittagskarte</h2>
+      <img id="mt-karte-img" class="mt-karte-img" alt="Aktuelle Mittagskarte" loading="lazy">
+      <p id="mt-karte-fallback" class="mt-karte-fallback" style="display:none">
+        Die Karte konnte gerade nicht geladen werden. Ruft uns gerne an oder schreibt uns.
+      </p>
       <div class="mt-card-divider"></div>
       <div class="mt-contact">
         <span>Fragen zum Mittagstisch?</span>
@@ -106,5 +119,23 @@
     </div>
   </main>
 
+  <script src="supabase-config.js"></script>
+  <script>
+    (function () {
+      var SUPA = window.DIS_SUPABASE || {};
+      var img = document.getElementById('mt-karte-img');
+      var fallback = document.getElementById('mt-karte-fallback');
+      if (!SUPA.url) {
+        img.style.display = 'none';
+        fallback.style.display = 'block';
+        return;
+      }
+      img.onerror = function () {
+        img.style.display = 'none';
+        fallback.style.display = 'block';
+      };
+      img.src = SUPA.url + '/storage/v1/object/public/mittagstisch/aktuelle-karte?cb=' + Date.now();
+    })();
+  </script>
 </body>
 </html>
