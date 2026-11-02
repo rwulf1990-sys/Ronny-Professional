@@ -456,6 +456,7 @@ const cartConfirm = document.getElementById('cart-confirm');
 const pickupSelect = document.getElementById('pickup-time');
 const phoneInput = document.getElementById('cart-phone');
 const phoneError = document.getElementById('cart-phone-error');
+const noteInput = document.getElementById('cart-note');
 
 /* A valid German phone number: at least 6 digits, allows +, spaces,
    slashes, dashes and parentheses. */
@@ -595,7 +596,7 @@ cartOverlay.addEventListener('click', (e) => {
 const SUPA = window.DIS_SUPABASE || {};
 const SUPA_ON = !!(SUPA.url && SUPA.anonKey);
 
-function saveLocalOrder(items, total, pickup, phone) {
+function saveLocalOrder(items, total, pickup, phone, note) {
   try {
     const orders = JSON.parse(localStorage.getItem('dis-orders') || '[]');
     orders.push({
@@ -605,6 +606,7 @@ function saveLocalOrder(items, total, pickup, phone) {
       total,
       pickup,
       phone,
+      note,
       status: 'neu',
     });
     localStorage.setItem('dis-orders', JSON.stringify(orders));
@@ -613,7 +615,7 @@ function saveLocalOrder(items, total, pickup, phone) {
   }
 }
 
-function recordOrder(items, total, pickup, phone) {
+function recordOrder(items, total, pickup, phone, note) {
   if (SUPA_ON) {
     fetch(SUPA.url + '/rest/v1/orders', {
       method: 'POST',
@@ -622,13 +624,13 @@ function recordOrder(items, total, pickup, phone) {
         apikey: SUPA.anonKey,
         Authorization: 'Bearer ' + SUPA.anonKey,
       },
-      body: JSON.stringify({ items, total, pickup, phone, status: 'neu' }),
+      body: JSON.stringify({ items, total, pickup, phone, note, status: 'neu' }),
     }).then((res) => {
-      if (!res.ok) saveLocalOrder(items, total, pickup, phone);
-    }).catch(() => saveLocalOrder(items, total, pickup, phone));
+      if (!res.ok) saveLocalOrder(items, total, pickup, phone, note);
+    }).catch(() => saveLocalOrder(items, total, pickup, phone, note));
     return;
   }
-  saveLocalOrder(items, total, pickup, phone);
+  saveLocalOrder(items, total, pickup, phone, note);
 }
 
 /* Schickt beim Absenden der Bestellung eine E-Mail an das
@@ -689,12 +691,14 @@ cartConfirm.addEventListener('click', () => {
   const pickup = pickupSelect.value === 'schnellstmoeglich'
     ? 'Schnellstmöglich'
     : pickupSelect.value;
+  const note = noteInput.value.trim();
   const orderTotal = cart.reduce((s, i) => s + i.price, 0);
-  recordOrder(cart, orderTotal, pickup, phone);
+  recordOrder(cart, orderTotal, pickup, phone, note);
   sendOrderEmail(cart, orderTotal, pickup, phone);
   saveCart([]);
   renderCart();
   phoneInput.value = '';
+  noteInput.value = '';
   closeCart();
   showToast('✓ Bestellung eingegangen!', 'Abholung ' + pickup + ' · Bezahlung vor Ort');
 });
