@@ -721,7 +721,6 @@ renderCart();
 
 /* ---------- Buns Modal (Burger customization) ---------- */
 const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
-const BUN_PRICES = { rustikal: 0 };
 const DOUBLE_PRICE = 4;
 const POMMES_PRICE = 4.5;
 const SAUCE_PRICES = {
@@ -748,7 +747,6 @@ const bunsOverlay = document.getElementById('buns-overlay');
 const bunsTitle = document.getElementById('buns-title');
 const bunsTotalPrice = document.getElementById('buns-total-price');
 const orderTypeRadios = document.querySelectorAll('input[name="order-type"]');
-const bunRadios = document.querySelectorAll('input[name="bun-choice"]');
 const pattyRadios = document.querySelectorAll('input[name="patty-choice"]');
 const pattyDouble = document.getElementById('patty-double');
 const dipChecks = document.querySelectorAll('.dip-choice');
@@ -825,8 +823,6 @@ function updateBunsTotal() {
     }
   });
 
-  const selectedBun = document.querySelector('input[name="bun-choice"]:checked');
-  const bunExtra = selectedBun ? BUN_PRICES[selectedBun.value] : 0;
   const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
   // Multi-select dips: sum all picked dips; with the Menü the first
   // Mayo/Ketchup is free, a second one costs its normal 0,60 €.
@@ -851,7 +847,7 @@ function updateBunsTotal() {
   }
   const pommesExtra = !menuOrder && einzelnPommes.checked ? POMMES_PRICE : 0;
 
-  bunsTotalPrice.textContent = formatEUR(basePrice + bunExtra + doubleExtra + sauceExtra + drinkExtra + pommesExtra);
+  bunsTotalPrice.textContent = formatEUR(basePrice + doubleExtra + sauceExtra + drinkExtra + pommesExtra);
 }
 
 window.openBuns = function (name) {
@@ -861,7 +857,6 @@ window.openBuns = function (name) {
   }
   bunsTitle.textContent = name;
   document.getElementById('order-einzeln').checked = true;
-  document.getElementById('bun-rustikal').checked = true;
   document.getElementById('patty-beef').checked = true;
   pattyDouble.checked = false;
   dipChecks.forEach((cb) => { cb.checked = false; });
@@ -878,7 +873,6 @@ function closeBuns() {
 }
 
 orderTypeRadios.forEach((r) => r.addEventListener('change', handleOrderTypeChange));
-bunRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
 pattyDouble.addEventListener('change', updateBunsTotal);
 dipChecks.forEach((cb) => cb.addEventListener('change', updateBunsTotal));
@@ -897,7 +891,6 @@ function checkedLabel(name) {
 document.getElementById('buns-confirm').addEventListener('click', () => {
   const details = [];
   details.push(checkedLabel('order-type'));
-  details.push('Bun: ' + checkedLabel('bun-choice'));
   details.push('Patty: ' + checkedLabel('patty-choice'));
   if (pattyDouble.checked) details.push('Double (2 Patties)');
   const dips = [...dipChecks]
