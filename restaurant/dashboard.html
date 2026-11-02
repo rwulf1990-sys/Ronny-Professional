@@ -131,6 +131,12 @@
     }
     .db-order-phone a { color: #fff; text-decoration: none; }
     .db-order-phone a:hover { color: var(--gold); }
+    .db-order-note {
+      font-size: 12px; color: var(--gray-light); line-height: 1.6;
+      margin-bottom: 14px; padding: 8px 10px;
+      background: rgba(229, 168, 46, .08); border-left: 2px solid var(--gold);
+      border-radius: 4px; white-space: pre-line;
+    }
     .db-order-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .db-order-total { font-size: 17px; font-weight: 700; }
 
@@ -225,6 +231,7 @@
     .order-alert-item .t { font-size: 11px; color: var(--gray); letter-spacing: 1px; margin-bottom: 6px; }
     .order-alert-item .d { font-size: 14px; color: #fff; font-weight: 600; margin-bottom: 2px; }
     .order-alert-item .p { font-size: 12px; color: var(--gray-light); margin-top: 6px; }
+    .order-alert-item .n { font-size: 12px; color: var(--gray-light); margin-top: 6px; white-space: pre-line; }
     .order-alert-item .sum { font-size: 13px; color: var(--gold); font-weight: 700; margin-top: 8px; }
     .order-alert-btn {
       width: 100%; padding: 16px; border: none; cursor: pointer;
@@ -538,6 +545,7 @@
             total: parseFloat(r.total),
             pickup: r.pickup,
             phone: r.phone,
+            note: r.note,
             status: r.status,
           }));
         } catch (e) {
@@ -775,6 +783,7 @@
             <div class="t">${formatDate(o.ts)} · ${formatTime(o.ts)} Uhr · #${escapeHtml(o.id.slice(-4).toUpperCase())}</div>
             <div class="d">${dishes}</div>
             ${o.pickup ? `<div class="p">🕛 Abholung: ${escapeHtml(o.pickup)}</div>` : ''}
+            ${o.note ? `<div class="n">💬 ${escapeHtml(o.note)}</div>` : ''}
             <div class="sum">${formatEUR(o.total)}</div>
           </div>`;
       }).join('');
@@ -835,6 +844,7 @@
                  <p class="db-order-details">${escapeHtml((o.details || []).join(' · ')) || '—'}</p>`)}
           ${o.pickup ? `<p class="db-order-pickup">🕛 Abholung: ${escapeHtml(o.pickup)}</p>` : ''}
           ${o.phone ? `<p class="db-order-phone">📞 <a href="tel:${escapeHtml(String(o.phone).replace(/[\s/()\-.]/g, ''))}">${escapeHtml(o.phone)}</a></p>` : ''}
+          ${o.note ? `<p class="db-order-note">💬 ${escapeHtml(o.note)}</p>` : ''}
           <div class="db-order-foot">
             <span class="db-order-total">${formatEUR(o.total)}</span>
             ${o.status !== 'abgeholt'
