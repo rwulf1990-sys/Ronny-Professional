@@ -186,6 +186,16 @@ textarea{min-height:130px;resize:vertical}
 @media (max-width:860px){.cgrid{grid-template-columns:1fr}}
 @media (max-width:520px){form{grid-template-columns:1fr}}
 
+/* ---------- Mobile call bar ---------- */
+.callbar{display:none}
+@media (max-width:760px){
+  .callbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));background:var(--blue);color:var(--white);text-decoration:none;font-family:var(--f-display);font-weight:600;font-size:18px;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 -6px 24px rgba(6,26,54,.25)}
+  .callbar b{font-weight:600;letter-spacing:.02em;opacity:.85}
+  .callbar:active{background:var(--navy)}
+  .callbar:focus-visible{outline:2px solid var(--white);outline-offset:-5px}
+  body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+  .caps{bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+}
 footer{background:var(--marble);color:var(--mist);font-size:14px}
 .foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:18px;padding-block:28px;border-top:1px solid rgba(255,255,255,.08)}
 .foot img{height:54px;width:auto;display:block}
@@ -391,6 +401,11 @@ footer{background:var(--marble);color:var(--mist);font-size:14px}
     <span class="preview-tag">Vorschau</span>
   </div>
 </footer>
+
+<a class="callbar" href="tel:+4917670742850" aria-label="Jetzt anrufen: 0176 70742850">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+  <span>Jetzt anrufen</span><b>0176 70742850</b>
+</a>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
