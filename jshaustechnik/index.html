@@ -53,7 +53,8 @@ a{color:inherit}
 .brand img{height:46px;width:auto;display:block}
 .brand b{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
 .nav-links{display:flex;align-items:center;gap:28px;font-weight:500;font-size:15px}
-.nav-links a{text-decoration:none;opacity:.85}
+.nav-links a{text-decoration:none;opacity:.85;white-space:nowrap}
+@media (max-width:1080px){.nav-links .nav-tel{display:none}}
 .nav-links a:hover{opacity:1;color:var(--gold-hi)}
 .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:12px 22px;border:1.5px solid var(--gold);color:var(--gold-hi);background:transparent;cursor:pointer;transition:background .2s,color .2s}
 .btn:hover{background:var(--gold);color:var(--marble)}
@@ -172,8 +173,9 @@ section.block{padding-block:clamp(72px,10vw,130px)}
 .cinfo dl{margin:0;display:grid;gap:22px}
 .cinfo dt{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .cinfo dd{margin:4px 0 0;font-family:var(--f-display);font-size:28px;font-weight:600;letter-spacing:.02em}
-.cinfo dd.tbd{color:var(--mist);font-size:22px}
-.cinfo .note{margin-top:26px;font-size:14px;color:var(--mist);max-width:36ch}
+.cinfo dd a{text-decoration:none}
+.cinfo dd a:hover{color:var(--gold-hi)}
+.cinfo dd.area{font-family:var(--f-body);font-size:18px;font-weight:500;letter-spacing:0;line-height:1.5;max-width:30ch;color:#d7dce5}
 form{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 form .full{grid-column:1/-1}
 label{display:grid;gap:6px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
@@ -212,6 +214,7 @@ footer{background:var(--marble);color:var(--mist);font-size:14px}
       <a href="#leistungen">Leistungen</a>
       <a href="#ablauf">Ablauf</a>
       <a href="#ueber">Über uns</a>
+      <a class="nav-tel" href="tel:+4917670742850">0176 70742850</a>
       <a class="btn" href="#kontakt">Anfrage</a>
     </nav>
   </div>
@@ -363,11 +366,10 @@ footer{background:var(--marble);color:var(--mist);font-size:14px}
       <div class="cgrid">
         <div class="cinfo">
           <dl>
-            <div><dt>Telefon</dt><dd class="tbd">wird ergänzt</dd></div>
-            <div><dt>E-Mail</dt><dd class="tbd">wird ergänzt</dd></div>
-            <div><dt>Einsatzgebiet</dt><dd class="tbd">wird ergänzt</dd></div>
+            <div><dt>Telefon</dt><dd><a href="tel:+4917670742850">0176 70742850</a></dd></div>
+            <div><dt>E-Mail</dt><dd><a href="mailto:info@jsht.de">info@jsht.de</a></dd></div>
+            <div><dt>Einsatzgebiet</dt><dd class="area">Hamburg Nord, Norderstedt, Henstedt-Ulzburg, Kaltenkirchen, Neumünster und umliegende Dörfer</dd></div>
           </dl>
-          <p class="note">Vorschau: Kontaktdaten, Einsatzgebiet und Öffnungszeiten trage ich ein, sobald sie feststehen.</p>
         </div>
         <form id="form" novalidate>
           <label for="f-name">Name<input id="f-name" name="name" autocomplete="name" placeholder="Vor- und Nachname"></label>
