@@ -521,8 +521,20 @@ window.removeFromCart = function (index) {
   renderCart();
 };
 
+/* Einzelne Tage, an denen die Online-Bestellung ausnahmsweise
+   komplett deaktiviert ist (z. B. Betriebsurlaub, Feiertag). Format
+   'JJJJ-MM-TT'. Datum nach dem jeweiligen Tag hier wieder entfernen,
+   dann läuft die normale Bestellannahme automatisch weiter. */
+const CLOSED_DATES = ['2026-11-23'];
+
+function todayISO() {
+  const now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+}
+
 /* Bestellannahme: Montag – Samstag, 11:00 – 19:30 Uhr (Sonntag geschlossen) */
 function isOrderingOpen() {
+  if (CLOSED_DATES.includes(todayISO())) return false;
   const now = new Date();
   if (now.getDay() === 0) return false;
   const minutes = now.getHours() * 60 + now.getMinutes();
@@ -539,9 +551,11 @@ function buildPickupOptions() {
 
   if (!isOrderingOpen()) {
     const closed = document.createElement('option');
-    closed.textContent = new Date().getDay() === 0
-      ? 'Sonntag geschlossen – Bestellungen Mo–Sa möglich'
-      : 'Aktuell geschlossen – Bestellungen Mo–Sa 11:00–19:30 Uhr möglich';
+    closed.textContent = CLOSED_DATES.includes(todayISO())
+      ? 'Heute ausnahmsweise kein Bestellservice – ab morgen wieder bestellbar'
+      : new Date().getDay() === 0
+        ? 'Sonntag geschlossen – Bestellungen Mo–Sa möglich'
+        : 'Aktuell geschlossen – Bestellungen Mo–Sa 11:00–19:30 Uhr möglich';
     closed.disabled = true;
     closed.selected = true;
     pickupSelect.appendChild(closed);
@@ -673,7 +687,12 @@ cartConfirm.addEventListener('click', () => {
   const cart = loadCart();
   if (!cart.length) return;
   if (!isOrderingOpen()) {
-    showToast('Aktuell geschlossen', 'Bestellungen sind Mo–Sa 11:00–19:30 Uhr möglich.');
+    showToast(
+      'Aktuell geschlossen',
+      CLOSED_DATES.includes(todayISO())
+        ? 'Heute ausnahmsweise kein Bestellservice – ab morgen wieder bestellbar.'
+        : 'Bestellungen sind Mo–Sa 11:00–19:30 Uhr möglich.'
+    );
     buildPickupOptions();
     cartConfirm.disabled = true;
     return;
