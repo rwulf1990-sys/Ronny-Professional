@@ -1,0 +1,66 @@
+# DIS Restaurant
+
+> Restaurant in Henstedt-Ulzburg (Deutschland). Pizza, Burger, Klassiker,
+> Frühstück, Salate und täglich wechselnder Mittagstisch. Nur Abholung,
+> keine Lieferung, keine Online-Zahlung – Bezahlung bar oder mit Karte
+> bei Abholung vor Ort.
+
+## Kontakt & Adresse
+
+- Adresse: Gutenbergstraße 7b, 24558 Henstedt-Ulzburg, Deutschland
+- Telefon: 04193 967994
+- E-Mail: info@dis-restaurant.de
+- Öffnungszeiten: Montag–Samstag 09:00–19:30 Uhr, Sonntag geschlossen
+- Online-Vorbestellung (Abholung): Montag–Samstag 11:00–19:30 Uhr
+
+## Wichtige Seiten
+
+- Startseite & Online-Speisekarte: https://dis-restaurant.de/
+- Mittagstisch (täglich wechselnd): https://dis-restaurant.de/mittagstisch.html
+- Impressum: https://dis-restaurant.de/impressum.html
+- Datenschutz: https://dis-restaurant.de/datenschutz.html
+
+## Speisekarte (Auszug, Stand siehe Website)
+
+### Pizza
+Salami 9,90€ · Sucuk 11,90€ · Margarita 8,90€ · Hawaii 9,90€ ·
+Fitness 11,90€ · Tuna 9,90€ · Speziale 11,90€ · Prime-Chicken 10,90€ ·
+Vegetarisch 11,90€ (vegetarisch) · Dis Pizza 11,90€ · BBQ-Hähnchen 11,90€ ·
+Deine eigene Pizza (Baukasten) ab 7,90€ · Funghi 9,90€
+
+### Burger
+Cheeseburger, inkl. Pommes – 14,90€
+
+### Klassiker
+Jäger Art 12,90€ · Wiener Art 10,90€ · Paprika Art 12,90€ ·
+Hähnchen (Schnitzel) 10,90€ · Chicken-Chips 10,90€ · Currywurst 9,90€ ·
+Fischfilet 10,90€ · Putensteak mit Kräuterbutter & Ofenkartoffel 13,90€ ·
+Frikadelle mit Pommes & Senf 10,90€ · Hacksteak mit Ofenkartoffel 10,90€ ·
+Nackensteak mit Kräuterbutter & Ofenkartoffel 13,90€ ·
+Pommes 4,50€ · Ketchup/Mayo je 0,60€
+
+### Frühstück
+Ganzes belegtes Brötchen 2,00€ · Halbes Mett Brötchen 2,00€ ·
+Rührei mit Speck 4,00€
+
+### Salat
+Gemischter Salat 7,90€ · Hähnchen Salat 9,90€ · Hirtensalat 9,90€
+
+### Mittagstisch
+Täglich wechselnde Gerichte, Preise und Zeiten – aktuelle Karte unter
+https://dis-restaurant.de/mittagstisch.html bzw. im Mittagstisch-Pop-up
+auf der Startseite.
+
+### Getränke
+Coca-Cola, Coca-Cola Zero, Sprite, Fanta, Mineralwasser, Stilles Wasser,
+Fuze Tea, Lift Apfelschorle je 2,50–2,90€ · König Pilsener (alkoholisch,
+nur für Erwachsene) 3,00€
+
+## Hinweise
+
+- Keine veganen Hauptgerichte aktuell im Angebot, nur die vegetarische
+  Pizza "Vegetarisch".
+- Bestellungen sind ausschließlich zur Abholung vor Ort, keine Lieferung.
+- Die maschinenlesbare, strukturierte Version der Karte (mit allen
+  aktuellen Preisen) steht als Schema.org-Menü (JSON-LD) im HTML der
+  Startseite.
