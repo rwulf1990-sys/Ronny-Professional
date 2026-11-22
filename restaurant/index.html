@@ -45,7 +45,97 @@
       "closes": "19:30"
     },
     "acceptsReservations": false,
-    "menu": "https://dis-restaurant.de/#menu"
+    "menu": "https://dis-restaurant.de/#menu",
+    "hasMenu": {
+      "@type": "Menu",
+      "name": "Speisekarte",
+      "hasMenuSection": [
+        {
+          "@type": "MenuSection",
+          "name": "Pizza",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Salami", "description": "Tomatensauce, Salami, Mozzarella", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Sucuk", "description": "Tomatensauce, milde Pepperoni, Sucuk, Oliven, Hirtenkäse, Mozzarella", "offers": { "@type": "Offer", "price": "11.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Margarita", "description": "Tomatensauce, Mozzarella", "offers": { "@type": "Offer", "price": "8.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Hawaii", "description": "Tomatensauce, Hinterschinken, Ananasstücke, Mozzarella", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Fitness", "description": "Hähnchenstreifen, Champignons, Mais, Zwiebeln, Tomaten, Mozzarella", "offers": { "@type": "Offer", "price": "11.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Tuna", "description": "Tomatensauce, Thunfischstücke, Mozzarella, rote Zwiebeln", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Speziale", "description": "Hinterschinken, Salami, frische Champignons, rote Zwiebeln, Mozzarella", "offers": { "@type": "Offer", "price": "11.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Prime-Chicken", "description": "Tomatensauce, Hähnchenbrust, Broccoli, rote Zwiebeln, Sauce Hollandaise, Mozzarella", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Vegetarisch", "description": "Champignons, Paprika, Mais, rote Zwiebeln, Tomaten, Mozzarella", "suitableForDiet": "https://schema.org/VegetarianDiet", "offers": { "@type": "Offer", "price": "11.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Dis Pizza", "description": "Hinterschinken, Broccoli, Tomaten, Sauce Hollandaise, Mozzarella", "offers": { "@type": "Offer", "price": "11.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "BBQ-Hähnchen", "description": "Hähnchenbrust, Paprika, Mais, rote Zwiebeln, Mozzarella, BBQ-Sauce", "offers": { "@type": "Offer", "price": "11.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Deine eigene Pizza", "description": "Tomatensauce, Mozzarella – belege nach Wahl", "offers": { "@type": "Offer", "price": "7.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Funghi", "description": "Tomatensauce, Mozzarella, frische Champignons", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Burger",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Cheeseburger", "description": "Beef Patty 180g, Cheddar, Tomaten, rote Zwiebeln, Gewürzgurken, Salat, Ketchup, Mayo, inkl. Pommes", "offers": { "@type": "Offer", "price": "14.90", "priceCurrency": "EUR" } }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Klassiker",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Jäger Art", "description": "Paniertes Schweineschnitzel (200g), Pilzrahmsauce, frische Pommes", "offers": { "@type": "Offer", "price": "12.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Wiener Art", "description": "Paniertes Schweineschnitzel (200g), Zitrone, frische Pommes", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Paprika Art", "description": "Paniertes Schweineschnitzel (200g), Paprika-Zwiebel Sauce, frische Pommes", "offers": { "@type": "Offer", "price": "12.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Hähnchen", "description": "Paniertes Hähnchenschnitzel (180g), Zitrone, frische Pommes", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Chicken-Chips", "description": "Panierte Hähnchenbrust-Stücke, 4 Stück, frische Pommes", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Currywurst", "description": "Currywurst (160g) mit Curryketchup, frische Pommes", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Fischfilet", "description": "Paniertes Seelachsfilet, frische Pommes, Remoulade", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Putensteak", "description": "Mit Kräuterbutter und Ofenkartoffel", "offers": { "@type": "Offer", "price": "13.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Frikadelle", "description": "Mit Pommes und Senf", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Hacksteak", "description": "Mit Ofenkartoffel", "offers": { "@type": "Offer", "price": "10.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Nackensteak", "description": "Mit Kräuterbutter und Ofenkartoffel", "offers": { "@type": "Offer", "price": "13.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Pommes", "description": "Frische Pommes", "offers": { "@type": "Offer", "price": "4.50", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Ketchup", "description": "Portion", "offers": { "@type": "Offer", "price": "0.60", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Mayo", "description": "Portion", "offers": { "@type": "Offer", "price": "0.60", "priceCurrency": "EUR" } }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Frühstück",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Ganzes belegtes Brötchen", "description": "Verschieden belegt", "offers": { "@type": "Offer", "price": "2.00", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Halbes Mett Brötchen", "description": "Mit rohem Hackfleisch", "offers": { "@type": "Offer", "price": "2.00", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Rührei mit Speck", "description": "Frisches Rührei mit Speck", "offers": { "@type": "Offer", "price": "4.00", "priceCurrency": "EUR" } }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Salat",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Gemischter Salat", "description": "Gemischter Salat mit Salatdressing", "offers": { "@type": "Offer", "price": "7.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Hähnchen Salat", "description": "Gemischter Salat, Hähnchenstreifen und Salatdressing", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Hirtensalat", "description": "Gemischter Salat, Hirtenkäse und Salatdressing", "offers": { "@type": "Offer", "price": "9.90", "priceCurrency": "EUR" } }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Mittagstisch",
+          "description": "Täglich wechselnde Gerichte, Preise und Zeiten – siehe aktuelle Mittagskarte auf der Website."
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Getränke",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Coca-Cola 0,33L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Coca-Cola Zero 0,33L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Sprite 0,33L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Fanta 0,33L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "König Pilsener 0,33L", "description": "Alkoholisches Getränk, nur für Erwachsene", "offers": { "@type": "Offer", "price": "3.00", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Mineralwasser 0,5L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Stilles Wasser 0,5L", "offers": { "@type": "Offer", "price": "2.50", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Fuze Tea 0,33L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } },
+            { "@type": "MenuItem", "name": "Lift Apfelschorle 0,5L", "offers": { "@type": "Offer", "price": "2.90", "priceCurrency": "EUR" } }
+          ]
+        }
+      ]
+    }
   }
   </script>
 </head>
