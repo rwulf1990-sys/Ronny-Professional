@@ -723,194 +723,14 @@ document.getElementById('extras-confirm').addEventListener('click', () => {
 
 renderCart();
 
-/* ---------- Buns Modal (Burger customization) ---------- */
-const ORDER_TYPE_PRICES = { einzeln: 9.9, menu: 15.9 };
-const DOUBLE_PRICE = 4;
-const POMMES_PRICE = 4.5;
-const SAUCE_PRICES = {
-  none: 0,
-  mayo: 0.6,
-  ketchup: 0.6,
-  'vegan-mayo': 1,
-  'trueffel-mayo': 1,
-  'chili-cheese': 1,
-  bbq: 1,
-};
-const DRINK_PRICES = {
-  none: 0,
-  cola: 2.9,
-  'cola-zero': 2.9,
-  sprite: 2.9,
-  fanta: 2.9,
-  mineralwasser: 2.9,
-  'stilles-wasser': 2.5,
-  'fuze-tea': 2.9,
-  apfelschorle: 2.9,
-};
-const bunsOverlay = document.getElementById('buns-overlay');
-const bunsTitle = document.getElementById('buns-title');
-const bunsTotalPrice = document.getElementById('buns-total-price');
-const orderTypeRadios = document.querySelectorAll('input[name="order-type"]');
-const pattyRadios = document.querySelectorAll('input[name="patty-choice"]');
-const pattyDouble = document.getElementById('patty-double');
-const dipChecks = document.querySelectorAll('.dip-choice');
-const priceMayo = document.getElementById('price-mayo');
-const priceKetchup = document.getElementById('price-ketchup');
-const einzelnExtras = document.getElementById('einzeln-extras');
-const einzelnPommes = document.getElementById('einzeln-pommes');
-const drinkNoneOption = document.getElementById('drink-none-option');
-const drinkRadios = document.querySelectorAll('input[name="drink-choice"]');
-
-function isMenuOrder() {
-  const selected = document.querySelector('input[name="order-type"]:checked');
-  return selected ? selected.value === 'menu' : false;
-}
-
-function handleOrderTypeChange() {
-  const menuOrder = isMenuOrder();
-  einzelnExtras.classList.toggle('visible', !menuOrder);
-  drinkNoneOption.style.display = menuOrder ? 'none' : 'flex';
-
-  if (menuOrder) {
-    // Menü always includes a free Mayo or Ketchup dip — make sure one is picked
-    if (!document.getElementById('sauce-mayo').checked && !document.getElementById('sauce-ketchup').checked) {
-      document.getElementById('sauce-mayo').checked = true;
-    }
-    // ...and a real drink, since it's included either way
-    const currentDrink = document.querySelector('input[name="drink-choice"]:checked');
-    if (!currentDrink || currentDrink.value === 'none') {
-      document.getElementById('drink-cola').checked = true;
-    }
-  } else {
-    // Einzeln: drink and fries are optional paid add-ons, default to none
-    document.getElementById('drink-none').checked = true;
-    einzelnPommes.checked = false;
-  }
-
-  updateBunsTotal();
-}
-
-function updateBunsTotal() {
-  const selectedOrderType = document.querySelector('input[name="order-type"]:checked');
-  const basePrice = selectedOrderType ? ORDER_TYPE_PRICES[selectedOrderType.value] : ORDER_TYPE_PRICES.einzeln;
-  const menuOrder = isMenuOrder();
-
-  // One Mayo or Ketchup is included free with the Menü; picking both
-  // makes the second one cost 0,60 €. The labels update live: once one
-  // of the two is ticked, the other switches from inclusive to +0,60 €.
-  if (!menuOrder) {
-    priceMayo.textContent = '+0,60 €';
-    priceKetchup.textContent = '+0,60 €';
-  } else {
-    const mayoChecked = document.getElementById('sauce-mayo').checked;
-    const ketchupChecked = document.getElementById('sauce-ketchup').checked;
-    if (mayoChecked) {
-      priceMayo.textContent = 'Inklusive';
-      priceKetchup.textContent = '+0,60 €';
-    } else if (ketchupChecked) {
-      priceKetchup.textContent = 'Inklusive';
-      priceMayo.textContent = '+0,60 €';
-    } else {
-      priceMayo.textContent = '1× inklusive';
-      priceKetchup.textContent = '1× inklusive';
-    }
-  }
-
-  // Drink prices show as included with the Menü, otherwise their normal price
-  Object.keys(DRINK_PRICES).forEach((key) => {
-    if (key === 'none') return;
-    const label = document.getElementById('price-drink-' + key);
-    if (label) {
-      label.textContent = menuOrder
-        ? 'Inklusive · +0,25 € Pfand'
-        : '+' + formatEUR(DRINK_PRICES[key] + DRINK_PFAND) + ' inkl. Pfand';
-    }
-  });
-
-  const doubleExtra = pattyDouble.checked ? DOUBLE_PRICE : 0;
-  // Multi-select dips: sum all picked dips; with the Menü the first
-  // Mayo/Ketchup is free, a second one costs its normal 0,60 €.
-  let sauceExtra = 0;
-  let freeDipUsed = false;
-  dipChecks.forEach((cb) => {
-    if (!cb.checked) return;
-    const value = cb.dataset.value;
-    if (menuOrder && (value === 'mayo' || value === 'ketchup') && !freeDipUsed) {
-      freeDipUsed = true;
-      return;
-    }
-    sauceExtra += SAUCE_PRICES[value];
-  });
-
-  const selectedDrink = document.querySelector('input[name="drink-choice"]:checked');
-  // Any bottled drink adds the 0,25 € takeaway deposit — with the Menü
-  // the drink itself is free, the deposit still applies.
-  let drinkExtra = 0;
-  if (selectedDrink && selectedDrink.value !== 'none') {
-    drinkExtra = (menuOrder ? 0 : DRINK_PRICES[selectedDrink.value]) + DRINK_PFAND;
-  }
-  const pommesExtra = !menuOrder && einzelnPommes.checked ? POMMES_PRICE : 0;
-
-  bunsTotalPrice.textContent = formatEUR(basePrice + doubleExtra + sauceExtra + drinkExtra + pommesExtra);
-}
-
-window.openBuns = function (name) {
+/* ---------- Cheeseburger (fester Preis inkl. Pommes) ---------- */
+window.orderBurger = function (dish, price) {
   if (!isBurgerTime()) {
     showToast('Burger sind heute leider ausverkauft', 'Täglich nur bis 17:00 Uhr bestellbar.');
     return;
   }
-  bunsTitle.textContent = name;
-  document.getElementById('order-einzeln').checked = true;
-  document.getElementById('patty-beef').checked = true;
-  pattyDouble.checked = false;
-  dipChecks.forEach((cb) => { cb.checked = false; });
-  document.getElementById('drink-none').checked = true;
-  einzelnPommes.checked = false;
-  einzelnExtras.classList.add('visible');
-  drinkNoneOption.style.display = 'flex';
-  updateBunsTotal();
-  bunsOverlay.classList.add('open');
+  addToCart({ dish, details: ['inkl. Pommes'], price });
 };
-
-function closeBuns() {
-  bunsOverlay.classList.remove('open');
-}
-
-orderTypeRadios.forEach((r) => r.addEventListener('change', handleOrderTypeChange));
-pattyRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
-pattyDouble.addEventListener('change', updateBunsTotal);
-dipChecks.forEach((cb) => cb.addEventListener('change', updateBunsTotal));
-einzelnPommes.addEventListener('change', updateBunsTotal);
-drinkRadios.forEach((r) => r.addEventListener('change', updateBunsTotal));
-document.getElementById('buns-close').addEventListener('click', closeBuns);
-bunsOverlay.addEventListener('click', (e) => {
-  if (e.target === bunsOverlay) closeBuns();
-});
-function checkedLabel(name) {
-  const input = document.querySelector(`input[name="${name}"]:checked`);
-  if (!input) return null;
-  return input.closest('.extras-option-left').innerText.trim().split('\n')[0];
-}
-
-document.getElementById('buns-confirm').addEventListener('click', () => {
-  const details = [];
-  details.push(checkedLabel('order-type'));
-  details.push('Patty: ' + checkedLabel('patty-choice'));
-  if (pattyDouble.checked) details.push('Double (2 Patties)');
-  const dips = [...dipChecks]
-    .filter((cb) => cb.checked)
-    .map((cb) => cb.closest('.extras-option-left').innerText.trim().split('\n')[0]);
-  if (dips.length) details.push('Dips: ' + dips.join(', '));
-  const drink = checkedLabel('drink-choice');
-  if (drink && drink !== 'Ohne Getränk') details.push('Getränk: ' + drink + ' (inkl. 0,25 € Pfand)');
-  if (!isMenuOrder() && einzelnPommes.checked) details.push('Pommes');
-  addToCart({
-    dish: bunsTitle.textContent,
-    details: details.filter(Boolean),
-    price: parseEUR(bunsTotalPrice.textContent),
-  });
-  closeBuns();
-});
 
 /* ---------- Pommes Modal (Dip-Auswahl) ---------- */
 const pommesOverlay = document.getElementById('pommes-overlay');
@@ -1003,7 +823,6 @@ document.getElementById('pizza-confirm').addEventListener('click', () => {
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (extrasOverlay.classList.contains('open')) closeExtras();
-  if (bunsOverlay.classList.contains('open')) closeBuns();
   if (pizzaOverlay.classList.contains('open')) closePizza();
   if (pommesOverlay.classList.contains('open')) closePommes();
   if (cartOverlay.classList.contains('open')) closeCart();
