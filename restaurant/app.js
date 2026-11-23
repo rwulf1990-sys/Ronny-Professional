@@ -401,13 +401,18 @@ mittagstischOverlay.addEventListener('click', (e) => {
 });
 window.goToMittagstisch = window.openMittagstisch;
 
-/* ---------- Extras Modal (Mayo/Ketchup) ---------- */
+/* ---------- Extras Modal (Beilage Pflicht + Mayo/Ketchup optional) ---------- */
 const EXTRA_PRICE = 0.6;
 const extrasOverlay = document.getElementById('extras-overlay');
 const extrasTitle = document.getElementById('extras-title');
 const extrasTotalPrice = document.getElementById('extras-total-price');
 const extraMayo = document.getElementById('extra-mayo');
 const extraKetchup = document.getElementById('extra-ketchup');
+const extrasSauces = document.getElementById('extras-sauces');
+const beilagePommes = document.getElementById('beilage-pommes');
+const beilageKartoffelsalat = document.getElementById('beilage-kartoffelsalat');
+const beilageRadios = document.querySelectorAll('input[name="beilage-choice"]');
+const beilageError = document.getElementById('beilage-error');
 let extrasBasePrice = 0;
 
 function formatEUR(value) {
@@ -421,9 +426,15 @@ function updateExtrasTotal() {
   extrasTotalPrice.textContent = formatEUR(total);
 }
 
-window.openExtras = function (name, basePrice) {
+/* Beilage (Pommes/Kartoffelsalat) ist Pflicht; Mayo/Ketchup nur bei
+   Gerichten, die diese Extras schon vorher anbieten (withSauces). */
+window.openExtras = function (name, basePrice, withSauces = true) {
   extrasBasePrice = basePrice;
   extrasTitle.textContent = name;
+  beilagePommes.checked = false;
+  beilageKartoffelsalat.checked = false;
+  beilageError.classList.remove('show');
+  extrasSauces.style.display = withSauces ? '' : 'none';
   extraMayo.checked = false;
   extraKetchup.checked = false;
   updateExtrasTotal();
@@ -436,6 +447,7 @@ function closeExtras() {
 
 extraMayo.addEventListener('change', updateExtrasTotal);
 extraKetchup.addEventListener('change', updateExtrasTotal);
+beilageRadios.forEach((r) => r.addEventListener('change', () => beilageError.classList.remove('show')));
 document.getElementById('extras-close').addEventListener('click', closeExtras);
 extrasOverlay.addEventListener('click', (e) => {
   if (e.target === extrasOverlay) closeExtras();
@@ -733,7 +745,12 @@ window.orderDrink = function (dish, price) {
 };
 
 document.getElementById('extras-confirm').addEventListener('click', () => {
-  const details = [];
+  const beilage = document.querySelector('input[name="beilage-choice"]:checked');
+  if (!beilage) {
+    beilageError.classList.add('show');
+    return;
+  }
+  const details = [beilage === beilagePommes ? 'Frische Pommes' : 'Kartoffelsalat'];
   if (extraMayo.checked) details.push('Mayo');
   if (extraKetchup.checked) details.push('Ketchup');
   addToCart({ dish: extrasTitle.textContent, details, price: parseEUR(extrasTotalPrice.textContent) });
