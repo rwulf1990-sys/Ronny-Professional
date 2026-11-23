@@ -553,11 +553,6 @@ function isOrderingOpen() {
   return minutes >= 11 * 60 && minutes <= 19 * 60 + 30;
 }
 
-/* Burger sind täglich nur bis 17:00 Uhr bestellbar. */
-function isBurgerTime() {
-  return new Date().getHours() < 17;
-}
-
 function buildPickupOptions() {
   pickupSelect.innerHTML = '';
 
@@ -761,10 +756,6 @@ renderCart();
 
 /* ---------- Cheeseburger (fester Preis inkl. Pommes) ---------- */
 window.orderBurger = function (dish, price) {
-  if (!isBurgerTime()) {
-    showToast('Burger sind heute leider ausverkauft', 'Täglich nur bis 17:00 Uhr bestellbar.');
-    return;
-  }
   addToCart({ dish, details: ['inkl. Pommes'], price });
 };
 
