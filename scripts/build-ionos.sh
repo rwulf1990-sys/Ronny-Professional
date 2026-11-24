@@ -50,10 +50,17 @@ sed -i '/class="preview-badge"/d' "$B/index.html"
 # --- Titel/Meta säubern ---
 sed -i 's# · 3D Preview##g; s# · 3D-Preview##g' "$B/index.html"
 
-# --- .htaccess: korrekte MIME-Typen für ES-Module & Schriften ---
+# --- .htaccess: korrekte MIME-Typen, HTTPS-Zwang & Sicherheits-Header ---
 cat > "$B/.htaccess" <<'HT'
 # DIS Restaurant – Server-Konfiguration für IONOS
 DirectoryIndex index.html
+Options -MultiViews
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
 
 <IfModule mod_mime.c>
   AddType application/javascript .js
@@ -70,6 +77,8 @@ AddDefaultCharset UTF-8
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cjcysqefchfnyryrdsbo.supabase.co https://api.emailjs.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
 </IfModule>
 
 <IfModule mod_deflate.c>
